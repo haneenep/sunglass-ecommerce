@@ -4,12 +4,10 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const {connect }= require("./config/dbconnect");
-// const passport = require('passport');
-// const GoogleStrategy = require('passport-google-oauth20').Strategy;
-const passport = require('./config/passport')();
+const passport = require('passport');
+require('./config/passport');
 const cookieSession = require('cookie-session');
 const session = require("express-session")
-
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');

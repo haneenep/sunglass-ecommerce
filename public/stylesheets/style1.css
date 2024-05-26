@@ -59,6 +59,7 @@ h2 {
 
 h3 {
 	font-size: 30px;
+	font-family: ui-monospace;
 }
 
 h4 {
@@ -317,6 +318,13 @@ ol {
 
 .header {
 	background: #ffffff;
+    /* position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); */
+}
 }
 
 .header__top {
@@ -354,6 +362,11 @@ ol {
 .header__top__hover {
 	display: inline-block;
 	position: relative;
+}
+
+.fa-regular, .far {
+    font-weight: 400;
+    color: black;
 }
 
 .header__top__hover:hover ul {
@@ -1937,7 +1950,7 @@ ol {
 -----------------------*/
 
 .footer {
-	background: #111111;
+	background: #B2AC88;
 	padding-top: 70px;
 }
 
@@ -1954,7 +1967,7 @@ ol {
 }
 
 .footer__about p {
-	color: #b7b7b7;
+	color: #111111;
 	margin-bottom: 30px;
 }
 
@@ -1963,7 +1976,7 @@ ol {
 }
 
 .footer__widget h6 {
-	color: #ffffff;
+	color: #111111;
 	font-size: 15px;
 	font-weight: 700;
 	text-transform: uppercase;
@@ -1977,12 +1990,12 @@ ol {
 }
 
 .footer__widget ul li a {
-	color: #b7b7b7;
+	color: #111111;
 	font-size: 15px;
 }
 
 .footer__widget .footer__newslatter p {
-	color: #b7b7b7;
+	color: #111111;
 }
 
 .footer__widget .footer__newslatter form {
@@ -1996,31 +2009,31 @@ ol {
 	background: transparent;
 	border: none;
 	padding: 15px 0;
-	border-bottom: 2px solid #ffffff;
+	border-bottom: 2px solid #111111;
 }
 
 .footer__widget .footer__newslatter form input::-webkit-input-placeholder {
-	color: #3d3d3d;
+	color: #111111;
 }
 
 .footer__widget .footer__newslatter form input::-moz-placeholder {
-	color: #3d3d3d;
+	color: #111111;
 }
 
 .footer__widget .footer__newslatter form input:-ms-input-placeholder {
-	color: #3d3d3d;
+	color: #111111;
 }
 
 .footer__widget .footer__newslatter form input::-ms-input-placeholder {
-	color: #3d3d3d;
+	color: #111111;
 }
 
 .footer__widget .footer__newslatter form input::placeholder {
-	color: #3d3d3d;
+	color: #111111;
 }
 
 .footer__widget .footer__newslatter form button {
-	color: #b7b7b7;
+	color: #111111;
 	font-size: 16px;
 	position: absolute;
 	right: 5px;
@@ -2031,22 +2044,22 @@ ol {
 }
 
 .footer__copyright__text {
-	border-top: 1px solid rgba(255, 255, 255, 0.1);
+	border-top: 1px solid rgba(0, 0, 0, 0.943);
 	padding: 20px 0;
 	margin-top: 40px;
 }
 
 .footer__copyright__text p {
-	color: #b7b7b7;
+	color: #111111;
 	margin-bottom: 0;
 }
 
 .footer__copyright__text p i {
-	color: #e53637;
+	color: #111111;
 }
 
 .footer__copyright__text p a {
-	color: #e53637;
+	color: #111111;
 }
 
 /*---------------------

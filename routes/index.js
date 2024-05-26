@@ -1,34 +1,38 @@
 const router = require('express').Router();
-const collection = require('../models/userModel')
+const User = require('../models/userModel')
+const cartController = require('../controller/cartController');
+const productController = require('../controller/productController');
+const userController = require('../controller/userController');
+const otpController = require('../controller/otpController');
 
 /* GET home page. */
-router.get('/',(req,res)=>{
-  res.render('user/user_login')
-})
+router.get('/',userController.homepage);
 
-router.get('/login',(req,res)=>{
-  res.render('user/user_home')
-})
+router.get('/login',userController.login);
+
+// login and signup page
+router.get('/loginandsignup',userController.loginAndSignup);
+
+// GET cart page 
+router.get('/cart',cartController.cartPage);
+
+// GET product page
+router.get('/product',productController.productPage);
 
 // register the user
-router.post('/signup',async (req,res)=>{
+router.post('/signup',userController.registerUser);
 
-  const data = {
-    name : req.body.name,
-    password : req.body.password,
-    email : req.body.email
-  }
+// to send otp
+router.post('/send-otp',otpController.sendOtp);
 
-  // checking wheather user is already exist 
-  const existingUser = await collection.findOne({email : data.email})
+// to render otp 
+router.get('/otp',otpController.renderOtp);
 
-  if(existingUser){
-    res.send("this email is already registered , you can login with other one")
-  }else{
-    const userdata = await collection.insertMany(data)
-    console.log(userdata);
-  }
+// to verify otp
+router.post('/verify-otp',otpController.verifyOtp);
 
-  
-})
+// to resend otp
+router.post('/resend-otp',otpController.resendOtp)
+
+
 module.exports = router;
