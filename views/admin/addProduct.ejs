@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!--favicon-->
+    <link rel="icon" href="/assets/images/favicon-32x3.png" type="image/png" />
+    <!--plugins-->
+    <link
+      href="/assets/plugins/vectormap/jquery-jvectormap-2.0.2.css"
+      rel="stylesheet"
+    />
+    <link href="/assets/plugins/simplebar/css/simplebar.css" rel="stylesheet" />
+    <link
+      href="/assets/plugins/perfect-scrollbar/css/perfect-scrollbar.css"
+      rel="stylesheet"
+    />
+    <link
+      href="/assets/plugins/metismenu/css/metisMenu.min.css"
+      rel="stylesheet"
+    />
+    <!-- loader-->
+    <link href="/assets/css/pace.min.css" rel="stylesheet" />
+    <script src="/assets/js/pace.min.js"></script>
+    <!-- Bootstrap CSS -->
+    <link href="/assets/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="/assets/css/app.css" rel="stylesheet" />
+    <link href="/assets/css/icons.css" rel="stylesheet" />
+    <!-- Theme Style CSS -->
+    <link rel="stylesheet" href="/assets/css/dark-theme.css" />
+    <link rel="stylesheet" href="/assets/css/semi-dark.css" />
+    <link rel="stylesheet" href="/assets/css/header-colors.css" />
+    <!-- Cropper.js CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css"
+    />
+    <title>VistaVogue</title>
+    <style>
+      #cropContainer {
+        display: flex;
+        overflow-x: auto;
+        gap: 10px;
+        padding: 10px 0;
+      }
+
+      #cropContainer .image-container {
+        position: relative;
+        display: inline-block;
+      }
+
+      #cropContainer img {
+        max-width: 150px;
+        max-height: 150px;
+        object-fit: cover;
+        cursor: pointer;
+      }
+
+      #cropContainer canvas {
+        max-width: 150px;
+        max-height: 150px;
+        object-fit: cover;
+      }
+
+      .image-crop-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .crop-actions {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background: rgba(0, 0, 0, 0.5);
+        padding: 5px;
+        display: none;
+      }
+
+      .image-container:hover .crop-actions {
+        display: block;
+      }
+
+      .crop-actions button {
+        margin-right: 5px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!--wrapper-->
+    <div class="wrapper">
+      <!--sidebar wrapper -->
+      <%- include('../layout/adminSideWrapper') -%>
+      <!--end sidebar wrapper -->
+      <!--start header -->
+      <%- include('../layout/adminHeaderNav') -%>
+      <!--end header -->
+      <!--start page wrapper -->
+      <div class="page-wrapper">
+        <div class="page-content">
+          <!--breadcrumb-->
+          <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
+            <div class="breadcrumb-title pe-3">eCommerce</div>
+            <div class="ps-3">
+              <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0 p-0">
+                  <li class="breadcrumb-item">
+                    <a href="javascript:;"><i class="bx bx-home-alt"></i></a>
+                  </li>
+                  <li class="breadcrumb-item active" aria-current="page">
+                    Add New Product
+                  </li>
+                </ol>
+              </nav>
+            </div>
+            <div class="ms-auto">
+              <div class="btn-group">
+                <button type="button" class="btn btn-primary">Settings</button>
+                <button
+                  type="button"
+                  class="btn btn-primary split-bg-primary dropdown-toggle dropdown-toggle-split"
+                  data-bs-toggle="dropdown"
+                >
+                  <span class="visually-hidden">Toggle Dropdown</span>
+                </button>
+                <div
+                  class="dropdown-menu dropdown-menu-right dropdown-menu-lg-end"
+                >
+                  <a class="dropdown-item" href="javascript:;">Action</a>
+                  <a class="dropdown-item" href="javascript:;"
+                    >Another action</a
+                  >
+                  <a class="dropdown-item" href="javascript:;"
+                    >Something else here</a
+                  >
+                  <div class="dropdown-divider"></div>
+                  <a class="dropdown-item" href="javascript:;"
+                    >Separated link</a
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+          <!--end breadcrumb-->
+          <div class="row">
+            <div class="col-xl-9 mx-auto">
+              <h6 class="mb-0 text-uppercase">Add New Product</h6>
+              <hr />
+              <div class="card border-top border-0 border-4 border-danger">
+                <div class="card-body p-5">
+                  <form
+                    class="row g-3"
+                    action="/admin/add-product"
+                    method="POST"
+                    enctype="multipart/form-data"
+                    id="productForm"
+                  >
+                    <div class="col-md-6">
+                      <label for="inputProductName" class="form-label"
+                        >Product Name</label
+                      >
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="inputProductName"
+                        name="productName"
+                        placeholder="Enter product name"
+                        required
+                      />
+                    </div>
+                    <div class="col-md-6">
+                      <label for="inputPrice" class="form-label">Price</label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        class="form-control"
+                        id="inputPrice"
+                        name="price"
+                        placeholder="Enter price"
+                        required
+                      />
+                    </div>
+                    <div class="col-md-12">
+                      <label for="inputDescription" class="form-label"
+                        >Product Description</label
+                      >
+                      <textarea
+                        class="form-control"
+                        id="inputDescription"
+                        name="description"
+                        rows="4"
+                        placeholder="Enter product description"
+                        required
+                      ></textarea>
+                    </div>
+                    <div class="col-md-12">
+                      <label for="image" class="form-label"
+                        >Product Images</label
+                      >
+                      <input
+                        class="form-control"
+                        type="file"
+                        id="images"
+                        name="images"
+                        accept="image/*"
+                        multiple
+                        onchange="displaySelectedImages(this)"
+                      />
+                    </div>
+                    <div
+                      class="selected-images-container"
+                      id="selectedImagesContainer"
+                    ></div>
+                    <!-- <div id="croppedImagesContainer"></div> -->
+                    <div class="col-12">
+                      <label for="inputCategory" class="form-label"
+                        >Category</label
+                      >
+                      <select
+                        class="form-select"
+                        id="inputCategory"
+                        name="category"
+                        required
+                      >
+                        <option selected disabled>Select category</option>
+                        <% category.forEach(function(category) { %> <% if
+                        (category.isActive) { %>
+                        <option value="<%= category._id %>">
+                          <%= category.name %>
+                        </option>
+                        <% } %> <% }); %>
+                      </select>
+                    </div>
+                    <div class="col-12">
+                      <label for="inputStockQuantity" class="form-label"
+                        >Stock Quantity</label
+                      >
+                      <input
+                        type="number"
+                        class="form-control"
+                        id="inputStockQuantity"
+                        name="stockQuantity"
+                        placeholder="Enter stock quantity"
+                        required
+                      />
+                    </div>
+                    <div class="col-12">
+                      <button
+                        id="submit-btn"
+                        type="submit"
+                        class="btn btn-success px-5"
+                      >
+                        Add Product
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!--end row-->
+        </div>
+      </div>
+      <!--end page wrapper -->
+      <!--start overlay-->
+      <div class="overlay toggle-icon"></div>
+      <!--end overlay-->
+      <!--Start Back To Top Button-->
+      <a href="javaScript:;" class="back-to-top"
+        ><i class="bx bxs-up-arrow-alt"></i
+      ></a>
+      <!--End Back To Top Button-->
+      <footer class="page-footer">
+        <p class="mb-0">Copyright © 2021. All right reserved VistaVogue.</p>
+      </footer>
+    </div>
+    <!--end wrapper-->
+    <!--start switcher-->
+    <%- include('../layout/adminTheme') -%>
+    <!--end switcher-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.10.2/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/5.1.3/js/bootstrap.min.js"></script>
+    <!-- Cropper.js JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="assets/js/bootstrap.bundle.min.js"></script>
+    <!--plugins-->
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/plugins/simplebar/js/simplebar.min.js"></script>
+    <script src="assets/plugins/metismenu/js/metisMenu.min.js"></script>
+    <script src="assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
+    <!--app JS-->
+    <script src="assets/js/app.js"></script>
+    <script>
+      function displaySelectedImages(input) {
+    const selectedImagesContainer = document.getElementById("selectedImagesContainer");
+    selectedImagesContainer.innerHTML = "";
+
+    for (let i = 0; i < input.files.length; i++) {
+        const file = input.files[i];
+        const reader = new FileReader();
+        const cropContainer = document.createElement("div");
+        cropContainer.classList.add("image-crop-container");
+        cropContainer.innerHTML = `
+            <div class="image-container">
+                <img id="image${i}" src="" alt="Select an image to crop">
+            </div>
+            <button class="crop-button" id="cropButton${i}">Crop Image ${i + 1}</button>
+        `;
+        selectedImagesContainer.appendChild(cropContainer);
+
+        const image = cropContainer.querySelector(`#image${i}`);
+        const cropButton = cropContainer.querySelector(`#cropButton${i}`);
+
+        reader.onload = () => {
+            image.src = reader.result;
+            let cropper = new Cropper(image, {
+                aspectRatio: 1,
+                viewMode: 1,
+            });
+
+            cropButton.addEventListener("click", (event) => {
+                event.preventDefault();
+                if (cropper) {
+                    const canvas = cropper.getCroppedCanvas({
+                        width: 150,
+                        height: 150,
+                    });
+                    const croppedImageDataURL = canvas.toDataURL();
+                    image.src = croppedImageDataURL;
+                    const croppedImageFile = dataURLToFile(croppedImageDataURL, file.name);
+                    const currentFiles = Array.from(input.files);
+                    currentFiles[i] = croppedImageFile;
+
+                    const newFileList = createFileList(currentFiles);
+                    input.files = newFileList;
+                    cropper.destroy();
+                    cropper = null;
+                } else {
+                    cropper = new Cropper(image, {
+                        aspectRatio: 1,
+                        viewMode: 1,
+                    });
+                }
+            });
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+function dataURLToFile(dataUrl, filename) {
+    const arr = dataUrl.split(",");
+    const mime = arr[0].match(/:(.*?);/)[1];
+    const bstr = atob(arr[1]);
+
+    let n = bstr.length;
+    const u8arr = new Uint8Array(n);
+    while (n--) {
+        u8arr[n] = bstr.charCodeAt(n);
+    }
+
+    return new File([u8arr], filename, { type: mime });
+}
+
+function createFileList(currentList) {
+    const dataTransfer = new DataTransfer();
+    currentList.forEach((file) => {
+        dataTransfer.items.add(file);
+    });
+    return dataTransfer.files;
+}
+
+    </script>
+  </body>
+</html>

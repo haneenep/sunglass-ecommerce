@@ -1,64 +1,110 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="/stylesheets/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-</head>
-<body>
+<%- include("../layout/header") -%>
 
-    <div class="wrapper">
-        <div class="container">
-          <div class="sign-up-container">
-            <form action="/signup" method="post">
-              <h1>Create Account</h1>
-              <div class="social-links">
-                <div>
-                  <a href="#"><i class="fa-brands fa-google"></i></a>
+<div class="limiter">
+    <div class="container-login100">
+        <div class="wrap-login100">
+            <div class="login100-pic js-tilt" data-tilt>
+                <img src="images/img-01.png" alt="IMG">
+            </div>
+
+            <form id="loginForm" class="login100-form validate-form" action="/loginAccess" method="post" novalidate>
+                <span class="login100-form-title">
+                    Member Login
+                </span>
+                <div class="google-btn-container">
+                  <a href="/auth/google" class="google-btn">
+                      <i class="fa fa-google fa-lg"></i>
+                  </a>
+                  <div class="text-container">
+                    <h4 class="txt2">&nbsp;&nbsp;or use your account</h4>
                 </div>
               </div>
-              <span>or use your email for registration</span>
-              <input type="text" placeholder="Name" name="name">
-              <input type="email" placeholder="Email" name="email">
-              <input type="password" placeholder="Password" name="password">
-              <input type="password" placeholder="confirmPassword" name="confirmpassword">
-              <button class="form_btn">Sign Up</button>
-            </form>
-          </div>
-          <div class="sign-in-container">
-            <form action="/login">
-              <h1>Sign In</h1>
-              <div class="social-links">
-                <div>
-                  <a href="#"><i class="fa-brands fa-google"></i></i></a>
+              <% if (locals.error) { %>
+                 <p class="text-danger"><%= error %></p>
+                <% } %>
+                <div class="wrap-input100 validate-input" data-validate="Valid email is required: ex@abc.xyz">
+                    <input id="email" class="input100" type="text" name="email" placeholder="Email" required>
+                    <span class="focus-input100"></span>
+                    <span class="symbol-input100">
+                        <i class="fa fa-envelope" aria-hidden="true"></i>
+                    </span>
                 </div>
-              </div>
-              <span>or use your account</span>
-              <input type="email" placeholder="Email">
-              <input type="password" placeholder="Password">
-              <button class="form_btn">Sign In</button>
+                <span id="emailError" class="error-message" style="color:red; display:none;">Valid email is required: ex@abc.xyz</span>
+
+                <div class="wrap-input100 validate-input" data-validate="Password is required">
+                    <input id="password" class="input100" type="password" name="password" placeholder="Password" required>
+                    <span class="focus-input100"></span>
+                    <span class="symbol-input100">
+                        <i class="fa fa-lock" aria-hidden="true"></i>
+                    </span>
+                </div>
+                <span id="passwordError" class="error-message" style="color:red; display:none;">Password must be at least 8 characters long, include a number, a special character, and no spaces.</span>
+
+                <div class="container-login100-form-btn">
+                    <button id="submitBtn" type="button" class="login100-form-btn">
+                        Login
+                    </button>
+                </div>
+
+                <div class="text-center p-t-12">
+                    <span class="txt1">
+                        Forgot
+                    </span>
+                    <a class="txt2" href="#">
+                        Username / Password?
+                    </a>
+                </div>
+
+                <div class="text-center p-t-136">
+                    <a class="txt2" href="/loginandsignup">
+                        Create your Account
+                        <i class="fa fa-long-arrow-right m-l-5" aria-hidden="true"></i>
+                    </a>
+                </div>
             </form>
-          </div>
-          <div class="overlay-container">
-            <div class="overlay-left">
-              <h1>Welcome Back</h1>
-              <p>To keep connected with us please login with your personal info</p>
-              <button id="signIn" class="overlay_btn">Sign In</button>
-            </div>
-            <div class="overlay-right">
-              <h1>Hello, Friend</h1>
-              <p>Enter your personal details and start journey with us</p>
-              <button id="signUp" class="overlay_btn">Sign Up</button>
-            </div>
-          </div>
         </div>
-      </div>
+    </div>
+</div>
 
-      <!-- linking the js file -->
+<%- include('../layout/footer') -%>
 
-      <script src="/js/script.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const submitBtn = document.getElementById('submitBtn');
+    const loginForm = document.getElementById('loginForm');
+    const emailError = document.getElementById('emailError');
+    const passwordError = document.getElementById('passwordError');
 
-    </body>
-    </html>
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const passwordPattern = /^(?=.*[0-9])(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
+
+    function validateEmail() {
+        const isValid = emailPattern.test(emailInput.value);
+        emailError.style.display = isValid ? 'none' : 'block';
+        return isValid;
+    }
+
+    function validatePassword() {
+        const isValid = passwordPattern.test(passwordInput.value) && !/\s/.test(passwordInput.value);
+        passwordError.style.display = isValid ? 'none' : 'block';
+        return isValid;
+    }
+
+    function validateForm() {
+        const isEmailValid = validateEmail();
+        const isPasswordValid = validatePassword();
+        return isEmailValid && isPasswordValid;
+    }
+
+    submitBtn.addEventListener('click', function (event) {
+        if (validateForm()) {
+            loginForm.submit();
+        }
+    });
+
+    emailInput.addEventListener('input', validateEmail);
+    passwordInput.addEventListener('input', validatePassword);
+});
+</script>

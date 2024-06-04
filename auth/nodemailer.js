@@ -1,37 +1,35 @@
-const nodemailer = require("nodemailer");
-require('dotenv').config();
-const {AUTH_EMAIL,AUTH_PASS} = process.env;
+    const nodemailer = require("nodemailer");
+    require("dotenv").config();
+    const {AUTH_EMAIL,AUTH_PASS} = process.env;
 
-// create a transporter
-let mailTransporter = nodemailer.createTransport({
-    service : 'Gmail',
-    auth : {
-        user : AUTH_EMAIL,
-        pass : AUTH_PASS,
-    },
-    tls : {
-        rejectUnauthorized : false
-    }
-});
 
-// verify transport configuration
-mailTransporter.verify((error,success) => {
-    if(error) {
-        console.log("Error verifying transporter : ",error);
-    } else {
-        console.log("Transporter is ready to send Emails");
-        console.log(success);
-    }
-})
+        // create a transporter
+        const transporter = nodemailer.createTransport({
+            service : 'gmail',
+            auth : {
+                user : AUTH_EMAIL,  
+                pass : AUTH_PASS
+            }
+        });
 
-// send the email
-const sendEmail = async (mailOptions) => {
-    try {
-        await mailTransporter.sendMail(mailOptions);
-        console.log("Email send successfully");
-    } catch (err) {
-        console.log("Error sending the email :",err);
-    }
-}
+        // transporter verify
+        transporter.verify((err,success) => {
+            if(err){
+                console.log("error verifying user",err);
+            }else
+            console.log("ready to send email");
+            console.log(success);
+        });
 
-module.exports = sendEmail
+        // function to send email
+        const sendEmail = async (mailOptions) => {
+            try {
+                await transporter.sendMail(mailOptions);
+                console.log("Email sent successfully");
+            } catch (err) {
+                console.log("error sending email",err);
+            }
+        };
+
+
+        module.exports = sendEmail;

@@ -13,16 +13,16 @@ const userSchema = new mongoose.Schema({
     },
     password:{
         type:String,
-        required : true
     },
-    otp : {
+    googleId : {
         type : String,
-        required : true
+    },
+    profilePicture : {
+        type : String,
     },
     createdAt : {
         type : Date,
         default : Date.now,
-        expires : '3m'
     }
 
 })

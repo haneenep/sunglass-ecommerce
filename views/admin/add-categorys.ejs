@@ -1,0 +1,43 @@
+
+    <%- include('../layout/adminHead') -%>
+
+<div class="wrapper">
+    <%- include('../layout/adminSideWrapper') -%>
+    <%- include('../layout/adminHeaderNav') -%>
+
+    <div class="page-wrapper">
+        <div class="page-content">
+            <h3>Add Category</h3>
+            <form action="/admin/add-categorys" method="POST">
+                <div class="mb-3">
+                    <label for="name" class="form-label">Category Name</label>
+                    <input type="text" class="form-control" id="name" name="name" required>
+                </div>
+                <div class="mb-3">
+                    <label for="isActive" class="form-label">Active</label>
+                    <select class="form-select" id="isActive" name="isActive" required>
+                        <option value="true">Yes</option>
+                        <option value="false">No</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-success ">Add Category</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="overlay toggle-icon"></div>
+    <a href="javascript:;" class="back-to-top"><i class='bx bxs-up-arrow-alt'></i></a>
+    <footer class="page-footer">
+        <p class="mb-0">Copyright © 2021. All right reserved.</p>
+    </footer>
+</div>
+
+<%- include('../layout/adminTheme') -%>
+<script src="assets/js/bootstrap.bundle.min.js"></script>
+<script src="assets/js/jquery.min.js"></script>
+<script src="assets/plugins/simplebar/js/simplebar.min.js"></script>
+<script src="assets/plugins/metismenu/js/metisMenu.min.js"></script>
+<script src="assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>

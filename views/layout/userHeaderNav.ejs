@@ -1,0 +1,57 @@
+<!-- Header Section Begin -->
+<header class="header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3 col-md-3">
+                <div class="header__logo">
+                    <a href="./index.html"><h3>VISTAVOGUE</h3></a>
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-6">
+                <nav class="header__menu mobile-menu">
+                    <ul>
+                        <li class=""><a href="./index.html">Home</a></li>
+                        <li><a href="/product">Shop</a></li>
+                        <li><a href="#">Pages</a>
+                            <ul class="dropdown">
+                                <li><a href="./shop-details.html">Shop Details</a></li>
+                                <li><a href="/cart">Shopping Cart</a></li>
+                                <li><a href="./checkout.html">Check Out</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="./contact.html">Contacts</a></li>
+                    </ul>
+                </nav>
+            </div>
+            <div class="col-lg-3 col-md-3">
+                <div class="header__nav__option">
+                    <a href="#" class="search-switch"><img src="img/icon/search.png" alt=""></a>
+                    <a href="#"><img src="img/icon/heart.png" alt=""></a>
+                    <a href="/cart"><img src="img/icon/cart.png" alt=""> <span>0</span></a>
+                    
+                    <% if( locals.user){%>
+                    <div class="dropdown">
+                        <button class="dropdown-toggle"
+                         style="border-radius: 15px; 
+                         padding: 0px 6px;">
+                         <%= user.toString().charAt(0).toUpperCase() %>
+                        </button>
+                        <div class="dropdown-menu" style="z-index: 10; background-color: rgb(0, 0, 0);">
+                            <a href="#" style="margin-right: 0;"><%= user.name%></a>                            
+                            <a href="#" style="margin-right: 0;">My Profile</a>                            
+                            <a href="#" style="margin-right: 0;">All Products</a>
+                            <a href="#" style="margin-right: 0;">My Orders</a>
+                            <a href="/logout" style="margin-right: 0;" id="logoutButton" style="color: red;" onclick="confirmLogout(event)">Logout</a>
+                        </div>
+                    </div>
+                <%}else{%>
+                    <a href="/login"><i class="fa-regular fa-user"></i></a>
+                    <%}%>
+
+            </div>
+        </div>
+        <div class="canvas__open"><i class="fa fa-bars"></i></div>
+    </div>
+</header>
+<!-- Header Section End -->
+

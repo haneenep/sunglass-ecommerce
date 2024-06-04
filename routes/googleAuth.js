@@ -1,16 +1,45 @@
 const router = require("express").Router();
 const passport = require('passport');
+const User = require("../models/userModel");
 require('dotenv').config();
 
 // Route for successful login
-router.get('/login/success',(req,res) => {
+router.get('/login/success', async (req,res) => {
     if(req.user) {
-        res.status(200).json({
-            error : false,
-            message : "Successfully Loged In",
-            user : req.user
-        });
-    }else{
+
+        const { id, _json: { name, email, picture } } = req.user;
+
+        console.log( name, email,);
+        try {
+            let existUser = await User.findOne({ email });
+            
+         if(existUser && existUser.password) {
+          return res.send("user allready exists")
+         }
+          if(existUser && existUser.googleId){
+            req.session.user = req.user.displayName;
+            return res.redirect('/')
+          }
+               const user = new User({
+                    googleId : id,
+                    name : name,
+                    email : email,
+                    picture : picture
+                });
+
+                await user.save()
+
+            console.log("sa ved:",user);
+            req.session.user = req.user.displayName;
+            res.redirect("/");
+        } catch(error) {
+            console.error("Error saving user goole :",error);
+            res.status(500).json({
+                error : true,
+                message : 'Internal Server Error'
+            });
+        }
+        }else{
         res.status(403).json({
             error : true,
             message : "Not Authorized"
@@ -32,8 +61,8 @@ router.get('/google',passport.authenticate('google',{
 
 // Callback route for Google OAuth
 router.get("/google/callback",passport.authenticate('google',{
-    successRedirect : process.env.CLIENT_URL,
-    failureRedirect : "/login/failed"
+    successRedirect : "/auth/login/success",
+    failureRedirect : "/auth/login/failed"
 }));
 
 // Route to initiate Google OAuth login

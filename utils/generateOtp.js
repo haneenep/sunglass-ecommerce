@@ -1,7 +1,4 @@
-const generateOtp = async () => {
-    const otp = Math.floor(1000 + Math.random() * 9000) 
-    console.log("User OTP : ",otp);
-    return otp.toString();
-}
-
-module.exports = generateOtp;
+module.exports = function generateOTP() {
+    const otp = Math.floor(1000 + Math.random() * 9000).toString();
+    return otp;
+  };
