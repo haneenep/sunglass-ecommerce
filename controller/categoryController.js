@@ -6,27 +6,50 @@ module.exports = {
 
         try {
             const categorys = await Category.find({isDeleted : false});
-            res.render('admin/categorys',{categorys})
+
+            const success = req.session.successMssg || null;
+            const delet = req.session.delete || null;
+            const done = req.session.success || null;
+            const err = req.session.err || null;
+
+            req.session.err = null;
+            req.session.delete = null;
+            req.session.success = null;
+            req.session.successMssg = null;
+
+            res.render('admin/categorys',{ categorys,success,done,delet,err })
         } catch(error) {
             res.status(500).send('server Error')
         }
-        // res.render('admin/category',{categorys})
 
     },
 
     addCategoryGet : async (req, res) => {
-
-        res.render('admin/add-categorys'); 
+        const err = req.session.errMssg || null;
+        req.session.errMssg = null;
+        res.render('admin/add-categorys',{ err }); 
 
     },
 
     addCategory : async (req,res) => {
+        const {name , isActive} = req.body;
 
         try {
-            const {name , isActive} = req.body;
-            const newCategory = new Category({name,isActive})
+            const names = name.toLowerCase()
+
+            const existCategory = await Category.findOne({ name : names })
+            console.log(existCategory);
+            if(existCategory){
+                req.session.errMssg = "Category is allready registered"
+                return res.redirect('/admin/add-categorys')
+            }
+            const newCategory = new Category({name : names,isActive})
             await newCategory.save()
+
+            req.session.success = "New Category is Added";
+
             res.redirect('/admin/categorys')
+    
         } catch(error) {
             res.status(500).send('Server Error')
         }
@@ -37,10 +60,15 @@ module.exports = {
 
         try {
             const category = await Category.findById(req.params.id);
+
+            const err = req.session.errMssg || null;
+            req.session.errMssg = null;
+
             if(!category) {
-                return res.status(400).send('Category not found')
+                req.session.err = "Category not found";
+                return res.redirect('/admin/categorys')
             }
-            res.render('admin/edit-categorys',{category});
+            res.render('admin/edit-categorys',{ category,err });
         } catch(error) {
             res.status(500).send("Server Error")
         }
@@ -53,9 +81,16 @@ module.exports = {
         console.log(`recieved ${id},and ${name},and also ${isActive}`);
 
         try {
+            const names = name.toLowerCase()
+
+            const existCategory = await Category.findOne({ name : names });
+            if(existCategory && existCategory._id.toString() !== id){
+                req.session.errMssg = "Category is already registered";
+                return res.redirect(`/admin/edit-categorys/${id}`)
+            }
             const category = await Category.findByIdAndUpdate(id,
                 {
-                    name,
+                    name : names,
                     isActive : isActive === 'true'
                 },
                 {
@@ -63,9 +98,11 @@ module.exports = {
                 });
                 console.log('category: ',category);
             if(!category) {
-                return res.status(400).send('Category Not Found')
+                req.session.err = "Category not found";
+                return res.redirect('/admin/categorys')
             }
-            res.redirect('/admin/categorys')
+            req.session.successMssg = "Category Edited Successfully"
+            return res.redirect('/admin/categorys')
         } catch(error) {
             res.status(500).send("Server Error")
         }
@@ -74,12 +111,18 @@ module.exports = {
     deleteCategorys : async (req,res) => {
 
         try {
+
             const {id} = req.body;
             const category = await Category.findByIdAndDelete(id);
+
             if(!category){
-                return res.status(400).send('Category Not Found')
+                req.session.err = "Category not found";
+                return res.redirect('/admin/categorys');
             }
+
+            req.session.delete = "Deleted Successfully";
             res.redirect('/admin/categorys')
+
         } catch(error) {
             res.status(500).send('Server Error')
         }

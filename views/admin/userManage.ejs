@@ -1,0 +1,250 @@
+<%- include('../layout/adminHead') -%>
+
+<div class="wrapper">
+  <%- include('../layout/adminSideWrapper') -%>
+  <%- include('../layout/adminHeaderNav') -%>
+
+  <div class="container user-management mt-4" style="width: 90%; padding-left: 15%; padding-top: 6%;">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2 class="text-black">User Management</h2>
+    </div>
+    <input type="text" id="search" class="form-control mb-4" placeholder="Search for user name..." />
+    <table class="table table-hover">
+      <thead class="thead-dark">
+        <tr>
+          <th scope="col">No.</th>
+          <th scope="col">User Name</th>
+          <th scope="col">Email Address</th>
+          <th scope="col">Status</th>
+          <th scope="col">Access</th>
+        </tr>
+      </thead>
+      <tbody id="userTableBody">
+        <% user.forEach(function(user, index) { %>
+          <tr>
+            <td><%= index + 1 %></td>
+            <td><%= user.name %></td>
+            <td><%= user.email %></td>
+            <td class="<%= user.access === 'status-active' ? 'status-active' : 'status-deactive' %>">
+              <%= user.access === 'status-active' ? 'Active' : 'Deactive' %>
+            </td>
+            <td>
+              <label class="switch">
+                <input type="checkbox" <%= user.access === 'status-active' ? 'checked' : '' %> data-id="<%= user._id %>" class="access-toggle" />
+                <span class="slider round"></span>
+              </label>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+    <nav aria-label="Page navigation example">
+      <ul class="pagination" id="pagination"></ul>
+    </nav>
+  </div>
+</div>
+
+<%- include('../layout/adminTheme') -%>
+
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const rowsPerPage = 5;
+    let currentPage = 1;
+
+    function displayUsers(users, page = 1) {
+      const start = (page - 1) * rowsPerPage;
+      const end = start + rowsPerPage;
+      const paginatedUsers = users.slice(start, end);
+
+      const tableBody = document.getElementById('userTableBody');
+      tableBody.innerHTML = '';
+
+      paginatedUsers.forEach((user, index) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${start + index + 1}</td>
+          <td>${user.name}</td>
+          <td>${user.email}</td>
+          <td class="${user.access === 'status-active' ? 'status-active' : 'status-deactive'}">
+            ${user.access === 'status-active' ? 'Active' : 'Deactive'}
+          </td>
+          <td>
+            <label class="switch">
+              <input type="checkbox" ${user.access === 'status-active' ? 'checked' : ''} data-id="${user._id}" class="access-toggle"/>
+              <span class="slider round"></span>
+            </label>
+          </td>
+        `;
+        tableBody.appendChild(row);
+      });
+
+      document.querySelectorAll('.access-toggle').forEach(toggle => {
+        toggle.addEventListener('change', function() {
+          const userId = this.getAttribute('data-id');
+          const newAccess = this.checked ? 'status-active' : 'status-deactive';
+          updateUserAccess(userId, newAccess);
+        });
+      });
+    }
+
+    function setupPagination(users) {
+      const pagination = document.getElementById('pagination');
+      pagination.innerHTML = '';
+
+      const pageCount = Math.ceil(users.length / rowsPerPage);
+
+      for (let i = 1; i <= pageCount; i++) {
+        const pageItem = document.createElement('li');
+        pageItem.className = 'page-item';
+        pageItem.innerHTML = `<a class="page-link" href="#">${i}</a>`;
+        pageItem.addEventListener('click', function(e) {
+          e.preventDefault();
+          currentPage = i;
+          displayUsers(users, currentPage);
+        });
+        pagination.appendChild(pageItem);
+      }
+    }
+
+    function filterUsers(users, query) {
+      return users.filter(user => user.name.toLowerCase().includes(query.toLowerCase()));
+    }
+
+    document.getElementById('search').addEventListener('input', function() {
+      const query = this.value;
+      const filteredUsers = filterUsers(users, query);
+      displayUsers(filteredUsers, 1);
+      setupPagination(filteredUsers);
+    });
+
+    const users = <%- JSON.stringify(user) %>;
+    displayUsers(users, currentPage);
+    setupPagination(users);
+
+    function updateUserAccess(userId, newAccess) {
+      fetch(`/admin/updateAccess/${userId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ access: newAccess })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (!data.success) {
+          alert('Failed to update access');
+        } else {
+          const userRow = document.querySelector(`input[data-id="${userId}"]`).closest('tr');
+          const statusCell = userRow.querySelector('td:nth-child(4)');
+          statusCell.className = data.newAccess === 'status-active' ? 'status-active' : 'status-deactive';
+          statusCell.textContent = data.newAccess === 'status-active' ? 'Active' : 'Deactive';
+        }
+      })
+      .catch(error => console.error('Error:', error));
+    }
+  });
+</script>
+
+<style>
+  .container.user-management {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+  }
+
+  h2.text-primary {
+    color: #00d227;
+  }
+
+  .table-hover tbody tr:hover {
+    background-color: #f1f1f1;
+  }
+
+  .table thead th {
+    background-color: #000000;
+    color: #fff;
+  }
+
+  .table th, .table td {
+    vertical-align: middle;
+  }
+
+  .status-active {
+    color: green;
+  }
+
+  .status-deactive {
+    color: red;
+  }
+
+  .switch {
+    position: relative;
+    display: inline-block;
+    width: 34px;
+    height: 20px;
+  }
+
+  .switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ff0000;
+    transition: .4s;
+  }
+
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 12px;
+    width: 12px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+  }
+
+  input:checked + .slider {
+    background-color: #00d227;
+  }
+
+  input:checked + .slider:before {
+    transform: translateX(14px);
+  }
+
+  .slider.round {
+    border-radius: 34px;
+  }
+
+  .slider.round:before {
+    border-radius: 50%;
+  }
+
+  .pagination .page-link {
+    color: #00d227;
+  }
+
+  .pagination .page-item.active .page-link {
+    background-color: #00d227;
+    border-color: #00d227;
+    color: white;
+  }
+
+  .pagination .page-item:hover .page-link {
+    background-color: #00d227;
+    border-color: #00d227;
+    color: white;
+  }
+</style>

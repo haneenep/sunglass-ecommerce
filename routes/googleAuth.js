@@ -17,7 +17,7 @@ router.get('/login/success', async (req,res) => {
           return res.send("user allready exists")
          }
           if(existUser && existUser.googleId){
-            req.session.user = req.user.displayName;
+            req.session.user = existUser;
             return res.redirect('/')
           }
                const user = new User({
@@ -30,7 +30,7 @@ router.get('/login/success', async (req,res) => {
                 await user.save()
 
             console.log("sa ved:",user);
-            req.session.user = req.user.displayName;
+            req.session.user = user;
             res.redirect("/");
         } catch(error) {
             console.error("Error saving user goole :",error);

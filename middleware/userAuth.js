@@ -1,22 +1,46 @@
     const User = require("../models/userModel")
 
     module.exports = {
-
-        authentication : (req,res,next) => {
-            if(req.session.user){
-                next()
-            }else{
-                return res.redirect('/login')
-            }
-        },
         
         userExist : (req,res,next) => {
             if(req.session.user){
                 console.log("existss");
                 return res.redirect('/')
             }else{
+                next()  
+            }     
+        },
+
+        blockUser : async (req,res,next) => {
+
+            try{    
+
+                const users = req.session.curUser;
+                // console.log(email,"ggggggggggggg");
+                console.log(users,'pppppp');
+            const findUser = await User.findOne({ email : users })
+
+            console.log(findUser,"jhgjghjgjgjhgjhghjghj");
+
+            if(findUser && findUser.access === 'status-deactive'){
+                req.session.errMssg = "Your Account is blocked";
+                req.session.destroy( err => {
+                    if(err){
+                        console.error("Session destroying err",err);
+                        } else {
+                            res.render('admin/blocked');
+                        }
+                })
+            }else{
                 next()
             }
+
+            } catch(error) {
+                console.error("error checking the blocked user",error);
+                res.status(500).json({error : "Internal Server Error"})
+            }
+
         }
+
     }
 

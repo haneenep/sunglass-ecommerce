@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const passwordInput = document.getElementById("password");
     const confirmPasswordInput = document.getElementById("confirmPassword");
     const submitBtn = document.getElementById("submitBtn");
+    const signupForm = document.getElementById("signupForm");
 
     function validateName() {
         const name = nameInput.value.trim();
@@ -35,7 +36,7 @@ document.addEventListener("DOMContentLoaded", function() {
         const passwordError = document.getElementById("password-error");
         const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*\W).{8,}$/;
         if (!passwordRegex.test(password)) {
-            passwordError.textContent = "Password must be at least 8 characters,contain at least one uppercase letter,1 number and 1 special character";
+            passwordError.textContent = "Password must be at least 8 characters, contain at least one uppercase letter, 1 number, and 1 special character";
             return false;
         } else {
             passwordError.textContent = ""; 
@@ -48,7 +49,7 @@ document.addEventListener("DOMContentLoaded", function() {
         const confirmPassword = confirmPasswordInput.value;
         const confirmPasswordError = document.getElementById("confirmPassword-error");
         if (confirmPassword !== password) {
-            confirmPasswordError.textContent = "Passwords not match";
+            confirmPasswordError.textContent = "Passwords do not match";
             return false;
         } else {
             confirmPasswordError.textContent = "";
@@ -63,6 +64,7 @@ document.addEventListener("DOMContentLoaded", function() {
         const isConfirmPasswordValid = validateConfirmPassword();
 
         submitBtn.disabled = !(isNameValid && isEmailValid && isPasswordValid && isConfirmPasswordValid);
+        return isNameValid && isEmailValid && isPasswordValid && isConfirmPasswordValid;
     }
 
     nameInput.addEventListener("input", validateForm);
@@ -70,15 +72,9 @@ document.addEventListener("DOMContentLoaded", function() {
     passwordInput.addEventListener("input", validateForm);
     confirmPasswordInput.addEventListener("input", validateForm);
 
-    document.getElementById("signupForm").addEventListener("submit", function(event) {
-        if (submitBtn.disabled) {
-            event.preventDefault();
+    signupForm.addEventListener("submit", function(event) {
+        if (!validateForm()) {
+            event.preventDefault(); // Prevent form submission if validation fails
         }
     });
 });
-
-
-// ..............
-
-
-

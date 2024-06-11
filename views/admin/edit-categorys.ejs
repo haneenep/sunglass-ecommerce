@@ -8,6 +8,16 @@
                 <h3>Edit Category</h3>
                 <form action="/admin/categorys/edit" method="POST">
                     <input type="hidden" name="id" value="<%= category._id %>">
+                    <% if(locals.err){ %>
+                            <script>
+
+                                document.addEventListener('DOMContentLoaded' , function () {
+                                    const err = "Category is allready registered";
+                                    showModal(err);
+                                })
+
+                            </script>
+                        <% } %>
                     <div class="mb-3">
                         <label for="name" class="form-label">Name</label>
                         <input type="text" class="form-control" id="name" name="name" value="<%= category.name %>" required>
@@ -19,7 +29,7 @@
                             <option value="false" <%= !category.isActive ? 'selected' : '' %>>No</option>
                         </select>
                     </div>
-                    <button type="submit" class="btn btn-primary">Save changes</button>
+                    <button type="submit" class="btn btn-success">Save changes</button>
                 </form>
             </div>
         </div>
@@ -39,5 +49,23 @@
     <script src="assets/plugins/metismenu/js/metisMenu.min.js"></script>
     <script src="assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
     <script src="assets/js/app.js"></script>
+    <script>
+        // Define the showModal function in the global scope
+        function showModal(err) {
+            Toastify({
+                text: err,
+                duration: 3000,
+                newWindow: true,
+                close: true,
+                gravity: "top",
+                position: "center",
+                stopOnFocus: true,
+                style: {    
+                    background: "red",
+                },
+                onClick: function(){} // Callback after click
+            }).showToast();
+        }
+    </script>
     </body>
     </html>

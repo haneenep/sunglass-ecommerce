@@ -3,23 +3,41 @@
   const sendEmail = require('../auth/nodemailer');
   const OTP = require('../models/otpModel');
   const generateOtp = require('../utils/generateOtp');
+  const Product = require('../models/productModel');
+  const Category = require('../models/categoryModel');
   
 
 
     module.exports = {
 
-      homepage : (req,res) => {
+      homepage : async (req,res) => {
+
         const user = req.session.user;
-        const email = req.session.curUser;
-        res.render('user/user_home',{user,email});
+        
+        try {
+
+          const products = await Product.find();
+
+          console.log(products,"productsss");
+          res.render('user/user_home',{user,products});
+
+        } catch(err){
+          console.error('Error Fetching Products :',err);
+          res.status(500).send("Error Fetching Products")
+        }
       },
 
       login : (req,res) => {
-        res.render('user/user_login');
+        const err = req.session.errMssg || null;
+        
+        req.session.errMssg = null;
+        res.render('user/user_login',{ err });
       },
 
       signup : (req,res) => {
-        res.render('user/user_signup');
+        const err = req.session.errMssg || null;
+        req.session.errMssg = null;
+        res.render('user/user_signup',{err});
       },
 
       // Generate and send OTP 
@@ -35,7 +53,8 @@
           console.log(user);
           if(user){
             console.log("user already registered");
-            return res.render('user/user_signup', { error: "User already exists" });
+            req.session.errMssg = "User already exists";
+            return res.redirect('/loginandsignup');
           }
 
           // Generate OTP 
@@ -74,11 +93,13 @@
       },
 
       renderVerifyOtpPage: (req, res) => {
-        const email = req.query.email;
+        const email = req.query.email || (req.session.tempUser && req.session.tempUser.email);
+        const errMssg = req.session.errMssg || null;
+        req.session.errMssg = null;
         if (!email) {
-          return res.status(400).send('Email is required');
+          return res.redirect('/loginandsignup')
         }
-        res.render('user/otp', { email });
+        res.render('user/otp', { email,errMssg });
       },
 
       // verify OTP
@@ -92,16 +113,19 @@
           const otpRecord = await OTP.findOne({ email });
 
           if(!otpRecord){
-            return res.status(400).send("Invalid Email or OTP");
+            req.session.errMssg = "Invalid Emaill or OTP";
+            return res.redirect(`/verify-otp?email=${email}`);
           }
 
           // checking if OTP is valid
           if(otpRecord.otp !== otp || Date.now() > otpRecord.otpExpires) {
-            return res.status(400).send("Invalid or Expired OTP")
+            req.session.errMssg = "Invalid or Expired OTP"
+            return res.redirect(`/verify-otp?email=${email}`)
           }
 
           if(!req.session.tempUser) {
-            return res.status(400).send("session expired.please start registration process aggain")
+            req.session.errMssg = "session expired.please start registration process aggain"
+            return redirect(`/verify-otp?email=${email}`)
           }
 
           // OTP is valid and complete registration
@@ -114,7 +138,8 @@
 
           await newUser.save();
           await OTP.deleteOne({email});
-          req.session.tempUser = null
+          req.session.tempUser = null;
+          // req.session.errMssg = null;
 
           res.redirect('/login');
         } catch(err) {
@@ -123,7 +148,7 @@
         }
       },
 
-      // user signinde;
+      // user signinde
       loginUser : async (req,res) => {
         const { email, password} = req.body;
         // console.log(req.body);
@@ -132,15 +157,22 @@
 
           if(!user) {
             console.log("User not found : ",email);
+            req.session.errMssg = "Invalid Email / Password";
             
-            return res.render('user/user_login',{error : "Invalid Email / Password"});
-          }else{
+            return res.redirect('/login');
+          }
+          // else if(user.access === 'status-deactive'){
+          //   req.session.errMssg = "Your Account is Blocked";
+          //   return res.redirect('/login');
+          // }
+          else{
             const isPasswordValid = await bcrypt.compare(password, user.password);
+
             if(!isPasswordValid){
               console.log("Invalid password for user : ",email);
-              res.locals.err = "Invalid Email or Password";
+              req.session.errMssg = "Invalid Email or Password";
              
-             return res.render('user/user_login',{error : "Invalid Email / Password"});
+             return res.redirect('/login');
             }
   
             // User is Authenticated
@@ -187,6 +219,41 @@
         }
       },
 
+
+      productPage : async (req,res) => {
+        const user = req.session.user;
+        const email = req.session.curUser;
+
+        try {
+          const products = await Product.find();
+          res.render('user/product',{ products,user,email })
+        } catch(err) {
+          console.error('Error Fetching Product',err);
+          res.status(500).send("Error Fetching Product")
+        }
+      },
+
+      productDetails : async (req,res) => {
+        const user = req.session.user;
+        const email = req.session.curUser;
+        const productId = req.params.id;
+        try {
+          
+          const product = await Product.findById(productId);
+          console.log(product,"ghjk");
+
+          if(!product) {
+            return res.status(404).render('404',{message : "Product Not Found"})
+          }
+
+          res.render('user/productDetails' ,{user,email,product})
+        }catch (error) {
+          console.error('Error Fetching Product Details' , error);
+          res.status(500).send('Server Error')
+        }
+
+      },
+
       logout : (req, res) => {
         // Destroy user session
         req.session.destroy(err => {
@@ -195,7 +262,7 @@
                 res.status(500).send('Internal Server Error');
             } else {
                 // Redirect to login page
-                res.redirect('/login');
+                res.redirect('/');
             }
         });
     }

@@ -8,8 +8,45 @@
             <div class="page-content">
                 <h3>Manage Categories</h3>
                 <a href="/admin/add-categorys"  class="btn btn-success bx bx-list-plus" >Add Category</a>
+                <% if(locals.success){ %>
+                <script>
 
-                <table class="table">
+                    document.addEventListener('DOMContentLoaded' , function () {
+                        const success = "Category Edited Successfully";
+                        showModals(success);
+                    })
+
+                </script>
+                <% }else if(locals.done){ %>
+                    <script>
+
+                        document.addEventListener('DOMContentLoaded' , function () {
+                            const done = "New Category is Added";
+                            showModals(done);
+                        })
+    
+                    </script>
+                    <% }else if(locals.delet){ %>
+                        <script>
+
+                            document.addEventListener('DOMContentLoaded' , function () {
+                                const delet = "Deleted Successfully";
+                                showModal(delet);
+                            })
+        
+                        </script>
+                        <% }else if(locals.err){ %>
+                            <script>
+
+                                document.addEventListener('DOMContentLoaded' , function () {
+                                    const err = "Category not found";
+                                    showModa(err);
+                                })
+            
+                            </script>
+                            <% } %>
+                <table id="categoryTable" class="display" style="width:100%">
+
                     <thead>
                         <tr>
                             <th>Name</th>
@@ -25,14 +62,13 @@
                             <td><%= category.isActive ? 'Yes' : 'No' %></td>
                             <td><%= category.createdAt.toDateString() %></td>
                             <td>
-                                <a href="/admin/edit-categorys/<%= category._id %>" class="btn btn-warning bx bxs-edit-alt">Edit</a>
+                                <a href="/admin/edit-categorys/<%= category._id %>" class="btn btn-outline-success bx bxs-edit-alt"> Edit</a>
                                 <form action="/admin/categorys/delete" method="POST" class="d-inline">
                                     <input type="hidden" name="id" value="<%= category.id %>">
-                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                    <button type="submit" class="btn btn-outline-danger bx bxs-trash-alt"> Delete</button>
                                 </form>
                             </td>
                         </tr>
-
                         <% }); %>
                     </tbody>
                 </table>
@@ -47,11 +83,76 @@
     </div>
 
     <%- include('../layout/adminTheme') -%>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
     <script src="assets/js/jquery.min.js"></script>
     <script src="assets/plugins/simplebar/js/simplebar.min.js"></script>
     <script src="assets/plugins/metismenu/js/metisMenu.min.js"></script>
     <script src="assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
     <script src="assets/js/app.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#categoryTable').DataTable();
+        });
+    </script>
+    <script>
+
+        function showModals(success,done) {
+        Toastify({
+            text: success,done,
+            duration: 3000,
+            newWindow: true,
+            close: true,
+            gravity: "top",
+            position: "center",
+            stopOnFocus: true,
+            style: {    
+                background: "green",
+            },
+            onClick: function(){} // Callback after click
+        }).showToast();
+    }
+
+    </script>
+    <script>
+    
+        function showModal(delet) {
+        Toastify({
+            text: delet,
+            duration: 3000,
+            newWindow: true,
+            close: true,
+            gravity: "top",
+            position: "center",
+            stopOnFocus: true,
+            style: {    
+                background: "orange",
+            },
+            onClick: function(){} // Callback after click
+        }).showToast();
+    }
+
+    </script>
+    <script>
+    
+        function showModa(err) {
+        Toastify({
+            text: err,
+            duration: 3000,
+            newWindow: true,
+            close: true,
+            gravity: "top",
+            position: "center",
+            stopOnFocus: true,
+            style: {    
+                background: "red",
+            },
+            onClick: function(){} // Callback after click
+        }).showToast();
+    }
+
+    </script>
 </body>
 
 </html>

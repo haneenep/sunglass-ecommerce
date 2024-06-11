@@ -18,21 +18,47 @@
                     <div class="card">
                         <div class="card-body">
                             <div class="row align-items-center">
-                                <div class="col-lg-3 col-xl-2">
-                                    <a href="/admin/add-product" class="btn btn-success mb-3 mb-lg-0"><i class='bx bxs-plus-square'></i> New Product</a>
+                                <div class="col-lg-3 col-xl-2 mb-3 mb-lg-0">
+                                    <a href="/admin/add-product" class="btn btn-success"><i class='bx bxs-plus-square'></i> New Product</a>
                                 </div>
-                                <div class="col-lg-9 col-xl-10">
-                                    <form class="float-lg-end">
-                                        <div class="row row-cols-lg-auto g-2">
-                                            <div class="col-12">
-                                                <div class="position-relative">
-                                                    <input type="text" class="form-control ps-5" placeholder="Search Product..."> 
-                                                    <span class="position-absolute top-50 product-show translate-middle-y"><i class="bx bx-search"></i></span>
-                                                </div>
-                                            </div>
-                                            <!-- Additional filter options can go here -->
-                                        </div>
-                                    </form>
+                                <div class="col-lg-9 col-xl-10 d-flex justify-content-end">
+                                    <div class="me-2 position-relative">
+                                        <input type="text" class="form-control ps-5" placeholder="Search Product..." id="searchInput" value="<%= searchQuery %>"> 
+                                        <span class="position-absolute top-50 translate-middle-y" style="left: 15px;"><i class="bx bx-search"></i></span>
+                                    </div>
+                                    <div class="btn-group me-2" role="group">
+                                        <button type="button" class="btn btn-white">Sort By</button>
+                                        <button id="sortDropdown" type="button" class="btn btn-white dropdown-toggle dropdown-toggle-nocaret px-1" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class='bx bx-chevron-down'></i>
+                                        </button>
+                                        <ul class="dropdown-menu" aria-labelledby="sortDropdown">
+                                            <li><a class="dropdown-item sort-option" href="#" data-sort="name">Name</a></li>
+                                            <li><a class="dropdown-item sort-option" href="#" data-sort="price">Price</a></li>
+                                            <li><a class="dropdown-item sort-option" href="#" data-sort="date">Date</a></li>
+                                        </ul>
+                                    </div>
+                                    <div class="btn-group me-2" role="group">
+                                        <button type="button" class="btn btn-white">Category Type</button>
+                                        <button id="categoryDropdown" type="button" class="btn btn-white dropdown-toggle dropdown-toggle-nocaret px-1" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class='bx bxs-category'></i>
+                                        </button>
+                                        <ul class="dropdown-menu" aria-labelledby="categoryDropdown">
+                                            <li><a class="dropdown-item category-option" href="#" data-category="Category 1">Category 1</a></li>
+                                            <li><a class="dropdown-item category-option" href="#" data-category="Category 2">Category 2</a></li>
+                                            <li><a class="dropdown-item category-option" href="#" data-category="Category 3">Category 3</a></li>
+                                        </ul>
+                                    </div>
+                                    <div class="btn-group" role="group">
+                                        <button type="button" class="btn btn-white">Price Range</button>
+                                        <button id="priceDropdown" type="button" class="btn btn-white dropdown-toggle dropdown-toggle-nocaret px-1" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class='bx bx-slider'></i>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="priceDropdown">
+                                            <li><a class="dropdown-item price-option" href="#" data-price="0-50">$0 - $50</a></li>
+                                            <li><a class="dropdown-item price-option" href="#" data-price="50-100">$50 - $100</a></li>
+                                            <li><a class="dropdown-item price-option" href="#" data-price="100-200">$100 - $200</a></li>
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -40,34 +66,25 @@
                 </div>
             </div>
 
-            <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xl-4 row-cols-xxl-5 product-grid">
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xl-4 row-cols-xxl-5 product-grid" id="productGrid">
                 <% products.forEach(product => { %>
-                <div class="col">
-                    <div class="card">
+                <div class="col mb-4 product-item" data-name="<%= product.productName %>" data-price="<%= product.price %>" data-category="<%= product.category ? product.category.name : '' %>">
+                    <div class="card h-100">
                         <% if (product.images && product.images.length > 0) { %>
                         <a href=""><img src="<%= product.images[0] %>" class="card-img-top" alt="<%= product.productName %>"></a>
                         <% } else { %>
                         <img src="path/to/default-image.png" class="card-img-top" alt="<%= product.productName %>">
                         <% } %>
-                        <div class="">
-                            <div class="position-absolute top-0 end-0 m-3 product-discount">
-                                <span class="">-10%</span>
-                            </div>
-                        </div>
                         <div class="card-body">
                             <h6 class="card-title cursor-pointer"><%= product.productName %></h6>
-                            <div class="clearfix">
-                                <p class="mb-0 float-start"><strong>In Stock: <%= product.stockQuantity %></strong></p>
-                                <p class="mb-0 float-end fw-bold">
-                                    <span>$<%= product.price %></span>
-                                </p>  
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <p class="mb-0"><strong>In Stock: <%= product.stockQuantity %></strong></p>
+                                <p class="mb-0 fw-bold">$<%= product.price %></p>
                             </div>
-                            <div class="mt-1">
-                                <% if (product.category) { %>
-                                    <p class="mb-0"><strong><%= product.category.name %></strong></p>
-                                    <% } %> 
-                                <p class="mb-0"><%= product.createdAt.toDateString() %></p>
-                            </div>
+                            <% if (product.category) { %>
+                            <p class="mb-0"><strong><%= product.category.name %></strong></p>
+                            <% } %> 
+                            <p class="mb-0"><%= new Date(product.createdAt).toDateString() %></p>
                             <div class="mt-3">
                                 <a href="/admin/edit-product/<%= product._id %>" class="btn btn-sm btn-warning">Edit</a>
                                 <form action="/admin/delete-product/<%= product._id %>" method="POST" class="d-inline">
@@ -79,6 +96,23 @@
                 </div>
                 <% }); %>
             </div>
+
+             <!-- Pagination Controls -->
+             <div class="pagination">
+                <% if (hasPreviousPage) { %>
+                    <a href="?page=<%= previousPage %>&search=<%= searchQuery %>">Previous</a>
+                <% } %>&nbsp;-
+
+                <% for (let i = 1; i <= lastPage; i++) { %>
+                    <a href="?page=<%= i %>&search=<%= searchQuery %>" class="<%= currentPage == i ? 'active' : '' %>"><%= i %></a>
+                <% } %>&nbsp;-
+
+                <% if (hasNextPage) { %>
+                    <a href="?page=<%= nextPage %>&search=<%= searchQuery %>">Next</a>
+                <% } %>&nbsp;
+            </div>
+            <!-- End Pagination Controls -->
+
         </div>
     </div>
     <!--end page wrapper -->
@@ -110,5 +144,55 @@
 <script src="assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
 <!--app JS-->
 <script src="assets/js/app.js"></script>
+
+<!-- Search, Sort, Filter JS -->
+<script>
+$(document).ready(function() {
+    $('#searchInput').on('keyup', function() {
+        var query = $(this).val().toLowerCase();
+        window.location.href = `?search=${query}&page=1`;
+    });
+
+    // Sort products
+    $('.sort-option').on('click', function() {
+        var sortKey = $(this).data('sort');
+        var $products = $('.product-item');
+
+        $products.sort(function(a, b) {
+            var aValue = $(a).data(sortKey);
+            var bValue = $(b).data(sortKey);
+
+            if (sortKey === 'price') {
+                return parseFloat(aValue) - parseFloat(bValue);
+            } else {
+                return aValue.localeCompare(bValue);
+            }
+        });
+
+        $('#productGrid').html($products);
+    });
+
+    // Filter by category
+    $('.category-option').on('click', function() {
+        var category = $(this).data('category');
+        $('.product-item').each(function() {
+            var productCategory = $(this).data('category');
+            $(this).toggle(productCategory === category);
+        });
+    });
+
+    // Filter by price range
+    $('.price-option').on('click', function() {
+        var priceRange = $(this).data('price').split('-');
+        var minPrice = parseFloat(priceRange[0]);
+        var maxPrice = parseFloat(priceRange[1]);
+
+        $('.product-item').each(function() {
+            var productPrice = parseFloat($(this).data('price'));
+            $(this).toggle(productPrice >= minPrice && productPrice <= maxPrice);
+        });
+    });
+});
+</script>
 </body>
 </html>

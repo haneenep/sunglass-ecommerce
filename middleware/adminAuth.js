@@ -1,6 +1,7 @@
     require('dotenv').config();
 
     module.exports = {
+
     isAdminAuthenticated: (req, res, next) => {
         const { ADMIN_EMAIL, ADMIN_PASSWORD } = process.env;
 
@@ -18,4 +19,5 @@
         }
         res.redirect('/admin/login');
     },
+    
     };

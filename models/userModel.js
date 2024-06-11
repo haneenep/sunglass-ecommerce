@@ -20,6 +20,10 @@ const userSchema = new mongoose.Schema({
     profilePicture : {
         type : String,
     },
+    access : {
+        type : String,
+        default : 'status-active'
+    },
     createdAt : {
         type : Date,
         default : Date.now,
@@ -29,4 +33,4 @@ const userSchema = new mongoose.Schema({
 
 const User = new mongoose.model("users",userSchema)
 
-module.exports = User;
+module.exports = User;  

@@ -1,5 +1,4 @@
-
-    <%- include('../layout/adminHead') -%>
+<%- include('../layout/adminHead') -%>
 
 <div class="wrapper">
     <%- include('../layout/adminSideWrapper') -%>
@@ -13,6 +12,18 @@
                     <label for="name" class="form-label">Category Name</label>
                     <input type="text" class="form-control" id="name" name="name" required>
                 </div>
+                <% if(locals.err){ %>
+                <div class="error">
+                    <script>
+
+                        document.addEventListener('DOMContentLoaded', function() {
+                            const err = "Category is allReady registered";
+                            showModal(err);
+                        });
+
+                    </script>
+                </div>
+                <% } %>
                 <div class="mb-3">
                     <label for="isActive" class="form-label">Active</label>
                     <select class="form-select" id="isActive" name="isActive" required>
@@ -39,5 +50,24 @@
 <script src="assets/plugins/metismenu/js/metisMenu.min.js"></script>
 <script src="assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
 <script src="assets/js/app.js"></script>
+<script>
+    // Define the showModal function in the global scope
+    function showModal(err) {
+        Toastify({
+            text: err,
+            duration: 3000,
+            destination: "https://github.com/apvarun/toastify-js",
+            newWindow: true,
+            close: true,
+            gravity: "top",
+            position: "center",
+            stopOnFocus: true,
+            style: {
+                background: "red",
+            },
+            onClick: function(){} // Callback after click
+        }).showToast();
+    }
+</script>
 </body>
 </html>
