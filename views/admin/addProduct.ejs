@@ -395,10 +395,10 @@
                       event.preventDefault();
                       if (cropper) {
                           const canvas = cropper.getCroppedCanvas({
-                              width: 150,
-                              height: 150,
+                              width: 500,
+                              height: 500,
                           });
-                          const croppedImageDataURL = canvas.toDataURL();
+                          const croppedImageDataURL = canvas.toDataURL('image/jpeg',1.0);
                           image.src = croppedImageDataURL;
                           const croppedImageFile = dataURLToFile(croppedImageDataURL, file.name);
                           const currentFiles = Array.from(input.files);

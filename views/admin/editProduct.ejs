@@ -67,7 +67,7 @@
                         <div class="card border-top border-0 border-4 border-danger">
                             <div class="card-body p-5">
                                 <form class="row g-3" id="productForm" action="/admin/edit-product/<%= product._id %>" method="post" enctype="multipart/form-data">
-                                    <input type="hidden" name="_method" value="PUT">
+                                    <input type="hidden" name="isEdit" value="<%= !!product._id %>">
                                     <div class="col-md-6">
                                         <label for="inputProductName" class="form-label">Product Name</label>
                                         <input type="text" class="form-control" id="inputProductName" name="productName" value="<%= product.productName %>" required>
@@ -161,6 +161,7 @@
             const quantity = form.elements['stockQuantity'].value.trim();
             const images = form.elements['images'].files;
             const category = form.elements['category'].value;
+            const isEdit = form.elements['isEdit'] ? form.elements['isEdit'].value === 'true' : false;
 
             const errorMessages = document.querySelectorAll('.error-message');
             errorMessages.forEach(error => error.textContent = '');
@@ -187,7 +188,7 @@
                 isValid = false;
             }
 
-            if (!images || images.length === 0) {
+            if (!isEdit && (!images || images.length === 0)) {
                 displayErrorMessage('Product Image is required', 'images-error');
                 isValid = false;
             }
@@ -239,10 +240,10 @@
                         event.preventDefault();
                         if (cropper) {
                             const canvas = cropper.getCroppedCanvas({
-                                width: 150,
-                                height: 150,
+                                width: 500,
+                                height: 500,
                             });
-                            const croppedImageDataURL = canvas.toDataURL();
+                            const croppedImageDataURL = canvas.toDataURL('image/jpeg',1.0);
                             image.src = croppedImageDataURL;
                             const croppedImageFile = dataURLToFile(croppedImageDataURL, file.name);
                             const currentFiles = Array.from(input.files);
