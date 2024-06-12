@@ -13,6 +13,7 @@ module.exports = {
             
             const category = await Category.find({isDeleted : false , isActive : true})
             res.render('admin/addProduct',{category})
+            
         } catch (error) {
             console.error("Error fetching category",error);
             res.status(500).json({error : true , message : 'Internal Server Error'})

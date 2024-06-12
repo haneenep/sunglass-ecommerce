@@ -1,114 +1,118 @@
 <%- include('../layout/userHead') -%>
-
-<!-- Header Section Begin -->
 <%- include('../layout/userHeaderNav') -%>
-<!-- Header Section End -->
 
-<!-- Shop Details Section Begin -->
 <section class="shop-details">
-    <div class="product__details__pic">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="product__details__breadcrumb">
-                        <a href="/index">Home</a>
-                        <a href="/shop">Shop</a>
-                        <span>Product Details</span>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-lg-3 col-md-3">
-                    <ul class="nav nav-tabs" role="tablist" id="thumbnailList">
-                        <% if (product.images && product.images.length > 0) { %>
-                            <% product.images.forEach((image, index) => { %>
-                                <li class="nav-item">
-                                    <a class="nav-link <%= index === 0 ? 'active' : '' %>" data-toggle="tab" href="#tabs-<%= index + 1 %>" role="tab">
-                                        <div class="product__thumb__pic">
-                                            <img src="<%= image %>" alt="Thumbnail <%= index + 1 %>" onclick="updateMainImage('<%= image %>')">
-                                        </div>
-                                    </a>
-                                </li>
-                            <% }) %>
-                        <% } %>
-                    </ul>
-                </div>
-                <div class="col-lg-6 col-md-9">
-                    <div class="tab-content" style="width: 100%;">
-                        <% if (product.images && product.images.length > 0) { %>
-                            <% product.images.forEach((image, index) => { %>
-                                <div class="tab-pane <%= index === 0 ? 'active' : '' %>" id="tabs-<%= index + 1 %>" role="tabpanel">
-                                    <div class="product__details__pic__item" style="width: 100%;">
-                                        <img id="mainImage-<%= index + 1 %>" src="<%= image %>" alt="Main Image" style="width: 100%;">
-                                    </div>
-                                </div>
-                            <% }) %>
-                        <% } %>
-                    </div>
-                </div>
-            </div>
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="product__details__breadcrumb">
+          <a href="/index">Home</a>
+          <a href="/shop">Shop</a>
+          <span>Product Details</span>
         </div>
+      </div>
     </div>
-    <div class="product__details__content">
-        <div class="container">
-            <div class="row d-flex justify-content-center">
-                <div class="col-lg-8">
-                    <div class="product__details__text">
-                        <h4><%= product.productName %></h4>
-                        <h3>$<%= product.price %></h3>
-                        <p><%= product.description %></p>
-                        <div class="product__details__cart__option">
-                            <div class="quantity">
-                                <div class="pro-qty">
-                                    <input type="text" value="1">
-                                </div>
-                            </div>
-                            <a href="#" class="primary-btn">Add to cart</a>
-                        </div>
-                        <div class="product__details__btns__option">
-                            <a href="#"><i class="fa fa-heart"></i> Add to wishlist</a>
-                        </div>
-                        <div class="product__details__last__option">
-                            <ul>
-                                <li><span>Category:</span> <%= product.category.name %></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
+    <div class="row">
+      <div class="col-lg-6 col-md-6">
+        <link rel="stylesheet" href="/stylesheets/etalage.css" />
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="/js/jquery.etalage.min.js"></script>
+        <ul id="etalage">
+          <% if (product.images && product.images.length > 0) { %> 
+            <% product.images.forEach((image, index) => { %>
+              <li>
+                <img class="etalage_source_image" src="<%= image %>" />
+                <img class="etalage_thumb_image" src="<%= image %>" />
+              </li>
+            <% }) %> 
+          <% } %>
+        </ul>
+      </div>
+      <div class="col-lg-6 col-md-6" >
+        <div class="product__details__text" style="margin-top: 130px;border: 1px solid black; border-radius: 1%; padding: 40px;">
+          <h4><%= product.productName %></h4>
+          <h3>$<%= product.price %></h3>
+          <p><%= product.description %></p> 
+          <div class="product__details__cart__option">
+            <div class="quantity">
+              <div class="pro-qty">
+                <input type="text" value="1" />
+              </div>
             </div>
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="product__details__tab">
-                        <ul class="nav nav-tabs" role="tablist">
-                            <li class="nav-item">
-                                <a class="nav-link active" data-toggle="tab" href="#tabs-5" role="tab">Description</a>
-                            </li>
-                        </ul>
-                        <div class="tab-content">
-                            <div class="tab-pane active" id="tabs-5" role="tabpanel">
-                                <div class="product__details__tab__content">
-                                    <p class="note"><%= product.description %></p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <a href="#" class="primary-btn">Add to cart</a>
+          </div>
+          <div class="product__details__btns__option">
+            <a href="#"><i class="fa fa-heart"></i> Add to wishlist</a>
+          </div>
+          <div class="product__details__last__option">
+            <ul>
+                <% if (product.category) { %>
+              <li><span>Category:</span> <%= product.category.name %></li>
+              <% } %>
+                <li>
+              <% if (product.stockQuantity === 0) { %>
+                <b style="color: red">Out Of Stock</b>
+                <% } else if(product.stockQuantity < 10) { %>
+                <b style="color: rgb(255, 111, 0);">Only Few Left</b>
+                    <% }else{ %>
+                <b style="color: rgb(0, 153, 0);">In Stock</b>
+                <% } %>
+                </li>
+            </ul>
+          </div>
         </div>
+      </div>
     </div>
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="product__details__tab">
+          <ul class="nav nav-tabs" role="tablist">
+            <li class="nav-item">
+              <a class="nav-link active" data-toggle="tab" href="#tabs-5" role="tab">Description</a>
+            </li>
+          </ul>
+          <div class="tab-content">
+            <div class="tab-pane active" id="tabs-5" role="tabpanel">
+              <div class="product__details__tab__content">
+                <p class="note"><%= product.description %></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </section>
-<!-- Shop Details Section End -->
 
-
-<!-- Footer Section Begin -->
-<%- include('../layout/userFooterNav') -%>
-<!-- Footer Section End -->
-
+<%- include('../layout/userFooterNav') -%> 
 <%- include('../layout/userFoot') -%>
 
 <script>
-    function updateMainImage(imageUrl) {
-        const mainImages = document.querySelectorAll('[id^="mainImage-"]');
-        mainImages.forEach(img => img.src = imageUrl);
-    }
+  $(document).ready(function () {
+    $("#etalage").etalage({
+      thumb_image_width: 400,
+      thumb_image_height: 460,
+      source_image_width: 750,
+      source_image_height: 1100,
+      zoom_area_width: 600,
+      zoom_area_height: "justify",
+      zoom_area_distance: 10,
+      zoom_easing: true,
+      click_to_zoom: false,
+    });
+  });
+
+  function updateMainImage(imageUrl) {
+    $("#etalage")
+      .find(".etalage_source_image")
+      .each(function () {
+        $(this).attr("src", imageUrl);
+      });
+    $("#etalage")
+      .find(".etalage_thumb_image")
+      .each(function () {
+        $(this).attr("src", imageUrl);
+      });
+    $("#etalage").etalage("init");
+  }
 </script>

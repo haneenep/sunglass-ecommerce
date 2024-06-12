@@ -237,6 +237,7 @@
         const user = req.session.user;
         const email = req.session.curUser;
         const productId = req.params.id;
+
         try {
           
           const product = await Product.findById(productId);
