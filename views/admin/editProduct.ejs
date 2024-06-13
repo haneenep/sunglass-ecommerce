@@ -113,6 +113,17 @@
                                         </select>
                                         <span class="error-message" id="category-error"></span>
                                     </div>
+                                    <div class="col-12">    
+                                        <label for="inputBrand" class="form-label">Brand</label>
+                                        <select class="form-select" id="inputBrand" name="brand" required>
+                                            <% brand.forEach(function(brand) { %>
+                                                <% if (brand?.isActive) { %>
+                                                    <option value="<%= brand?._id %>" <%= product.brand?._id.equals(brand?._id) ? 'selected' : '' %>><%= brand.name %></option>
+                                                <% } %>
+                                            <% }); %>
+                                        </select>
+                                        <span class="error-message" id="brand-error"></span>
+                                    </div>
                                     <div class="col-12">
                                         <label for="inputStockQuantity" class="form-label">Stock Quantity</label>
                                         <input type="number" class="form-control" id="inputStockQuantity" name="stockQuantity" value="<%= product.stockQuantity %>" required>

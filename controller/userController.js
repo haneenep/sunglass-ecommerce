@@ -4,7 +4,6 @@
   const OTP = require('../models/otpModel');
   const generateOtp = require('../utils/generateOtp');
   const Product = require('../models/productModel');
-  const Category = require('../models/categoryModel');
   
 
 
@@ -161,10 +160,7 @@
             
             return res.redirect('/login');
           }
-          // else if(user.access === 'status-deactive'){
-          //   req.session.errMssg = "Your Account is Blocked";
-          //   return res.redirect('/login');
-          // }
+
           else{
             const isPasswordValid = await bcrypt.compare(password, user.password);
 
@@ -194,9 +190,8 @@
           // Generate new OTP
           const otp = generateOtp();
           console.log(otp);
-          const otpExpires = Date.now() + 3 * 60 * 1000; // OTP valid for 3 minutes
+          const otpExpires = Date.now() + 3 * 60 * 1000;
     
-          // Update OTP record for the user
           await OTP.findOneAndUpdate(
             { email },
             { otp, otpExpires },
@@ -233,36 +228,37 @@
         }
       },
 
-      productDetails : async (req,res) => {
+      productDetails: async (req, res) => {
         const user = req.session.user;
         const email = req.session.curUser;
         const productId = req.params.id;
-
+    
         try {
-          
-          const product = await Product.findById(productId);
-          console.log(product,"ghjk");
+            const product = await Product.findById(productId)
+            .populate('category')
+            .populate('brand');
 
-          if(!product) {
-            return res.status(404).render('404',{message : "Product Not Found"})
-          }
-
-          res.render('user/productDetails' ,{user,email,product})
-        }catch (error) {
-          console.error('Error Fetching Product Details' , error);
-          res.status(500).send('Server Error')
+    
+            const category = product.category;
+            const brand = product.brand;
+            const relatedProducts = await Product.find({ category: category._id, _id: { $ne: productId } });
+    
+            console.log(relatedProducts, 'Related Products');
+            
+            res.render('user/productDetails', { user, email, product, category, brand, relatedProducts });
+        } catch (error) {
+            console.error('Error Fetching Product Details', error);
+            res.render('500');
         }
-
-      },
+    },
+    
 
       logout : (req, res) => {
-        // Destroy user session
         req.session.destroy(err => {
             if (err) {
                 console.error('Error destroying session:', err);
                 res.status(500).send('Internal Server Error');
             } else {
-                // Redirect to login page
                 res.redirect('/');
             }
         });

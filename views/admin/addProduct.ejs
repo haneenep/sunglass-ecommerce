@@ -239,6 +239,26 @@
                       <span class="error-message" id="category-error"></span>
                     </div>
                     <div class="col-12">
+                      <label for="inputBrand" class="form-label"
+                        >Brand</label
+                      >
+                      <select
+                        class="form-select"
+                        id="inputBrand"
+                        name="brand"
+                        required
+                      >
+                        <option selected disabled>Select brand</option>
+                        <% brand.forEach(function(brand) { %> <% if
+                        (brand.isActive) { %>
+                        <option value="<%= brand._id %>">
+                          <%= brand.name %>
+                        </option>
+                        <% } %> <% }); %>
+                      </select>
+                      <span class="error-message" id="brand-error"></span>
+                    </div>
+                    <div class="col-12">
                       <label for="inputStockQuantity" class="form-label"
                         >Stock Quantity</label
                       >
@@ -317,6 +337,7 @@
           const quantity = form.elements['stockQuantity'].value.trim();
           const images = form.elements['images'].files;
           const category = form.elements['category'].value;
+          const brand = form.elements['brand'].value;
 
           const errorMessages = document.querySelectorAll('.error-message');
           errorMessages.forEach(error => error.textContent = '');
@@ -350,6 +371,11 @@
 
           if (category === '') {
               displayErrorMessage('Product Category is required', 'category-error');
+              isValid = false;
+          }
+
+          if (brand === '') {
+              displayErrorMessage('Product brand is required', 'brand-error');
               isValid = false;
           }
 

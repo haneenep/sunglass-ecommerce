@@ -1,42 +1,37 @@
 <%- include('../layout/adminHead') -%>
-
 <div class="wrapper">
     <%- include('../layout/adminSideWrapper') -%>
     <%- include('../layout/adminHeaderNav') -%>
 
     <div class="page-wrapper">
         <div class="page-content">
-            <h3>Add Category</h3>
-            <form action="/admin/add-categorys" method="POST" id="edit-form">
+            <h3>Edit Brand</h3>
+            <form action="/admin/brands/edit" method="POST" id="edit-form">
+                <input type="hidden" name="id" value="<%= brand._id %>">
+                <% if(locals.error){ %>
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function () {
+                            const error = "Brand is already registered";
+                            showModal(error);
+                        });
+                    </script>
+                <% } %>
                 <span id="error-message" style="color: red;"></span>
                 <div class="mb-3">
-                    <label for="name" class="form-label">Category Name</label>
-                    <input type="text" class="form-control" id="name" name="name" required>
+                    <label for="name" class="form-label">Name</label>
+                    <input type="text" class="form-control" id="name" name="name" value="<%= brand.name %>" required>
                 </div>
-                <% if(locals.err){ %>
-                <div class="error">
-                    <script>
-
-                        document.addEventListener('DOMContentLoaded', function() {
-                            const err = "Category is allReady registered";
-                            showModal(err);
-                        });
-
-                    </script>
-                </div>
-                <% } %>
                 <div class="mb-3">
                     <label for="isActive" class="form-label">Active</label>
                     <select class="form-select" id="isActive" name="isActive" required>
-                        <option value="true">Yes</option>
-                        <option value="false">No</option>
+                        <option value="true" <%= brand.isActive ? 'selected' : '' %>>Yes</option>
+                        <option value="false" <%= !brand.isActive ? 'selected' : '' %>>No</option>
                     </select>
                 </div>
-                <button type="submit" class="btn btn-success ">Add Category</button>
+                <button type="submit" class="btn btn-success">Save changes</button>
             </form>
         </div>
     </div>
-
     <div class="overlay toggle-icon"></div>
     <a href="javascript:;" class="back-to-top"><i class='bx bxs-up-arrow-alt'></i></a>
     <footer class="page-footer">
@@ -45,25 +40,30 @@
 </div>
 
 <%- include('../layout/adminTheme') -%>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.10.2/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/5.1.3/js/bootstrap.min.js"></script>
 <script src="assets/js/bootstrap.bundle.min.js"></script>
 <script src="assets/js/jquery.min.js"></script>
 <script src="assets/plugins/simplebar/js/simplebar.min.js"></script>
 <script src="assets/plugins/metismenu/js/metisMenu.min.js"></script>
 <script src="assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
 <script src="assets/js/app.js"></script>
+
+<!-- Ensure Toastify is included if you're using it -->
+<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
 <script>
     // Define the showModal function in the global scope
-    function showModal(err) {
+    function showModal(error) {
         Toastify({
-            text: err,
+            text: error,
             duration: 3000,
-            destination: "https://github.com/apvarun/toastify-js",
             newWindow: true,
             close: true,
             gravity: "top",
             position: "center",
             stopOnFocus: true,
-            style: {
+            style: {    
                 background: "red",
             },
             onClick: function(){} // Callback after click

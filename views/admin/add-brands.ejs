@@ -6,11 +6,11 @@
 
     <div class="page-wrapper">
         <div class="page-content">
-            <h3>Add Category</h3>
-            <form action="/admin/add-categorys" method="POST" id="edit-form">
+            <h3>Add Brand</h3>
+            <form action="/admin/add-brands" method="POST" id="edit-form">
                 <span id="error-message" style="color: red;"></span>
                 <div class="mb-3">
-                    <label for="name" class="form-label">Category Name</label>
+                    <label for="name" class="form-label">Brand Name</label>
                     <input type="text" class="form-control" id="name" name="name" required>
                 </div>
                 <% if(locals.err){ %>
@@ -32,7 +32,7 @@
                         <option value="false">No</option>
                     </select>
                 </div>
-                <button type="submit" class="btn btn-success ">Add Category</button>
+                <button type="submit" class="btn btn-success ">Add Brand</button>
             </form>
         </div>
     </div>

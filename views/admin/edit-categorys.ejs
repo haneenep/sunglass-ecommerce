@@ -6,7 +6,7 @@
         <div class="page-wrapper">
             <div class="page-content">
                 <h3>Edit Category</h3>
-                <form action="/admin/categorys/edit" method="POST">
+                <form action="/admin/categorys/edit" method="POST" id="edit-form">
                     <input type="hidden" name="id" value="<%= category._id %>">
                     <% if(locals.err){ %>
                             <script>
@@ -18,6 +18,7 @@
 
                             </script>
                         <% } %>
+                        <span id="error-message" style="color: red;"></span>
                     <div class="mb-3">
                         <label for="name" class="form-label">Name</label>
                         <input type="text" class="form-control" id="name" name="name" value="<%= category.name %>" required>
@@ -67,5 +68,27 @@
             }).showToast();
         }
     </script>
+<script>
+    document.getElementById('edit-form').addEventListener('submit', function(event) {
+        const nameInput = document.getElementById('name').value.trim();
+        const errorMessage = document.getElementById('error-message');
+        const specialCharPattern = /[^a-zA-Z\s]/;
+
+        errorMessage.innerText = ""; // Clear previous error messages
+
+        if (nameInput === '') {
+            event.preventDefault();
+            errorMessage.innerText = "Name is required and cannot be empty.";
+        }
+        if (/\d/.test(nameInput)) {
+            event.preventDefault();
+            errorMessage.innerText = "Numbers are not allowed in the name.";
+        }
+        if (specialCharPattern.test(nameInput)) {
+            event.preventDefault();
+            errorMessage.innerText = "Special characters are not allowed in the name.";
+        }
+    });
+</script>
     </body>
     </html>

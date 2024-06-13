@@ -6,46 +6,46 @@
 
         <div class="page-wrapper">
             <div class="page-content">
-                <h3>Manage Categories</h3>
-                <a href="/admin/add-categorys"  class="btn btn-success bx bx-list-plus" >Add Category</a>
+                <h3>Manage Brands</h3>
+                <a href="/admin/add-brands"  class="btn btn-success bx bx-list-plus" >Add Brand</a>
                 <% if(locals.success){ %>
-                <script>
-
-                    document.addEventListener('DOMContentLoaded' , function () {
-                        const success = "Category Edited Successfully";
-                        showModals(success);
-                    })
-
-                </script>
-                <% }else if(locals.done){ %>
                     <script>
-
+    
                         document.addEventListener('DOMContentLoaded' , function () {
-                            const done = "New Category is Added";
-                            showModals(done);
+                            const success = "Category Edited Successfully";
+                            showModals(success);
                         })
     
                     </script>
-                    <% }else if(locals.delet){ %>
+                    <% }else if(locals.done){ %>
                         <script>
-
+    
                             document.addEventListener('DOMContentLoaded' , function () {
-                                const delet = "Deleted Successfully";
-                                showModal(delet);
+                                const done = "New Category is Added";
+                                showModals(done);
                             })
         
                         </script>
-                        <% }else if(locals.err){ %>
+                        <% }else if(locals.delet){ %>
                             <script>
-
+    
                                 document.addEventListener('DOMContentLoaded' , function () {
-                                    const err = "Category not found";
-                                    showModa(err);
+                                    const delet = "Deleted Successfully";
+                                    showModal(delet);
                                 })
             
                             </script>
-                            <% } %>
-                <table id="categoryTable" class="display" style="width:100%">
+                            <% }else if(locals.err){ %>
+                                <script>
+    
+                                    document.addEventListener('DOMContentLoaded' , function () {
+                                        const err = "Category not found";
+                                        showModa(err);
+                                    })
+                
+                                </script>
+                                <% } %>
+                <table id="brandTable" class="display" style="width:100%">
 
                     <thead>
                         <tr>
@@ -56,21 +56,21 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <% categorys.forEach(function(category, index) { %>
+                        <% brands.forEach(function(brand, index) { %>
                         <tr>
-                            <td><%= category.name.toUpperCase() %></td>
-                            <td><%= category.isActive ? 'Yes' : 'No' %></td>
-                            <td><%= category.createdAt.toDateString() %></td>
+                            <td><%= brand.name.toUpperCase() %></td>
+                            <td><%= brand.isActive ? 'Yes' : 'No' %></td>
+                            <td><%= brand.createdAt.toDateString() %></td>
                             <td>
-                                <a href="/admin/edit-categorys/<%= category._id %>" class="btn btn-outline-success bx bxs-edit-alt"> Edit</a>
-                                <form action="/admin/categorys/delete" method="POST" class="d-inline">
-                                    <input type="hidden" name="id" value="<%= category.id %>">
+                                <a href="/admin/edit-brands/<%= brand._id %>" class="btn btn-outline-success bx bxs-edit-alt"> Edit</a>
+                                <form action="/admin/brands/delete" method="POST" class="d-inline">
+                                    <input type="hidden" name="id" value="<%= brand.id %>">
                                     <button type="submit" class="btn btn-outline-danger bx bxs-trash-alt"> Delete</button>
                                 </form>
                             </td>
                         </tr>
                         <% }); %>
-                    </tbody>
+                    </tbody>
                 </table>
 
             </div>
@@ -93,7 +93,7 @@
     <script src="assets/js/app.js"></script>
     <script>
         $(document).ready(function() {
-            $('#categoryTable').DataTable();
+            $('#brandTable').DataTable();
         });
     </script>
     <script>

@@ -1,5 +1,6 @@
 const Product = require('../models/productModel');
-const Category = require('../models/categoryModel')
+const Category = require('../models/categoryModel');
+const Brand = require('../models/brandModel');
 
 
 const ITEM_PER_PAGE = 10;
@@ -11,12 +12,13 @@ module.exports = {
 
         try {
             
-            const category = await Category.find({isDeleted : false , isActive : true})
-            res.render('admin/addProduct',{category})
+            const brand = await Brand.find({ isDeleted : false , isActive : true });
+            const category = await Category.find({isDeleted : false , isActive : true});
+            res.render('admin/addProduct',{ category,brand })
             
         } catch (error) {
             console.error("Error fetching category",error);
-            res.status(500).json({error : true , message : 'Internal Server Error'})
+            res.render('500');
         }
     },
 
@@ -28,6 +30,7 @@ module.exports = {
                 price ,
                 description,
                 category,
+                brand,
                 stockQuantity
             } = req.body;
 
@@ -43,6 +46,7 @@ module.exports = {
                 description,
                 images,
                 category,
+                brand,
                 stockQuantity,
             })
 
@@ -50,10 +54,7 @@ module.exports = {
             res.redirect('/admin/products')
         } catch (error) {
             console.error("error adding product : ",error);
-            res.status(500).json({
-                error : true,
-                message : "internal server error"
-            });
+            res.render('500');
         }
     },
 
@@ -72,6 +73,7 @@ module.exports = {
 
             const products = await Product.find(query)
             .populate('category')
+            .populate('brand')
             .skip((page - 1) * ITEM_PER_PAGE)
             .limit(ITEM_PER_PAGE);
 
@@ -87,10 +89,7 @@ module.exports = {
             })
         } catch (error) {
             console.error("error fetching products",error);
-            res.status(500).json({
-                error : true,
-                message : "internal server error"
-            });
+            res.render('500');
         }
     },
 
@@ -99,16 +98,17 @@ module.exports = {
         try {
             const productId = req.params.id;
             const product = await Product.findById(productId).populate('category');
-            const category = await Category.find({isDeleted : false ,isActive : true})
+            const brand = await Brand.find({isDeleted : false ,isActive : true });
+            const category = await Category.find({isDeleted : false ,isActive : true});
 
             if(!product){
                 return res.status(404).json({ error : true ,message : "Product Not Found"})
             }
 
-            res.render('admin/editProduct',{product,category})
+            res.render('admin/editProduct',{product,category,brand})
         } catch (error) {
             console.error("Error Fetching Product for Edit",error);
-            res.status(500).json({error : true , message : "Internal Server Error"})
+            res.render('500');
         }
     },
 
@@ -121,6 +121,7 @@ module.exports = {
                 price,
                 description,
                 category,
+                brand,
                 stockQuantity
 
             } = req.body;
@@ -135,6 +136,7 @@ module.exports = {
                 price,
                 description,
                 category,
+                brand,
                 stockQuantity
             }
 
@@ -155,7 +157,7 @@ module.exports = {
             res.redirect('/admin/products')
         } catch (error) {
             console.error("error updating product",error);
-            return res.status(500).json({error : true , message : "Internal Server error"})
+            return res.render('500')
         }
     },
 

@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
-const Category = require('../models/categoryModel')
+const Category = require('../models/categoryModel');
+const Brand = require('../models/brandModel');
 
 const productSchema = new mongoose.Schema({
 
@@ -23,6 +24,11 @@ const productSchema = new mongoose.Schema({
         type : mongoose.Schema.Types.ObjectId,
         ref : Category,
         required : true
+    },
+    brand : {
+        type :  mongoose.Schema.Types.ObjectId,
+        ref : Brand,
+        requied : true
     },
     stockQuantity : {
         type : Number,

@@ -82,7 +82,10 @@
                                 <p class="mb-0 fw-bold">$<%= product.price %></p>
                             </div>
                             <% if (product.category) { %>
-                            <p class="mb-0"><strong><%= product.category.name %></strong></p>
+                            <p class="mb-0"><strong>Category : <%= product.category.name.toUpperCase() %></strong></p>
+                            <% } %> 
+                            <% if (product.brand) { %>
+                            <p class="mb-0 fw-bold">Brand : <%= product.brand.name.toUpperCase() %></p>
                             <% } %> 
                             <p class="mb-0"><%= new Date(product.createdAt).toDateString() %></p>
                             <div class="mt-3">

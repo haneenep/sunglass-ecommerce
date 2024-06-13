@@ -19,7 +19,7 @@ module.exports = {
 
             res.render('admin/categorys',{ categorys,success,done,delet,err })
         } catch(error) {
-            res.status(500).send('server Error')
+            res.render('500')
         }
 
     },
@@ -51,7 +51,7 @@ module.exports = {
             res.redirect('/admin/categorys')
     
         } catch(error) {
-            res.status(500).send('Server Error')
+            res.render('500');
         }
     },
 
@@ -70,7 +70,7 @@ module.exports = {
             }
             res.render('admin/edit-categorys',{ category,err });
         } catch(error) {
-            res.status(500).send("Server Error")
+            res.render('500');
         }
     },
 
@@ -124,7 +124,7 @@ module.exports = {
             res.redirect('/admin/categorys')
 
         } catch(error) {
-            res.status(500).send('Server Error')
+            res.render('500');
         }
     }
 }
