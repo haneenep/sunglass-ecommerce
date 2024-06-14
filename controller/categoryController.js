@@ -104,7 +104,7 @@ module.exports = {
             req.session.successMssg = "Category Edited Successfully"
             return res.redirect('/admin/categorys')
         } catch(error) {
-            res.status(500).send("Server Error")
+            res.render('500');
         }
     },
 

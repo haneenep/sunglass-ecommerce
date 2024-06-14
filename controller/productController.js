@@ -31,7 +31,8 @@ module.exports = {
                 description,
                 category,
                 brand,
-                stockQuantity
+                stockQuantity,
+                // isActive
             } = req.body;
 
             const files = req.files;
@@ -48,6 +49,7 @@ module.exports = {
                 category,
                 brand,
                 stockQuantity,
+                // isActive
             })
 
             await newProduct.save();
@@ -97,12 +99,12 @@ module.exports = {
 
         try {
             const productId = req.params.id;
-            const product = await Product.findById(productId).populate('category');
+            const product = await Product.findById(productId)
             const brand = await Brand.find({isDeleted : false ,isActive : true });
             const category = await Category.find({isDeleted : false ,isActive : true});
 
             if(!product){
-                return res.status(404).json({ error : true ,message : "Product Not Found"})
+                return res.render('404');
             }
 
             res.render('admin/editProduct',{product,category,brand})
@@ -122,7 +124,8 @@ module.exports = {
                 description,
                 category,
                 brand,
-                stockQuantity
+                stockQuantity,
+                // isActive
 
             } = req.body;
 
@@ -137,7 +140,8 @@ module.exports = {
                 description,
                 category,
                 brand,
-                stockQuantity
+                stockQuantity,
+                // isActive : isActive === 'true'
             }
 
             if(image.length > 0) {
@@ -151,7 +155,7 @@ module.exports = {
             );
 
             if(!updateProduct) {
-                return res.status(404).json({error : true , message : "product not found"})
+                return res.render('404');
             }
 
             res.redirect('/admin/products')
@@ -168,7 +172,7 @@ module.exports = {
             const deletedProduct = await Product.findByIdAndDelete(productId);
 
             if(!deletedProduct){
-                return res.status(404).json({error : true , message : "product Not found"})
+                return res.render('404');
             }
 
             res.redirect('/admin/products')

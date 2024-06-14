@@ -10,7 +10,6 @@
         },
 
         // handling admin
-
         adminPost : (req,res) => {
             res.redirect('/admin/dashboard')
         },

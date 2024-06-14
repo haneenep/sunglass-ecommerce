@@ -9,7 +9,7 @@ router.get('/',userAuth.blockUser,userController.homepage);
 
 // user login and signup
 router.get('/login',userAuth.userExist,userController.login);
-router.get('/loginandsignup',userController.signup);
+router.get('/loginandsignup',userAuth.userExist,userController.signup);
 
 
 // otp routes
@@ -24,6 +24,10 @@ router.get('/resend-otp', userController.resendOTP);
 // product route
 router.get('/products',userAuth.blockUser,userController.productPage);
 router.get('/products/:id',userAuth.blockUser,userController.productDetails);
+
+
+// forgotpassword
+// router.get('/forgotPassword')
 // GET cart page 
 // router.get('/cart',cartController.cartPage);
 

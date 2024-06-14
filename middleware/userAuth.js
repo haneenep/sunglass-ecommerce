@@ -16,11 +16,8 @@
             try{    
 
                 const users = req.session.curUser;
-                // console.log(email,"ggggggggggggg");
-                console.log(users,'pppppp');
-            const findUser = await User.findOne({ email : users })
 
-            console.log(findUser,"jhgjghjgjgjhgjhghjghj");
+            const findUser = await User.findOne({ email : users })
 
             if(findUser && findUser.access === 'status-deactive'){
                 req.session.errMssg = "Your Account is blocked";

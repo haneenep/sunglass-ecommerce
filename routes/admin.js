@@ -27,9 +27,9 @@
     // edit rendering 
     router.get('/edit-product/:id',adminAuth.ensureAdmin,productController.editProductGet);
     // edting
-    router.post('/edit-Product/:id',upload.array('images'),productController.editProduct);
+    router.post('/edit-Product/:id',adminAuth.ensureAdmin,upload.array('images'),productController.editProduct);
     // delete product
-    router.post('/delete-product/:id',productController.deleteProduct);
+    router.post('/delete-product/:id',adminAuth.ensureAdmin,productController.deleteProduct);
 
 
     // category 
@@ -37,13 +37,13 @@
     // Render the add
     router.get('/add-categorys',adminAuth.ensureAdmin,categoryController.addCategoryGet);
     // adding 
-    router.post('/add-categorys',categoryController.addCategory);
+    router.post('/add-categorys',adminAuth.ensureAdmin,categoryController.addCategory);
     // edit geting 
     router.get('/edit-categorys/:id',adminAuth.ensureAdmin,categoryController.editCategoryGet);
     // editing
-    router.post('/categorys/edit',categoryController.editCategory);
+    router.post('/categorys/edit',adminAuth.ensureAdmin,categoryController.editCategory);
     // deleting
-    router.post('/categorys/delete',categoryController.deleteCategorys);
+    router.post('/categorys/delete',adminAuth.ensureAdmin,categoryController.deleteCategorys);
 
 
     // brands
@@ -51,19 +51,19 @@
     // brand add getting
     router.get('/add-brands',adminAuth.ensureAdmin,brandController.addBrandGet);
     // brand adding
-    router.post('/add-brands',brandController.addBrand);
+    router.post('/add-brands',adminAuth.ensureAdmin,brandController.addBrand);
     // brand editing getting
     router.get('/edit-brands/:id',adminAuth.ensureAdmin,brandController.editBrandGet);
     // brand editting 
-    router.post('/brands/edit',brandController.editBrand);
+    router.post('/brands/edit',adminAuth.ensureAdmin,brandController.editBrand);
     // deleting brand
-    router.post('/brands/delete',brandController.deleteBrand);
+    router.post('/brands/delete',adminAuth.ensureAdmin,brandController.deleteBrand);
     
 
     // userManageget
     router.get('/userManageGet',adminAuth.ensureAdmin,userManageController.userManageGet);
     // blockorUnblock
-    router.post('/updateAccess/:id',userManageController.updateAccess);
+    router.post('/updateAccess/:id',adminAuth.ensureAdmin,userManageController.updateAccess);
 
 
     module.exports = router;    

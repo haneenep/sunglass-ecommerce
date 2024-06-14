@@ -22,7 +22,7 @@
 
         } catch(err){
           console.error('Error Fetching Products :',err);
-          res.status(500).send("Error Fetching Products")
+          res.render('500');
         }
       },
 
@@ -47,7 +47,6 @@
 
           console.log('Start generating OTP');
 
-          // checking if user is already registered
           let user = await User.findOne({email});
           console.log(user);
           if(user){
@@ -87,7 +86,7 @@
           res.render('user/otp',{ email });
         } catch (err) {
           console.error('Error generating OTP:', err);
-          res.status(500).send("Error generating OTP")
+          res.render('500');
         }
       },
 
@@ -104,7 +103,6 @@
       // verify OTP
       verifyOTP : async (req,res) => {
         const { email,otp } = req.body;
-        // const {email} = req.session.tempUser;
         console.log("egamil",email);
         console.log('Session tempUser:', req.session.tempUser);
         try {
@@ -138,19 +136,19 @@
           await newUser.save();
           await OTP.deleteOne({email});
           req.session.tempUser = null;
-          // req.session.errMssg = null;
+        
 
           res.redirect('/login');
         } catch(err) {
           console.log(err);
-          res.status(500).send("Error verifying OTP")
+          res.render('500')
         }
       },
 
       // user signinde
       loginUser : async (req,res) => {
         const { email, password} = req.body;
-        // console.log(req.body);
+
         try {
           const user = await User.findOne({ email })
 
@@ -171,7 +169,7 @@
              return res.redirect('/login');
             }
   
-            // User is Authenticated
+
             req.session.user = user;
             req.session.curUser = email;
             res.redirect('/');
@@ -179,6 +177,7 @@
          
         } catch(err) {
           console.error("Error logging in : ",err);
+          res.render('500');
           
         }
       },
@@ -187,7 +186,7 @@
         const { email } = req.query;
     
         try {
-          // Generate new OTP
+
           const otp = generateOtp();
           console.log(otp);
           const otpExpires = Date.now() + 3 * 60 * 1000;
@@ -198,7 +197,6 @@
             { upsert: true, new: true }
           );
     
-          // Send OTP to user's email
           const mailOptions = {
             from: process.env.AUTH_EMAIL,
             to: email,
@@ -210,7 +208,7 @@
           res.redirect(`/verify-otp?email=${email}`);
         } catch (err) {
           console.error('Error resending OTP:', err);
-          res.status(500).send('Error resending OTP');
+          res.render('500');
         }
       },
 
@@ -224,7 +222,7 @@
           res.render('user/product',{ products,user,email })
         } catch(err) {
           console.error('Error Fetching Product',err);
-          res.status(500).send("Error Fetching Product")
+          res.render('500');
         }
       },
 
@@ -251,13 +249,16 @@
             res.render('500');
         }
     },
-    
+
+    // forgot : (req,res) => {
+    //   res.render('')
+    // },
 
       logout : (req, res) => {
         req.session.destroy(err => {
             if (err) {
                 console.error('Error destroying session:', err);
-                res.status(500).send('Internal Server Error');
+                res.render('500');
             } else {
                 res.redirect('/');
             }

@@ -506,7 +506,7 @@ ol {
 	bottom: 0;
 	width: 100%;
 	height: 2px;
-	background: #e53637;
+	background: #000000;
 	content: "";
 	-webkit-transition: all, 0.5s;
 	-o-transition: all, 0.5s;
@@ -1950,8 +1950,11 @@ ol {
 -----------------------*/
 
 .footer {
-	background: #B2AC88;
-	padding-top: 70px;
+	background: #ffffff;
+	border-top: 1px solid rgba(0, 0, 0, 0.943);
+    padding: 20px 0;
+    margin-top: 40px;
+padding-top: 70px;
 }
 
 .footer__about {
