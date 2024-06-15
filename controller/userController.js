@@ -28,9 +28,11 @@
 
       login : (req,res) => {
         const err = req.session.errMssg || null;
+        const success = req.session.success || null;
         
+        req.session.success = null
         req.session.errMssg = null;
-        res.render('user/user_login',{ err });
+        res.render('user/user_login',{ err,success });
       },
 
       signup : (req,res) => {
@@ -66,7 +68,6 @@
             {otp,otpExpires},
             {upsert : true , new : true}
           );
-          console.log('OTP saved to database');
 
           // Send OTP to user's Email 
           const mailOptions = {
@@ -136,6 +137,7 @@
           await newUser.save();
           await OTP.deleteOne({email});
           req.session.tempUser = null;
+          req.session.success = "Signup Successfully !!";
         
 
           res.redirect('/login');
@@ -250,9 +252,6 @@
         }
     },
 
-    // forgot : (req,res) => {
-    //   res.render('')
-    // },
 
       logout : (req, res) => {
         req.session.destroy(err => {

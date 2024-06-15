@@ -22,6 +22,9 @@
               <% if (locals.err) { %>
                  <p class="text-danger"><%= err %></p>
                 <% } %>
+              <% if (locals.success) { %>
+                 <p class="text-success"><%= success %></p>
+                <% } %>
                 <div class="wrap-input100 validate-input" data-validate="Valid email is required: ex@abc.xyz">
                     <input id="email" class="input100" type="text" name="email" placeholder="Email" required>
                     <span class="focus-input100"></span>

@@ -1,6 +1,7 @@
 const router = require('express').Router();
-const userController = require('../controller/userController');
 const userAuth = require('../middleware/userAuth');
+const userController = require('../controller/userController');
+const forgotController = require('../controller/forgotController');
 
 
 // home page
@@ -26,8 +27,12 @@ router.get('/products',userAuth.blockUser,userController.productPage);
 router.get('/products/:id',userAuth.blockUser,userController.productDetails);
 
 
-// forgotpassword
-// router.get('/forgotPassword')
+// forgotpassword geting
+router.get('/forgotPassword',forgotController.forgot);
+router.post('/forgot',forgotController.forgotPassword);
+router.get('/otp-forgot',forgotController.forgotOtpren);
+router.post('/otp-forgot',forgotController.forgotOtp);
+router.post('/resetpass',forgotController.resetPassword)
 // GET cart page 
 // router.get('/cart',cartController.cartPage);
 
