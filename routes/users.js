@@ -16,7 +16,7 @@ router.get('/loginandsignup',userAuth.userExist,userController.signup);
 // otp routes
 router.post('/signup',userController.generateAndSendOtp);
 router.get('/verify-otp', userController.renderVerifyOtpPage);
-router.post('/verify-otp',userController.verifyOTP);
+router.post('/verify-otp',userAuth.userExist,userController.verifyOTP);
 router.post('/loginAccess',userAuth.blockUser,userController.loginUser)
 router.get('/resend-otp', userController.resendOTP);
   

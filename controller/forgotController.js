@@ -15,15 +15,6 @@ module.exports = {
 
       },
 
-      forgotOtpren : (req,res) => {
-        const errMssg = req.session.errMssg || null;
-        req.session.errMssg = null;
-        if(!email){
-            return res.redirect('/forgotPassword')
-        }
-        res.render('user/otpforgot',{ errMssg })
-      },
-
     forgotPassword : async (req,res) => {
 
         const {email} = req.body
@@ -34,6 +25,16 @@ module.exports = {
             if(!user){
                 req.session.errMssg = "Not an existing email";
                 return res.redirect('/forgotPassword')
+            }
+
+            const existingOtp = await OTP.findOne({email});
+            if(existingOtp){
+                if(Date.now < existingOtp.otpExpires){
+                    req.session.tempUser = {email};
+                    return res.redirect('user/otpforgot', { email })
+                }else{
+                    await OTP.deleteOne({email})
+                }
             }
 
             const otp = generateOtp()
@@ -55,12 +56,25 @@ module.exports = {
 
             await sendEmail(mailOptions);
 
+            req.session.tempUser = {email}
+
             res.render('user/otpforgot',{email})
         }catch (error){
             console.log(error);
             res.render('500');
         }
     },
+
+    forgotOtpren : (req,res) => {
+        const errMssg = req.session.errMssg || null;
+        const email = req.query.email || (req.session.tempUser && req.session.tempUser.email);
+
+        req.session.errMssg = null;
+        if(!email){
+            return res.redirect('/forgotPassword')
+        }
+        res.render('user/otpforgot',{ errMssg,email })
+      },
 
     forgotOtp : async (req,res) => {
 
