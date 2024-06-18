@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const userAuth = require('../middleware/userAuth');
 const userController = require('../controller/userController');
+const cartController = require('../controller/cartController');
 const forgotController = require('../controller/forgotController');
 
 
@@ -20,7 +21,6 @@ router.post('/verify-otp',userAuth.userExist,userController.verifyOTP);
 router.post('/loginAccess',userAuth.blockUser,userController.loginUser)
 router.get('/resend-otp', userController.resendOTP);
   
-// router.post('/forgot-password',)
 
 // product route
 router.get('/products',userAuth.blockUser,userController.productPage);
@@ -32,9 +32,12 @@ router.get('/forgotPassword',forgotController.forgot);
 router.post('/forgot',forgotController.forgotPassword);
 router.get('/otp-forgot',forgotController.forgotOtpren);
 router.post('/otp-forgot',forgotController.forgotOtp);
-router.post('/resetpass',forgotController.resetPassword)
+router.post('/resetpass',forgotController.resetPassword);
+
+
 // GET cart page 
-// router.get('/cart',cartController.cartPage);
+router.get('/cart',userAuth.userCart,cartController.cartGet);
+
 
 
 router.get('/logout', userController.logout);

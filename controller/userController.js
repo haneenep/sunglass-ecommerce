@@ -253,6 +253,18 @@
     },
 
 
+    cartRender : (req,res) => {
+      const user = req.session.user
+
+      try {
+        res.render('user/cart',{user})
+      }catch(err){
+        console.log(err);
+        return res.render('500');
+      }
+    },
+
+
       logout : (req, res) => {
         req.session.destroy(err => {
             if (err) {

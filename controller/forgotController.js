@@ -23,7 +23,7 @@ module.exports = {
             let user = await User.findOne({ email })
 
             if(!user){
-                req.session.errMssg = "Not an existing email";
+                req.session.errMssg = "Not an existing email,you can signup";
                 return res.redirect('/forgotPassword')
             }
 
