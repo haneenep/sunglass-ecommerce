@@ -160,13 +160,24 @@ ol {
 
 .primary-btn {
 	display: inline-block;
-	font-size: 13px;
-	font-weight: 700;
+	font-size: 11px;
+	font-weight: 500;
 	text-transform: uppercase;
 	padding: 14px 30px;
 	color: #ffffff;
 	background: #000000;
 	letter-spacing: 4px;
+}
+.danger-btn {
+	display: inline-block;
+	font-size: 11px;
+	font-weight: 500;
+	text-transform: uppercase;
+	padding: 10px 20px;
+	color: #ffffff;
+	background: #b10000;
+	letter-spacing: 4px;
+	border-radius: 7px;
 }
 
 .site-btn {

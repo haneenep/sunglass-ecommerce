@@ -46,7 +46,7 @@
               <li>
                 <hr>
                 <% if (product.stockQuantity === 0) { %>
-                  <b class="out-of-stock">Out Of Stock</b>
+                  <b class="out-of-stock">It will be added Soon</b>
                 <% } else if(product.stockQuantity < 10) { %>
                   <b class="few-left">Just a few left. Order soon.</b>
                 <% } else { %>
@@ -56,26 +56,30 @@
             </ul>
           </div>
           <div class="product__details__cart__option">
-            <% if (user) { %>
-              <% if (!cart) { %>
-                <a href="#" id="add-to-bag-btn" class="primary-btn" onclick="addToCart('<%= product._id %>', '<%= product.price %>', '<%= product.stockQuantity %>')">
-                  <i class="fa fa-shopping-cart"></i> Add to Bag
-                </a>
-                <input type="hidden" id="product-quantity" value="1">
-              <% } else { %>
-                <a href="/cart" class="primary-btn">
-                  <i class="fa fa-shopping-cart"></i> Go to Bag
-                </a>
-              <% } %>
+            <% if (!cart && product.stockQuantity <= 0) { %>
+              <button class="danger-btn" disabled>
+                <i class="fa fa-shopping-cart"></i> Out of Stock
+              </button>
+            <% } else if (user && !cart) { %>
+              <a href="#" id="add-to-bag-btn" class="primary-btn" onclick="addToCart('<%= product._id %>', '<%= product.price %>', '<%= product.stockQuantity %>')">
+                <i class="fa fa-shopping-cart"></i> Add to Bag
+              </a>
+              <input type="hidden" id="product-quantity" value="1">
+            <% } else if (user && cart) { %>
+              <a href="/cart" class="primary-btn">
+                <i class="fa fa-shopping-cart"></i> Go to Bag
+              </a>
             <% } else { %>
               <a href="/login" class="primary-btn">
-                <i class="fa fa-user"></i> Add to Cart
+                <i class="fa fa-shopping-cart"></i> Add to Cart
               </a>
             <% } %>
-          </div>          
+          </div>
+                   
           <div class="product__details__btns__option">
             <a href="#"><i class="fa fa-heart"></i> Add to wishlist</a>
           </div>
+
         </div>
       </div>
     </div>
@@ -180,6 +184,14 @@
 
   function addToCart(productId, price, stockQuantity) {
   const quantity = document.querySelector('#product-quantity').value;
+  if (stockQuantity <= 0) {
+    const addToBagBtn = document.getElementById('add-to-bag-btn');
+    if (addToBagBtn) {
+      addToBagBtn.setAttribute('disabled', 'disabled');
+      addToBagBtn.innerHTML = '<i class="fa fa-user"></i> Out of Stock';
+    }
+    return;
+  }
   fetch('/addToCart', {
     method: "post",
     headers: {
