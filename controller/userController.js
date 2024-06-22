@@ -4,6 +4,7 @@
   const OTP = require('../models/otpModel');
   const generateOtp = require('../utils/generateOtp');
   const Product = require('../models/productModel');
+  const Cart = require('../models/cartModel');
   
 
 
@@ -229,11 +230,14 @@
       },
 
       productDetails: async (req, res) => {
-        const user = req.session.user;
-        const email = req.session.curUser;
-        const productId = req.params.id;
     
         try {
+          
+            const user = req.session.user;
+            const email = req.session.curUser;
+            const productId = req.params.id;
+
+
             const product = await Product.findById(productId)
             .populate('category')
             .populate('brand');
@@ -242,26 +246,16 @@
             const category = product.category;
             const brand = product.brand;
             const relatedProducts = await Product.find({ category: category._id, _id: { $ne: productId } });
-    
-            console.log(relatedProducts, 'Related Products');
+            let cart = null;
+            if(user && user._id){
+              cart = await Cart.findOne({ userId: user._id, 'products.productid': productId });
+            }
             
-            res.render('user/productDetails', { user, email, product, category, brand, relatedProducts });
+            res.render('user/productDetails', { user, email, product, category, brand, relatedProducts, cart });
         } catch (error) {
             console.error('Error Fetching Product Details', error);
             res.render('500');
         }
-    },
-
-
-    cartRender : (req,res) => {
-      const user = req.session.user
-
-      try {
-        res.render('user/cart',{user})
-      }catch(err){
-        console.log(err);
-        return res.render('500');
-      }
     },
 
 

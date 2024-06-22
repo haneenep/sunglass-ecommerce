@@ -56,13 +56,23 @@
             </ul>
           </div>
           <div class="product__details__cart__option">
-            <div class="quantity">
-              <div class="pro-qty">
-                <input type="text" value="1" /> 
-              </div>
-            </div>
-            <a href="/" class="primary-btn">Add to cart</a>
-          </div>
+            <% if (user) { %>
+              <% if (!cart) { %>
+                <a href="#" id="add-to-bag-btn" class="primary-btn" onclick="addToCart('<%= product._id %>', '<%= product.price %>', '<%= product.stockQuantity %>')">
+                  <i class="fa fa-shopping-cart"></i> Add to Bag
+                </a>
+                <input type="hidden" id="product-quantity" value="1">
+              <% } else { %>
+                <a href="/cart" class="primary-btn">
+                  <i class="fa fa-shopping-cart"></i> Go to Bag
+                </a>
+              <% } %>
+            <% } else { %>
+              <a href="/login" class="primary-btn">
+                <i class="fa fa-user"></i> Add to Cart
+              </a>
+            <% } %>
+          </div>          
           <div class="product__details__btns__option">
             <a href="#"><i class="fa fa-heart"></i> Add to wishlist</a>
           </div>
@@ -118,7 +128,7 @@
                 </div>
                 <div class="product__item__text">
                     <h6><%= product.productName %></h6>
-                    <a href="#" class="add-cart">+ Add To Cart</a>
+                    <a href="/cart/add" class="add-cart"><i class="fa fa-shopping-cart"></i> + Add To Cart</a> <!-- Added icon -->
                     <div class="rating">
                         <i class="fa fa-star-o"></i>
                         <i class="fa fa-star-o"></i>
@@ -167,6 +177,69 @@
       });
     $("#etalage").etalage("init");
   }
+
+  function addToCart(productId, price, stockQuantity) {
+  const quantity = document.querySelector('#product-quantity').value;
+  fetch('/addToCart', {
+    method: "post",
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      productId: productId,
+      quantity: quantity,
+      price: price,
+      stockQuantity: stockQuantity
+    })
+  }).then(response => response.json())
+  .then(data => {
+    if(data.success) {
+      Toastify({
+        text: 'Product added to cart!',
+        duration: 3000,
+        close: true,
+        gravity: 'top',
+        position: 'center',
+        backgroundColor: '#333',
+        stopOnFocus: true,
+      }).showToast();
+
+      // Update button text and behavior
+      const btn = document.getElementById('add-to-bag-btn');
+      if (btn) {
+        btn.innerHTML = '<i class="fa fa-shopping-cart"></i> Go to Bag';
+        btn.href = '/cart';
+        btn.removeAttribute('onclick');
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          window.location.href = '/cart';
+        });
+      }
+    } else {
+      Toastify({
+        text: data.message || 'Failed to add to cart',
+        duration: 3000,
+        close: true,
+        gravity: 'top',
+        position: 'center',
+        backgroundColor: '#FF0000',
+        stopOnFocus: true,
+      }).showToast();
+    }
+  }).catch(error => {
+    console.error('Error:', error);
+    Toastify({
+      text: 'Failed to add to cart',
+      duration: 3000,
+      close: true,
+      gravity: 'top',
+      position: 'center',
+      backgroundColor: '#FF0000',
+      stopOnFocus: true,
+    }).showToast();
+  });
+}
+
 </script>
 
 <style>
@@ -297,4 +370,49 @@
   .product__details__tab__content p {
     margin: 0;
   }
+
+.quantity {
+  display: flex;
+  align-items: center;
+}
+
+.pro-qty {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.pro-qty .qtybtn {
+  background-color: #333;
+  color: #fff;
+  padding: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px; /* Set a fixed width */
+}
+
+.pro-qty .qtybtn:hover {
+  background-color: #555;
+}
+
+.pro-qty input {
+  width: 50px;
+  text-align: center;
+  border: none;
+  outline: none;
+  padding: 10px 0; /* Add padding for vertical alignment */
+}
+
+.pro-qty .dec {
+  border-right: 1px solid #ddd;
+}
+
+.pro-qty .inc {
+  border-left: 1px solid #ddd;
+}
+
 </style>

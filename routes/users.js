@@ -37,7 +37,7 @@ router.post('/resetpass',forgotController.resetPassword);
 
 // GET cart page 
 router.get('/cart',userAuth.userCart,cartController.cartGet);
-
+router.post('/addToCart',userAuth.userCart,cartController.addToCart);
 
 
 router.get('/logout', userController.logout);

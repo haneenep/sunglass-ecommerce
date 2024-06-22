@@ -1791,10 +1791,10 @@ ol {
 
 .product__details__cart__option .quantity .pro-qty .qtybtn {
 	font-size: 18px;
-	color: #0d0d0d;
+	color: #ffffff;
 	position: absolute;
-	right: 15px;
-	top: 3px;
+	right: 0px;
+	top: -2px;
 	height: 10px;
 	width: 10px;
 	cursor: pointer;
@@ -1802,7 +1802,8 @@ ol {
 }
 
 .product__details__cart__option .quantity .pro-qty .qtybtn.inc {
-	top: 16px;
+	top: 19px;
+	left: 77px;
 }
 
 .product__details__btns__option {

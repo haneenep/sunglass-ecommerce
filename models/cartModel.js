@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const Products = require('../models/productModel');
 
 const cartSchema = new mongoose.Schema(
     {
@@ -9,7 +10,7 @@ const cartSchema = new mongoose.Schema(
             {
                 productid : {
                     type: mongoose.Schema.Types.ObjectId,
-                    ref: "productDetails"
+                    ref: Products
                 },
                 quantity : {
                     type : Number,
