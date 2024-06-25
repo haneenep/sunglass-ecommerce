@@ -1,0 +1,13 @@
+<div class="sidebar">
+    <% if(locals.user){ %>
+    <h2>Hello <span style="color: #333333;"><%= user.name.toUpperCase() %></span><hr></h2>
+    <% } %>
+    <ul class="sidebar-nav">
+        <li><a href="/userProfile">My Account</a></li>
+        <li><a href="#">My Orders</a></li>
+        <li><a href="#">My Wishes</a></li>
+        <li><a href="#">My Wallet</a></li>
+        <li><a href="/shipAddress"></i> My Shipping Addresses</a></li>
+        <li><a href="/logout"style="margin-right: 0;" id="logoutButton" style="color: red;" onclick="confirmLogout(event)">Sign Out</a></li>
+    </ul>
+</div>

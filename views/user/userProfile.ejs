@@ -1,0 +1,202 @@
+<%- include('../layout/userProfileHead') -%>
+
+
+    <!-- Header Section Begin -->
+
+    <%- include('../layout/userHeaderNav') -%>
+
+    <!-- Header Section End -->
+
+
+    <div class="page-container">
+        <!-- Sidebar Begin -->
+
+        <%- include('../layout/userProfileSidebar') -%>
+
+        <!-- Sidebar End -->
+
+        <!-- Main Content Begin -->
+        <div class="main-content">
+            <div class="info-header">
+                <h1>My Account</h1>
+                <hr>
+            </div>
+            <% if(locals.user){ %>
+            <div class="info-item">
+                <label>Name :</label>
+                <p id="userName"><%= user.name %></p>
+                <button class="edit-btn" id="editName">Edit</button>
+            </div>
+            <div class="info-item">
+                <label>Email :</label>
+                <p><%= user.email %></p>
+            </div> 
+            <div class="info-item">
+                <label>Referral Link :</label>
+                <p>coming soon !</p>
+            </div>
+            <div class="info-item">
+                <label>Password :</label>
+                <p id="password">********</p>
+                <button class="edit-btn" id="editPassword">Change Password</button>
+            </div>
+        </div>
+        <!-- Main Content End -->
+    </div>
+
+    <!-- Name Edit Modal  -->
+    <div id="editNameModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit Name</h2>
+                <span class="close">&times;</span>
+            </div>
+            <form class="modal-form" id="nameForm">
+                <input type="text" id="nameInput" placeholder="Enter your name" value="<%= user.name %>">
+                <div class="modal-buttons">
+                    <button type="submit" class="btn-apply">Apply Changes</button>
+                    <button type="button" class="btn-cancel">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <% } %>
+
+    <!-- Password Edit Modal -->
+    <div id="editPasswordModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Edit Password</h2>
+            <span class="close">&times;</span>
+        </div>
+        <form class="modal-form" id="passwordForm">
+            <input type="password" id="currentPassword" placeholder="Current Password" required>
+            <input type="password" id="newPassword" placeholder="New Password" required>
+            <input type="password" id="confirmPassword" placeholder="Confirm New Password" required>
+            <div class="modal-buttons">
+                <button type="submit" class="btn-apply">Apply Changes</button>
+                <button type="button" class="btn-cancel">Cancel</button>
+            </div>
+        </form>
+        </div>
+    </div>
+    <!-- Modal End -->
+
+    <script>
+        const nameModal = document.getElementById('editNameModal');
+        const passwordModal = document.getElementById('editPasswordModal');
+        const editNameBtn = document.getElementById('editName');
+        const editPasswordBtn = document.getElementById('editPassword');
+        const closeBtn = document.getElementsByClassName('close');
+        const cancelBtn = document.querySelectorAll('.btn-cancel');
+        const userName = document.getElementById('userName');
+        const nameInput = document.getElementById('nameInput');
+        const nameForm = document.getElementById('nameForm');
+        const passwordForm = document.getElementById('passwordForm');
+
+        editNameBtn.onclick = function() {
+        nameModal.style.display = "block";
+        nameInput.value = userName.textContent;
+    }
+
+        editPasswordBtn.onclick = function() {
+        passwordModal.style.display = "block";
+    }
+
+    Array.from(closeBtn).forEach( btn => {
+        btn.onclick = function () {
+            nameModal.style.display = "none";
+            passwordModal.style.display = "none";
+        }
+    })
+
+        cancelBtn.forEach( btn => {
+            btn.onclick = function () {
+                nameModal.style.display = 'none';
+                passwordModal.style.display = 'none';
+            }
+        })
+
+        nameForm.onsubmit = async function(e) {
+            e.preventDefault();
+            const newName = nameInput.value;
+            try{
+                const response = await fetch('/updateName', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ name: newName }),
+            });
+
+            if (response.ok) {
+                userName.textContent = newName;
+                nameModal.style.display = "none";
+                showNotification('Name Updated Successfully',false);
+            } else {
+                showNotification('Failed to update name. Please try again.', true);
+            }
+            } catch(error){
+                console.error('Error:', error);
+                showNotification('An error occurred. Please try again.', true);
+            }
+        }
+
+        passwordForm.onsubmit = async function (e) {
+            e.preventDefault();
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if(newPassword !== confirmPassword){
+                showNotification('New password and confirm password do not match.',true);
+                return;
+            }
+
+            try {
+                const response = await fetch('/updatePassword', {
+                    method : 'POST',
+                    headers : {
+                        'Content-Type' : 'application/json',
+                    },
+                    body : JSON.stringify( {currentPassword,newPassword} )
+                });
+
+                if(response.ok){
+                    showNotification('Password updated successfully.',false);
+                    passwordModal.style.display = 'none';
+                    passwordForm.reset();
+                }else{
+                    showNotification('Failed to update password. Please check your current password and try again.',true);
+                }
+            } catch (error){
+                console.error('Error : ',error);
+                showNotification('An Error Occured. Please try again',true);
+            }
+        }
+
+        window.onclick = function(event) {
+            if (event.target == nameModal || event.target == passwordModal) {
+                nameModal.style.display = "none";
+                passwordModal.style.display = "none";
+        }
+        }
+        const showNotification = (message , isError = false) => {
+            Toastify({
+                text: message,
+                duration: 3000,
+                close: true,
+                gravity: "top",
+                position: "right",
+                backgroundColor: isError ? "red" : "green",
+            }).showToast();
+        };
+    </script>
+
+<!-- Footer Section Begin -->
+    
+<%- include('../layout/userFooterNav') -%>
+
+<!-- Footer Section End -->
+
+<%- include('../layout/userFoot') -%>

@@ -3,6 +3,7 @@ const userAuth = require('../middleware/userAuth');
 const userController = require('../controller/userController');
 const cartController = require('../controller/cartController');
 const forgotController = require('../controller/forgotController');
+const addressController = require('../controller/AddressController');
 
 
 // home page
@@ -38,6 +39,14 @@ router.post('/resetpass',forgotController.resetPassword);
 // GET cart page 
 router.get('/cart',userAuth.userCart,cartController.cartGet);
 router.post('/addToCart',userAuth.userCart,cartController.addToCart);
+router.post('/updateCart',userAuth.userCart,cartController.updateCart);
+router.post('/removeFromCart/:productId',userAuth.userCart,cartController.removeFromCart);
+
+// userProfile
+router.get('/userProfile',addressController.profileGet);
+router.post('/updateName',addressController.updateUserName);
+router.post('/updatePassword',addressController.updateUserPassword);
+router.get('/shipAddress',addressController.addressGet);
 
 
 router.get('/logout', userController.logout);
