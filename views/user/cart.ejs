@@ -280,7 +280,7 @@
                             <li>Total <span id="cartTotal">₹<%= cart ? cart.products.reduce((acc, product) => acc + (product.quantity * product.productid.price), 0).toFixed(2) : '0.00' %></span></li>
                             <li>Shipping Fee <span><del>₹40.00</del></span><span style="color: green;">Free</span></li>
                         </ul>
-                        <a href="#" class="primary-btn">Proceed to checkout</a>
+                        <a href="/checkOut" class="primary-btn">Proceed to checkout</a>
                     </div>
                 </div>
             </div>

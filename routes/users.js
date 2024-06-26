@@ -2,6 +2,7 @@ const router = require('express').Router();
 const userAuth = require('../middleware/userAuth');
 const userController = require('../controller/userController');
 const cartController = require('../controller/cartController');
+const orderController = require('../controller/orderController');
 const forgotController = require('../controller/forgotController');
 const addressController = require('../controller/AddressController');
 
@@ -47,6 +48,13 @@ router.get('/userProfile',addressController.profileGet);
 router.post('/updateName',addressController.updateUserName);
 router.post('/updatePassword',addressController.updateUserPassword);
 router.get('/shipAddress',addressController.addressGet);
+router.post('/addAddress',addressController.addAddress);
+router.put('/editAddress',addressController.editAddress);
+router.delete('/deleteAddress/:id',addressController.deleteAddresses);
+
+
+// checkOut
+router.get('/checkOut',orderController.checkOutGet);
 
 
 router.get('/logout', userController.logout);

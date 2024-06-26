@@ -18,6 +18,7 @@
     <link rel="stylesheet" href="/stylesheets/style1.css" type="text/css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.7.6/lottie.min.js"></script>
     <style>
@@ -112,36 +113,63 @@
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 20px;
+            margin-top: 20px;
         }
         .address-card {
+            background-color: #ffffff;
             border: 1px solid #e0e0e0;
             border-radius: 8px;
             padding: 20px;
             position: relative;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
         .address-card h3 {
             margin-top: 0;
             margin-bottom: 10px;
+            color: #333;
+            font-size: 18px;
         }
         .address-card p {
             margin: 5px 0;
+            color: #666;
         }
-        .edit-btn, .add-address-btn {
+        .edit-btn, .delete-btn {
+            position: absolute;
+            top: 10px;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+        .edit-btn {
+            right: 10px;
+            background-color: #4CAF50;
+            color: white;
+        }
+        .delete-btn {
+            right: 70px;
+            background-color: #f44336;
+            color: white;
+        }
+        .add-address-btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
             background-color: #333;
             color: white;
             border: none;
-            padding: 10px 20px;
-            cursor: pointer;
             border-radius: 4px;
+            cursor: pointer;
             font-size: 16px;
+            transition: background-color 0.3s;
         }
-        .edit-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
+        .edit-btn:hover, .delete-btn:hover {
+            opacity: 0.8;
         }
-        .add-address-btn {
-            margin-top: 20px;
+        .add-address-btn:hover {
+            background-color: #181818;
         }
         .modal {
             display: none;
@@ -269,26 +297,22 @@
                 <h1>My Shipping Addresses</h1><hr>
             </div>
             <div class="address-grid">
-                <div class="address-card">
-                    <h3>Home</h3>
-                    <p>Chloe Nicker</p>
-                    <p>123 Main St</p>
-                    <p>Apt 4B</p>
-                    <p>New York, NY 10001</p>
-                    <p>United States</p>
-                    <p>Phone: +1 212-555-1234</p>
-                    <button class="edit-btn" onclick="openModal('home')">Edit</button>
-                </div>
-                <div class="address-card">
-                    <h3>Work</h3>
-                    <p>Chloe Nicker</p>
-                    <p>456 Business Ave</p>
-                    <p>Suite 789</p>
-                    <p>New York, NY 10002</p>
-                    <p>United States</p>
-                    <p>Phone: +1 212-555-5678</p>
-                    <button class="edit-btn" onclick="openModal('work')">Edit</button>
-                </div>
+                <% if(address && address.length > 0){ %>
+                    <% address.forEach((addr) => { %>
+                        <div class="address-card">
+                            <h3><%= addr.addressType.toUpperCase() %></h3>
+                            <p><strong><%= addr.name %></strong></p>
+                            <p><%= addr.address %></p>
+                            <p><%= addr.city %>, <%= addr.state %> <%= addr.pincode %></p>
+                            <p><%= addr.locality %></p>
+                            <p>Phone No : <%= addr.phoneNumber %></p>
+                            <button class="edit-btn" onclick="openModal('edit', <%= JSON.stringify(addr)%>)">Edit</button>
+                            <button class="delete-btn" onclick="deleteAddress('<%= addr._id %>')">Remove</button>
+                        </div>
+                    <% }) %>
+                <% } else { %>
+                    <p>No addresses found. Add a new address below.</p>
+                <% } %>
             </div>
             <button class="add-address-btn" onclick="openModal()">Add New Address</button>
         </div>
@@ -302,7 +326,8 @@
             <h2 id="modalTitle">Add Address</h2>
             <form id="addressForm">
                 <div class="form-row">
-                    <input type="text" id="firstName" name="firstName" placeholder="First Name" required>
+                    <input type="hidden" id="addressId" name="addressId">
+                    <input type="text" id="name" name="name" placeholder="name" required>
                     <input type="tel" id="phoneNumber" name="phoneNumber" placeholder="10-digit number" pattern="[0-9]{10}" required>
                 </div>
                 <div class="form-row">
@@ -314,12 +339,10 @@
                     <input type="text" id="city" name="city" placeholder="City/District/Town" required>
                     <select id="state" name="state" required>
                         <option value="">Select State</option>
+                        <option value="kerala">Kerala</option>
+                        <option value="tamil nadu">tamil nadu</option>
                         <!-- Add state options here -->
                     </select>
-                </div>
-                <div class="form-row">
-                    <input type="text" id="landmark" name="landmark" placeholder="Landmark (optional)">
-                    <input type="text" id="houseNo" name="houseNo" placeholder="House No" required>
                 </div>
                 <div class="address-type">
                     <p>Address type</p>
@@ -336,6 +359,7 @@
     </div>
 
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         const modal = document.getElementById('addressModal');
         const closeBtn = modal.querySelector('.close');
@@ -343,41 +367,37 @@
         const submitBtn = document.getElementById('submitAddress');
         const modalTitle = document.getElementById('modalTitle');
 
-        function openModal(addressType = null) {
+        function openModal(action, address = null) {
             modal.style.display = 'block';
-            if (addressType) {
+            if (action === 'edit' && address) {
                 modalTitle.textContent = 'Edit Address';
                 submitBtn.textContent = 'Update Address';
-                // Pre-fill form with address data (you'll need to implement this)
-                // For demonstration, we're using dummy data
-                if (addressType === 'home') {
-                    document.getElementById('firstName').value = 'Chloe';
-                    document.getElementById('phoneNumber').value = '2125551234';
-                    document.getElementById('pincode').value = '10001';
-                    document.getElementById('locality').value = 'Manhattan';
-                    document.getElementById('address').value = '123 Main St\nApt 4B';
-                    document.getElementById('city').value = 'New York';
-                    document.getElementById('state').value = 'NY';
-                    document.getElementById('landmark').value = '';
-                    document.getElementById('houseNo').value = '4B';
-                    document.getElementById('homeType').checked = true;
-                } else if (addressType === 'work') {
-                    document.getElementById('firstName').value = 'Chloe';
-                    document.getElementById('phoneNumber').value = '2125555678';
-                    document.getElementById('pincode').value = '10002';
-                    document.getElementById('locality').value = 'Financial District';
-                    document.getElementById('address').value = '456 Business Ave\nSuite 789';
-                    document.getElementById('city').value = 'New York';
-                    document.getElementById('state').value = 'NY';
-                    document.getElementById('landmark').value = '';
-                    document.getElementById('houseNo').value = '789';
-                    document.getElementById('workType').checked = true;
-                }
+                fillFormWithAddress(address);
             } else {
                 modalTitle.textContent = 'Add Address';
                 submitBtn.textContent = 'Add Address';
                 form.reset();
+                document.getElementById('addressId').value = '';
             }
+        }
+
+        function fillFormWithAddress(address) {
+            document.getElementById('addressId').value = address._id;
+            document.getElementById('name').value = address.name;
+            document.getElementById('phoneNumber').value = address.phoneNumber;
+            document.getElementById('pincode').value = address.pincode;
+            document.getElementById('locality').value = address.locality;
+            document.getElementById('address').value = address.address;
+            document.getElementById('city').value = address.city;
+            document.getElementById('state').value = address.state;
+            document.getElementById(address.addressType.toLowerCase() + 'Type').checked = true;
+        
+
+              // Add a hidden input for the address ID
+            hiddenInput.type = 'hidden';
+            hiddenInput.name = 'addressId';
+            hiddenInput.value = address._id;
+            form.appendChild(hiddenInput);
         }
 
         closeBtn.onclick = () => modal.style.display = 'none';
@@ -385,22 +405,147 @@
             if (event.target == modal) modal.style.display = 'none';
         }
 
-        form.onsubmit = (e) => {
+        form.onsubmit = async (e) => {
             e.preventDefault();
+
+            const name = document.getElementById('name').value.trim();
+            const phoneNumber = document.getElementById('phoneNumber').value.trim();
+            const pincode = document.getElementById('pincode').value.trim();
+            const locality = document.getElementById('locality').value.trim();
+            const address = document.getElementById('address').value.trim();
+            const city = document.getElementById('city').value.trim();
+            const state = document.getElementById('state').value.trim();
+            const addressType = document.querySelector('input[name="addressType"]:checked').value;
+
+            const nameRegex = /^[a-zA-Z\s]+$/;
+            const phoneRegex = /^[0-9]{10}$/;
+            const pincodeRegex = /^[0-9]{6}$/;
+            const locationRegex = /^[a-zA-Z\s]+$/;
+            const cityRegex = /^[a-zA-Z\s]+$/;
+
+            if (!nameRegex.test(name)) {
+                showNotification('Please Provide a valid Input Name', true);
+                return;
+            }
+
+            if (!phoneRegex.test(phoneNumber)) {
+                showNotification('Phone number must contain 10 numeric characters', true);
+                return;
+            }
+
+            if (!pincodeRegex.test(pincode)) {
+                showNotification('Please Provide a valid Pincode.', true);
+                return;
+            }
+
+            if (!locationRegex.test(locality)) {
+                showNotification('Please Provide a valid Input location', true);
+                return;
+            }
+
+            if (!address) {
+                showNotification('Address should have between 40 and 50 characters.', true);
+                return;
+            }
+
+            if (!cityRegex.test(city)) {
+                showNotification('Please Provide a valid Input State/District/City.', true);
+                return;
+            }
+
+            if (!state) {
+                showNotification('State is required.', true);
+                return;
+            }
+
             const formData = new FormData(form);
             const addressData = Object.fromEntries(formData.entries());
             
-            // Here you would typically send this data to your server
             console.log('Address Data:', addressData);
+
+            if (form.querySelector('#addressId')) {
+                addressData._id = form.querySelector('#addressId').value;
+            }
             
-            // Simulate server response
-            setTimeout(() => {
-                alert(modalTitle.textContent === 'Edit Address' ? 'Address updated successfully!' : 'Address added successfully!');
-                modal.style.display = 'none';
-                // In a real application, you would update the UI here
-                location.reload(); // This reloads the page to show changes
-            }, 1000);
-        }
+        try {
+                const url = addressData.addressId ? '/editAddress' : '/addAddress';
+                const method = addressData.addressId ? 'PUT' : 'POST';
+                
+                const response = await fetch(url, {
+                    method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(addressData),
+            });
+
+            if (response.ok) {
+                    showNotification(addressData.addressId ? 'Address updated successfully!' : 'Address added successfully!');
+                    modal.style.display = 'none';                   
+                    // location.reload();
+                } else {
+                    showNotification('Failed to submit address. Please try again.', true);
+                }
+    } catch (error) {
+        console.error('Error:', error);
+        showNotification('An error occurred. Please try again.', true);
+    }
+}
+
+    function deleteAddress(addressId) {
+        Swal.fire({
+           title: 'Are you sure?',
+           text: "You won't be able to revert this!",
+           icon: 'warning',
+           showCancelButton: true,
+           confirmButtonColor: '#3085d6',
+           cancelButtonColor: '#d33',
+           confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+               fetch(`/deleteAddress/${addressId}`, {
+                   method: 'DELETE',
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                       Swal.fire(
+                           'Deleted!',
+                           'Your address has been deleted.',
+                           'success'
+                       ).then(() => {
+                           location.reload();
+                       });
+                    } else {
+                       Swal.fire(
+                           'Error!',
+                           'Failed to delete address.',
+                           'error'
+                       );
+                   }
+               })
+               .catch(error => {
+                   console.error('Error:', error);
+                   Swal.fire(
+                       'Error!',
+                       'An error occurred while deleting the address.',
+                       'error'
+                   );
+               });
+           }
+       });
+   }
+
+        const showNotification = (message, isError = false) => {
+        Toastify({
+        text: message,
+        duration: 3000,
+        close: true,
+        gravity: "top",
+        position: "right",
+        backgroundColor: isError ? "red" : "green",
+    }).showToast();
+};
     </script>
 
     <!-- Footer Section Begin -->
