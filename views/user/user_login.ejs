@@ -1,6 +1,6 @@
 <%- include("../layout/header") -%>
 
-<div class="limiter">
+<div class="limiter" style="background-color: #F2F2F2; min-height: 100vh;">
     <div class="container-login100">
         <div class="wrap-login100">
             <div class="login100-pic js-tilt" data-tilt>
@@ -12,18 +12,18 @@
                     Member Login
                 </span>
                 <div class="google-btn-container">
-                  <a href="/auth/google" class="google-btn">
-                      <i class="fa fa-google fa-lg"></i>
-                  </a>
-                  <div class="text-container">
-                    <h4 class="txt2">&nbsp;&nbsp;or use your account</h4>
+                    <a href="/auth/google" class="google-btn">
+                        <i class="fa fa-google fa-lg"></i>
+                    </a>
+                    <div class="text-container">
+                        <h4 class="txt2">&nbsp;&nbsp;or use your account</h4>
+                    </div>
                 </div>
-              </div>
-              <% if (locals.err) { %>
-                 <p class="text-danger"><%= err %></p>
+                <% if (locals.err) { %>
+                    <p class="text-danger"><%= err %></p>
                 <% } %>
-              <% if (locals.success) { %>
-                 <p class="text-success"><%= success %></p>
+                <% if (locals.success) { %>
+                    <p class="text-success"><%= success %></p>
                 <% } %>
                 <div class="wrap-input100 validate-input" data-validate="Valid email is required: ex@abc.xyz">
                     <input id="email" class="input100" type="text" name="email" placeholder="Email" required>
@@ -54,7 +54,7 @@
                         Forgot
                     </span>&nbsp;
                     <a class="txt2" href="/forgotPassword">
-                         Password?
+                        Password?
                     </a>
                 </div>
 

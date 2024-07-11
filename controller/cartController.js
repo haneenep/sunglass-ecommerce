@@ -9,7 +9,7 @@ module.exports = {
             const user = req.session.user;
             console.log(id, "cart");
 
-            const cart = await Cart.findOne({ userId: id._id }).populate('products.productid');
+            const cart = await Cart.findOne({ userId: id._id }).populate('products.productid')
             
             if(cart !== null && cart.products.length > 0){
                 res.render('user/cart', {cart, user});

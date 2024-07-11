@@ -26,7 +26,7 @@
             <div class="col-lg-3 col-md-3">
                 <div class="header__nav__option">
                     <a href="#" class="search-switch"><img src="/img/icon/search.png" alt=""></a>
-                    <a href="#"><img src="/img/icon/heart.png" alt=""></a>
+                    <a href="/wishlist"><img src="/img/icon/heart.png" alt=""></a>
                     <a href="/cart"><img src="/img/icon/cart.png" alt=""> <span>0</span></a>
                     
                     <% if( locals.user){%>
@@ -36,11 +36,11 @@
                          padding: 0px 6px;">
                          <%= user.name.charAt(0).toUpperCase()%>
                         </button>
-                        <div class="dropdown-menu" style="z-index: 10; background-color: rgb(0, 0, 0);">
+                        <div class="dropdown-menu" style="z-index: 10; background-color: #ff003c;">
                             <a href="#" style="margin-right: 0;"><%= user.name.toUpperCase() %></a>                            
                             <a href="/userProfile" style="margin-right: 0;">My Profile</a>                            
                             <a href="/products" style="margin-right: 0;">All Products</a>
-                            <a href="#" style="margin-right: 0;">My Orders</a>
+                            <a href="/orders" style="margin-right: 0;">My Orders</a>
                             <a href="/logout" style="margin-right: 0;" id="logoutButton" style="color: red;" onclick="confirmLogout(event)">Logout</a>
                         </div>
                     </div>

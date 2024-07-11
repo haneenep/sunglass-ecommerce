@@ -259,6 +259,19 @@
                       <span class="error-message" id="brand-error"></span>
                     </div>
                     <div class="col-12">
+                      <label for="inputDiscountAmount" class="form-label"
+                        >Discount Amount</label
+                      >
+                      <input
+                        type="number"
+                        class="form-control"
+                        id="inputDiscountAmount"
+                        name="discountAmount"
+                        placeholder="Enter discount amount"
+                      />
+                      <span class="error-message" id="discount-error"></span>
+                    </div>
+                    <div class="col-12">
                       <label for="inputStockQuantity" class="form-label"
                         >Stock Quantity</label
                       >
@@ -330,59 +343,66 @@
       });
 
       function validateForm() {
-          const form = document.getElementById('productForm');
-          const name = form.elements['productName'].value.trim();
-          const description = form.elements['description'].value.trim();
-          const price = form.elements['price'].value.trim();
-          const quantity = form.elements['stockQuantity'].value.trim();
-          const images = form.elements['images'].files;
-          const category = form.elements['category'].value;
-          const brand = form.elements['brand'].value;
+      const form = document.getElementById('productForm');
+      const name = form.elements['productName'].value.trim();
+      const description = form.elements['description'].value.trim();
+      const price = form.elements['price'].value.trim();
+      const quantity = form.elements['stockQuantity'].value.trim();
+      const images = form.elements['images'].files;
+      const category = form.elements['category'].value;
+      const brand = form.elements['brand'].value;
+      const discountAmount = form.elements['discountAmount'].value.trim();
 
-          const errorMessages = document.querySelectorAll('.error-message');
-          errorMessages.forEach(error => error.textContent = '');
+      const errorMessages = document.querySelectorAll('.error-message');
+      errorMessages.forEach(error => error.textContent = '');
 
-          let isValid = true;
+      let isValid = true;
 
-          if (name === '') {
-              displayErrorMessage('Product Name is required', 'name-error');
-              isValid = false;
-          }
-
-          if (description === '') {
-              displayErrorMessage('Product Description is required', 'description-error');
-              isValid = false;
-          }
-
-          if (price === '' || isNaN(price) || parseFloat(price) < 0) {
-              displayErrorMessage('Please enter a valid positive price', 'price-error');
-              isValid = false;
-          }
-
-          if (quantity === '' || isNaN(quantity) || parseInt(quantity) < 0) {
-              displayErrorMessage('Please enter a valid positive quantity', 'quantity-error');
-              isValid = false;
-          }
-
-          if (!images || images.length === 0) {
-              displayErrorMessage('Product Image is required', 'images-error');
-              isValid = false;
-          }
-
-          if (category === '') {
-              displayErrorMessage('Product Category is required', 'category-error');
-              isValid = false;
-          }
-
-          if (brand === '') {
-              displayErrorMessage('Product brand is required', 'brand-error');
-              isValid = false;
-          }
-
-          if (isValid) {
-              form.submit();
-          }
+      if (name === '') {
+          displayErrorMessage('Product Name is required', 'name-error');
+          isValid = false;
       }
+
+      if (description === '') {
+          displayErrorMessage('Product Description is required', 'description-error');
+          isValid = false;
+      }
+
+      if (price === '' || isNaN(price) || parseFloat(price) < 0) {
+          displayErrorMessage('Please enter a valid positive price', 'price-error');
+          isValid = false;
+      }
+
+      if (quantity === '' || isNaN(quantity) || parseInt(quantity) < 0) {
+          displayErrorMessage('Please enter a valid positive quantity', 'quantity-error');
+          isValid = false;
+      }
+
+      if (!images || images.length === 0) {
+          displayErrorMessage('Product Image is required', 'images-error');
+          isValid = false;
+      }
+
+      if (category === '') {
+          displayErrorMessage('Product Category is required', 'category-error');
+          isValid = false;
+      }
+
+      if (brand === '') {
+          displayErrorMessage('Product brand is required', 'brand-error');
+          isValid = false;
+      }
+
+      // Updated validation for discountAmount
+      if (discountAmount !== '' && (isNaN(discountAmount) || parseFloat(discountAmount) < 0)) {
+          displayErrorMessage('Please enter a valid positive discount amount', 'discount-error');
+          isValid = false;
+      }
+
+      if (isValid) {
+          form.submit();
+      }
+  }
 
       function displayErrorMessage(message, elementId) {
           const errorSpan = document.getElementById(elementId);

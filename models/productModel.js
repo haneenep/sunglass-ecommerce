@@ -38,20 +38,30 @@ const productSchema = new mongoose.Schema({
         type : Boolean,
         default : true
     },
+    discountAmount : {
+        type : Number,
+        default : 0
+    },
+    discountedPrice: {
+        type: Number,
+        default: function() {
+          return this.price - this.discountAmount;
+        }
+    },
     isDeleted : {
         type : Boolean,
         default : false
     },
-    // isActive : {
-    //     type : Boolean,
-    //     required : true
-    // },
     createdAt : {
         type : Date,
         default : Date.now
     }
 });
 
+    productSchema.pre('save', function(next) {
+        this.discountedPrice = this.price - this.discountAmount;
+        next();
+    });
 
 const product = mongoose.model('product',productSchema);
 

@@ -1,10 +1,13 @@
     const router = require('express').Router();
-    const adminController = require('../controller/adminController');
-    const productController = require('../controller/productController');
     const upload = require('../config/multer');
-    const categoryController = require('../controller/categoryController');
     const brandController = require('../controller/brandController');
+    const adminController = require('../controller/adminController');
+    const couponController = require('../controller/couponController');
+    const productController = require('../controller/productController');
+    const categoryController = require('../controller/categoryController');
     const userManageController = require('../controller/userManageController');
+    const orderMangementController = require('../controller/orderManageController');
+
 
     // middlewear
     const adminAuth = require('../middleware/adminAuth');
@@ -20,14 +23,15 @@
 
     // display addProduct form
     router.get('/add-product',adminAuth.ensureAdmin,productController.productAddGet);
-    // handle addProduct form submission
+    // addProduct form submission
     router.post('/add-product',adminAuth.ensureAdmin,upload.array('images',6),productController.addProduct);
     // displaying all products
     router.get('/products',adminAuth.ensureAdmin,productController.getAllProducts);
     // edit rendering 
     router.get('/edit-product/:id',adminAuth.ensureAdmin,productController.editProductGet);
-    // edting
-    router.post('/edit-Product/:id',adminAuth.ensureAdmin,upload.array('images'),productController.editProduct);
+    // editing
+    router.post('/edit-product/:id', upload.fields([{ name: 'newImages', maxCount: 10 }]), productController.editProduct);
+    router.post('/crop-image', upload.single('croppedImage'), productController.cropImage);
     // delete product
     router.post('/delete-product/:id',adminAuth.ensureAdmin,productController.deleteProduct);
 
@@ -64,6 +68,30 @@
     router.get('/userManageGet',adminAuth.ensureAdmin,userManageController.userManageGet);
     // blockorUnblock
     router.post('/updateAccess/:id',adminAuth.ensureAdmin,userManageController.updateAccess);
+
+
+    // orderMangementget
+    router.get('/orderManageGet',adminAuth.ensureAdmin,orderMangementController.orderManageGet);
+    // orderStatusChanging
+    router.put('/updateOrderStatus',orderMangementController.updateOrderStatus);
+    // orderManagementDetails
+    router.get('/orderDetails/:id',orderMangementController.orderManageDetails);
+    //  orderReturnStatus
+    router.post('/update-returnStatus',orderMangementController.updateReturnStatus);
+
+
+    // coupon
+    router.get('/coupons',couponController.couponGet);  
+    // addCoupon
+    router.post('/addCoupon',couponController.addCoupon);
+    // viewCoupon
+    router.get('/getCoupon/:id',couponController.getCoupon);
+    // editgetting
+    router.get('/editCoupon/:id',couponController.editCouponGet);
+    // editing 
+    router.put('/updateCoupon/:id',couponController.updateCoupon);
+    // deleting
+    router.delete('/deleteCoupon/:id',couponController.deleteCoupon);
 
 
     module.exports = router;    

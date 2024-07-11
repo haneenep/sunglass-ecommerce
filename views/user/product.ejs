@@ -28,14 +28,16 @@
             <div class="row">
                 <div class="col-lg-3">
                     <div class="shop__sidebar">
+                        <!-- Search Form -->
                         <div class="shop__sidebar__search">
-                            <form action="#">
-                                <input type="text" placeholder="Search...">
+                            <form action="/products" method="GET">
+                                <input type="text" name="search" placeholder="Search..." value="<%= search %>">
                                 <button type="submit"><span class="icon_search"></span></button>
                             </form>
                         </div>
                         <div class="shop__sidebar__accordion">
                             <div class="accordion" id="accordionExample">
+                                <!-- Category Filter -->
                                 <div class="card">
                                     <div class="card-heading">
                                         <a data-toggle="collapse" data-target="#collapseOne">Categories</a>
@@ -44,21 +46,61 @@
                                         <div class="card-body">
                                             <div class="shop__sidebar__categories">
                                                 <ul class="nice-scroll">
-                                                    <li><a href="#">Men (20)</a></li>
-                                                    <li><a href="#">Women (20)</a></li>
-                                                    <li><a href="#">Bags (20)</a></li>
-                                                    <li><a href="#">Clothing (20)</a></li>
-                                                    <li><a href="#">Shoes (20)</a></li>
-                                                    <li><a href="#">Accessories (20)</a></li>
-                                                    <li><a href="#">Kids (20)</a></li>
-                                                    <li><a href="#">Kids (20)</a></li>
-                                                    <li><a href="#">Kids (20)</a></li>
+                                                    <% categories.forEach(category => { %>
+                                                    <li>
+                                                        <a href="javascript:;" onclick="applyFilter('category', '<%= category.name %>')">
+                                                            <%= category.name.toUpperCase() %>
+                                                        </a>
+                                                    </li>
+                                                    <% }) %>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Brand Filter -->
+                                <div class="card">
+                                    <div class="card-heading">
+                                        <a data-toggle="collapse" data-target="#collapseTwo">Branding</a>
+                                    </div>
+                                    <div id="collapseTwo" class="collapse show" data-parent="#accordionExample">
+                                        <div class="card-body">
+                                            <div class="shop__sidebar__brand">
+                                                <ul>
+                                                    <% brands.forEach(brand => { %>
+                                                    <li>
+                                                        <a href="javascript:;" onclick="applyFilter('brand', '<%= brand.name %>')">
+                                                            <%= brand.name.toUpperCase() %>
+                                                        </a>
+                                                    </li>
+                                                    <% }) %>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Price Filter -->
+                                <div class="card">
+                                    <div class="card-heading">
+                                        <a data-toggle="collapse" data-target="#collapseThree">Filter Price</a>
+                                    </div>
+                                    <div id="collapseThree" class="collapse show" data-parent="#accordionExample">
+                                        <div class="card-body">
+                                            <div class="shop__sidebar__price">
+                                                <ul>
+                                                    <li><a href="javascript:;" onclick="applyFilter('price', '1000-4000')">₹1000 - ₹4000</a></li>
+                                                    <li><a href="javascript:;" onclick="applyFilter('price', '4000-6000')">₹4000 - ₹6000</a></li>
+                                                    <li><a href="javascript:;" onclick="applyFilter('price', '6000-10000')">₹6000 - ₹10000</a></li>
                                                 </ul>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                        <!-- Clear All Filters Button -->
+                        <div class="shop__sidebar__clear-filters">
+                            <a href="/products" class="btn btn-outline-dark" style="font-size: 16px;">CLEAR ALL</a>
                         </div>
                     </div>
                 </div>
@@ -67,32 +109,38 @@
                         <div class="row">
                             <div class="col-lg-6 col-md-6 col-sm-6">
                                 <div class="shop__product__option__left">
-                                    <p>Showing 1–12 of <%= products.length %> results</p>
+                                    <p>Showing <%= products.length %> of <%= totalProducts %> results</p>
                                 </div>
                             </div>
                             <div class="col-lg-6 col-md-6 col-sm-6">
                                 <div class="shop__product__option__right">
-                                    <p>Sort by Price:</p>
-                                    <select>
-                                        <option value="">Low To High</option>
-                                        <option value="">$0 - $55</option>
-                                        <option value="">$55 - $100</option>
+                                    <p>Sort by:</p>
+                                    <select onchange="location = this.value;">
+                                        <option value="?sort=recommended" <%= sort === 'recommended' ? 'selected' : '' %>>Recommended</option>
+                                        <option value="?sort=new" <%= sort === 'new' ? 'selected' : '' %>>What's New</option>
+                                        <option value="?sort=low_to_high" <%= sort === 'low_to_high' ? 'selected' : '' %>>Price: Low To High</option>
+                                        <option value="?sort=high_to_low" <%= sort === 'high_to_low' ? 'selected' : '' %>>Price: High to Low</option>
                                     </select>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="row">   
-                        <% products.forEach(product => { %>
-                        <div class="col-lg-4 col-md-6 col-sm-6">
-                            <div class="product__item">
-                                <div class="product__item__pic">
-                                    <% if (product.images && product.images.length > 0) { %>
-                                    <a href="/products/<%= product._id %>">
-                                    <img src="<%= product.images[0] %>" style="width: 100%;" alt="<%= product.productName %>" >
+                    <div class="row">
+                        <% if(noResults){ %>
+                            <div class="col-12 text-center">
+                                <h4>No products found</h4>
+                                <p>Try adjusting your search or filter to find what you're looking for.</p>
+                                <a href="/products" class="btn btn-outline-dark mt-3">Clear all filters</a>
+                            </div>
+                            <% }else{ %>
+                                <% products.forEach(product => { %>
+                                    <div class="col-lg-4 col-md-6 col-sm-6">
+                                        <div class="product__item">
+                                            <div class="product__item__pic">
+                                                <% if (product.images && product.images.length > 0) { %>
+                                                    <a href="/products/<%= product._id %>">
+                                        <img src="<%= product.images[0] %>" alt="<%= product.productName %>">
                                     </a>
-                                    <% } else { %>
-                                    <img src="img/default-image.jpg" alt="Default Image" class="img-fluid">
                                     <% } %>
                                     <ul class="product__hover">
                                         <li><a href="#"><img src="img/icon/heart.png" alt=""></a></li>
@@ -103,39 +151,93 @@
                                 <div class="product__item__text">
                                     <h6><%= product.productName %></h6>
                                     <a href="/cart" class="add-cart">+ Add To Cart</a>
-                                    <div class="rating">
-                                        <i class="fa fa-star-o"></i>
-                                        <i class="fa fa-star-o"></i>
-                                        <i class="fa fa-star-o"></i>
-                                        <i class="fa fa-star-o"></i>
-                                        <i class="fa fa-star-o"></i>
+                                    <% if (product.discountAmount > 0) { %>
+                                        <h5>
+                                          <span class="original-price">₹<%= product.price %></span>
+                                          <span class="discounted-price">₹<%= product.discountedPrice %></span>
+                                        </h5>
+                                        <span class="discount-badge"><%= Math.round((product.discountAmount / product.price) * 100) %>% OFF</span>
+                                      <% } else { %>
+                                        <h5>₹<%= product.price.toFixed(2) %></h5>
+                                      <% } %>
+                                    <!-- <h5>₹<%= product.price.toFixed(2) %></h5>    -->
+                                    <% if (product.stockQuantity > 0) { %>
+                                        <span class="in-stock badge rounded-end  p-2 text-uppercase px-3" style="background-color: rgb(255, 255, 255); color: green;">In Stock</span>
+                                        <% } else { %>
+                                            <span class="out-of-stock badge rounded  p-2 text-uppercase px-3" style="background-color: rgb(255, 255, 255); color: red;">Out of Stock</span>
+                                            <% } %>
+                                        </div>
                                     </div>
-                                    <h5>₹<%= product.price %></h5>
                                 </div>
+                                <% }) %>
+                                <% } %>
                             </div>
-                        </div>
-                        <% }) %>
-                    </div>
-                    
+                    <!-- Pagination -->
                     <div class="row">
                         <div class="col-lg-12">
                             <div class="product__pagination">
-                                <a class="active" href="#">1</a>
-                                <a href="#">2</a>
-                                <a href="#">3</a>
-                                <span>...</span>
-                                <a href="#">21</a>
+                                <% if (currentPage > 1) { %>
+                                <a href="?page=<%= currentPage - 1 %>&sort=<%= sort %>&category=<%= category %>&brand=<%= brand %>&price=<%= price %>&search=<%= search %>">&laquo;</a>
+                                <% } %>
+                                <% for (let i = 1; i <= totalPages; i++) { %>
+                                <a href="?page=<%= i %>&sort=<%= sort %>&category=<%= category %>&brand=<%= brand %>&price=<%= price %>&search=<%= search %>" class="<%= i === currentPage ? 'active' : '' %>"><%= i %></a>
+                                <% } %>
+                                <% if (currentPage < totalPages) { %>
+                                <a href="?page=<%= currentPage + 1 %>&sort=<%= sort %>&category=<%= category %>&brand=<%= brand %>&price=<%= price %>&search=<%= search %>">&raquo;</a>
+                                <% } %>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </section>  
-    <!-- Shop Section End -->
+    </section>
+<!-- Shop Section End -->
 
     <!-- Footer Section Begin -->
     <%- include('../layout/userFooterNav') -%>
     <!-- Footer Section End -->
 
     <%- include('../layout/userFoot') -%>
+
+
+    <!-- JavaScript to handle filter application -->
+    <script>
+        function applyFilter(type, value) {
+            const urlParams = new URLSearchParams(window.location.search);
+            urlParams.set(type, value);
+            window.location.search = urlParams.toString();
+        }
+    </script>
+
+    <style>
+        .shop__sidebar__clear-filters {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .shop__sidebar__clear-filters .btn {
+            width: 100%;
+            padding: 10px;
+            border-radius: 3pc 3pc;
+        }
+        .original-price {
+        text-decoration: line-through;
+        color: #999;
+        margin-right: 10px;
+        }
+
+        .discounted-price {
+        color: #e53637;
+        font-weight: bold;
+        }
+
+        .discount-badge {
+        background-color: #e53637;
+        color: white;
+        padding: 2px 5px;
+        border-radius: 3px;
+        font-size: 12px;
+        margin-left: 10px;
+        }
+    </style>

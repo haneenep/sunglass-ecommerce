@@ -4,22 +4,35 @@
   const OTP = require('../models/otpModel');
   const generateOtp = require('../utils/generateOtp');
   const Product = require('../models/productModel');
+  const Category = require('../models/categoryModel');
+  const Brand = require('../models/brandModel');
   const Cart = require('../models/cartModel');
   
-
 
     module.exports = {
 
       homepage : async (req,res) => {
 
         const user = req.session.user;
+        const PRODUCTS_PER_SECTION = 8;
         
         try {
 
-          const products = await Product.find();
+          const products = await Product.find().populate('category');
 
+          const mensProducts = products.filter(product => product.category.name.toLowerCase() === 'men').slice(0, PRODUCTS_PER_SECTION);
+          const womensProducts = products.filter(product => product.category.name.toLowerCase() === 'women').slice(0, PRODUCTS_PER_SECTION);
+          const kidsProducts = products.filter(product => product.category.name.toLowerCase() === 'kids').slice(0, PRODUCTS_PER_SECTION);
+          
           console.log(products,"productsss");
-          res.render('user/user_home',{user,products});
+          res.render('user/user_home',{
+            user,
+            products,
+            mensProducts,
+            womensProducts,
+            kidsProducts,
+          }
+        );
 
         } catch(err){
           console.error('Error Fetching Products :',err);
@@ -172,7 +185,6 @@
              return res.redirect('/login');
             }
   
-
             req.session.user = user;
             req.session.curUser = email;
             res.redirect('/');
@@ -215,21 +227,108 @@
         }
       },
 
-
+      
       productPage : async (req,res) => {
         const user = req.session.user;
         const email = req.session.curUser;
 
+        const { page = 1, sort = 'recommended', category, brand, price, search } = req.query;
+
+        const limit = 9;
+        const skip = (page - 1) * limit;
+
+        const filterQuery = await buildFilterQuery({ category , brand , price , search});
+        const sortOptions = getSortOption(sort);
+
+
         try {
-          const products = await Product.find();
-          res.render('user/product',{ products,user,email })
+
+          const totalProducts = await Product.countDocuments(filterQuery)
+          
+          const products = await Product.find(filterQuery)
+          .populate('category')
+          .populate('brand')
+          .sort(sortOptions)
+          .skip(skip)
+          .limit(limit)
+          .lean();
+
+          products.forEach(product => {
+            product.discountedPrice = product.price - product.discountAmount;
+          });
+          
+          console.log(products,"jkkjkjkjk");
+          const totalPages  = Math.ceil(totalProducts / limit);
+
+          const categories = await Category.find({ isActive: true }).lean();
+          const brands = await Brand.find({ isActive: true }).lean(); 
+
+          const noResults = totalProducts === 0;
+
+          res.render('user/product',{ 
+            products,
+            user,
+            email,
+            currentPage : parseInt(page),
+            totalPages,
+            totalProducts,
+            sort,
+            category,
+            brand,
+            price,
+            search,
+            categories,
+            brands,
+            noResults
+          })
+          
         } catch(err) {
           console.error('Error Fetching Product',err);
           res.render('500');
         }
+
+        async function buildFilterQuery({ category,brand,price,search }) {
+          const filterQuery = {}
+  
+          if(category){
+            const categoryData = await Category.findOne({ name : category });
+            if(categoryData) filterQuery.category = categoryData._id;
+          }
+  
+          if(brand){
+            const brandData = await Brand.findOne({ name : brand });
+            if(brandData) filterQuery.brand = brandData._id;
+          }
+  
+          if(price){
+          const [min,max] = price.split('-').map(Number);
+          filterQuery.price = {$gte : min,$lte : max};
+          }
+  
+          if(search){
+            filterQuery.$or = [
+              {productName : {$regex : search , $options : 'i'}},
+              {description : {$regex : search , $options : 'i'}}
+            ];
+          }
+  
+          return filterQuery;
+        }
+
+        function getSortOption(sort) {
+          const sortOptions = {
+              recommended: { createdAt: 1 },
+              new: { createdAt: -1 },
+              low_to_high: { price: 1 },
+              high_to_low: { price: -1 }
+          };
+          return sortOptions[sort] || sortOptions.recommended;
+      }
       },
 
       productDetails: async (req, res) => {
+
+        // const relatedProduct = 
     
         try {
           
@@ -241,6 +340,8 @@
             const product = await Product.findById(productId)
             .populate('category')
             .populate('brand');
+
+            product.discountedPrice = product.price - product.discountAmount;
 
     
             const category = product.category;

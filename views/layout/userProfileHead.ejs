@@ -124,6 +124,81 @@
         flex-grow: 1;
         padding: 30px;
       }
+      .order-item {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .order-image {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+        .order-details {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .status-received {
+          background-color: rgb(220 53 69 / .11);
+            color: #ffc107;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+        .status-confirmed {
+          background-color: rgba(0, 38, 176, 0.11);
+            color: #4400ff;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+        .status-shipped {
+          background-color: rgba(42, 255, 202, 0.11);
+            color: #00fffb;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+        .order-image { max-width: 100px; }
+        .status-delivered { 
+          color: green;
+          background-color: rgba(0, 133, 13, 0.11);
+          padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 14px;
+         }
+        .status-cancelled { 
+          color: rgb(255, 0, 81);
+          background-color: rgba(133, 0, 115, 0.11);
+          padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 14px;
+         }
+        .product-details { background-color: #f8f9fa; padding: 15px; margin-bottom: 15px; }
+        .status-in-progress {
+            background-color: #ffc107;
+            color: black;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+        .view-order-btn {
+          background-color: #ffffff;
+          color: rgb(0, 0, 0);
+          padding: 8px 16px;
+          border-radius: .2rem;
+          line-height: 1.5;
+          border-color: #343a40;
+          border: 1px solid;
+          cursor: pointer; 
+      }
+
+      .view-order-btn:hover {
+          background-color: #161718; 
+      }
 
       .info-header {
         margin-bottom: 30px;
@@ -292,8 +367,25 @@
       .dropdown-menu a:hover {
         background-color: #1ac100;
       }
+      @media (max-width: 768px) {
+            .page-container {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid #e0e0e0;
+            }
+            .order-details {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .order-image {
+                margin-bottom: 15px;
+            }
+        }
+
     </style>
   </head>
 
-  <body></body>
-</html>
+  <body>

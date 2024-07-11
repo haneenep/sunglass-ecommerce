@@ -1,4 +1,102 @@
-<%- include('../layout/userHead') -%>
+<!DOCTYPE html>
+<html lang="zxx">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="Male_Fashion Template">
+    <meta name="keywords" content="Male_Fashion, unica, creative, html">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>vistaVogue</title>
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700;800;900&display=swap"
+    rel="stylesheet">
+
+    <!-- Css Styles -->
+    <link rel="stylesheet" href="/stylesheets/bootstrap.min.css" type="text/css">
+    <link rel="stylesheet" href="/stylesheets/font-awesome.min.css" type="text/css">
+    <link rel="stylesheet" href="/stylesheets/elegant-icons.css" type="text/css">
+    <link rel="stylesheet" href="/stylesheets/magnific-popup.css" type="text/css">
+    <link rel="stylesheet" href="/stylesheets/nice-select.css" type="text/css">
+    <link rel="stylesheet" href="/stylesheets/owl.carousel.min.css" type="text/css">
+    <link rel="stylesheet" href="/stylesheets/slicknav.min.css" type="text/css">
+    <link rel="stylesheet" href="/stylesheets/style1.css" type="text/css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.7.6/lottie.min.js"></script>
+    
+
+    <style>
+       .dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-toggle {
+  background-color: #ff003c;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.dropdown-toggle:focus {
+  outline: none;
+}
+
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  background-color: white;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px rgba(255, 255, 255, 0.2);
+  z-index: 1;
+  border-radius: 4px;
+}
+
+.dropdown-toggle::after {
+        content: none !important;
+    }
+
+.dropdown-menu a {
+  color: rgb(255, 255, 255);
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+.dropdown-menu a:hover {
+  background-color: #000000;
+}
+
+        .original-price {
+        text-decoration: line-through;
+        color: #999;
+        margin-right: 10px;
+        }
+        .discounted-price {
+        color: #e53637;
+        font-weight: bold;
+        }
+
+        .discount-badge {
+        background-color: #e53637;
+        color: white;
+        padding: 2px 5px;
+        border-radius: 3px;
+        font-size: 12px;
+        margin-left: 10px;
+        }
+    </style>
+
+</head>
+
+<body>
 
     <!-- Header Section Begin -->
 
@@ -98,57 +196,66 @@
     </section>
     <!-- Banner Section End -->
 
-    <!-- Product Section Begin -->
-    <section class="product spad">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12">
-                    <ul class="filter__controls">
-                        <li class="active" data-filter="*">Products</li>
-                        <!-- <li data-filter=".new-arrivals">New Arrivals</li> -->
-                        <!-- <li data-filter=".hot-sales">Hot Sales</li> -->
-                    </ul>
-                </div>
-            </div>
-            <div class="row product__filter">
-                <% products.forEach(product => { %>
-                    <div class="col-lg-3 col-md-6 col-sm-6 col-md-6 col-sm-6 mix new-arrivals">
-                        <div class="product__item">
-                            <div class="product__item__pic">
-                                <% if (product.images && product.images.length > 0) { %>
-                                    <a href="/products/<%= product._id %>">
-                                    <img src="<%= product.images[0] %>" style="width: 100%;" alt="<%= product.productName %>" >
-                                    </a>
-                                    <% } else { %>
-                                    <img src="img/default-image.jpg" alt="Default Image" class="img-fluid">
-                                    <% } %>
-                                <ul class="product__hover">
-                                    <li><a href="#"><img src="img/icon/heart.png" alt=""></a></li>
-                                    <li><a href="#"><img src="img/icon/compare.png" alt=""> <span>Compare</span></a></li>
-                                    <li><a href="#"><img src="img/icon/search.png" alt=""></a></li>
-                                </ul>
-                            </div>
-                            <div class="product__item__text">
-                                <h6><%= product.productName %></h6>
-                                <a href="#" class="add-cart">+ Add To Cart</a>
-                                <div class="rating">
-                                    <% for(let i = 0; i < 5; i++) { %>
-                                        <% if(i < product.rating) { %>
-                                            <i class="fa fa-star"></i>
-                                        <% } else { %>
-                                            <i class="fa fa-star-o"></i>
-                                        <% } %>
-                                    <% } %>
-                                </div>
-                                <h5>$<%= product.price %></h5>
-                            </div>
-                        </div>
-                    </div>
-                <% }); %>
+     <!-- Product Section Begin -->
+<!-- Product Section Begin -->
+<section class="product spad">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <ul class="filter__controls">
+                    <!-- <li class="active" data-filter="*">All</li> -->
+                    <li data-filter=".mens">Men's</li>
+                    <li data-filter=".womens">Women's</li>
+                    <!-- <li data-filter=".kids">Kids</li> -->
+                </ul>
             </div>
         </div>
-    </section>
-    <!-- Product Section End -->
+        <div class="row product__filter">
+            <% const allProducts = [...mensProducts, ...womensProducts] %>
+            <% allProducts.forEach(product => { %>
+                <div class="col-lg-3 col-md-6 col-sm-6 mix <%= product.category.name.toLowerCase() %>s">
+                    <div class="product__item">
+                        <div class="product__item__pic">
+                            <% if (product.images && product.images.length > 0) { %>
+                                <a href="/products/<%= product._id %>">
+                                    <img src="<%= product.images[0] %>" alt="<%= product.productName %>" class="img-fluid">
+                                </a>
+                            <% } %>
+                            <ul class="product__hover">
+                                <li><a href="#"><img src="/img/icon/heart.png" alt=""></a></li>
+                                <li><a href="#"><img src="/img/icon/compare.png" alt=""> <span>Compare</span></a></li>
+                                <li><a href="#"><img src="/img/icon/search.png" alt=""></a></li>
+                            </ul>
+                        </div>
+                        <div class="product__item__text">
+                            <h6><%= product.productName %></h6>
+                            <a href="#" class="add-cart">+ Add To Cart</a>
+                            <div class="rating">
+                                <% for(let i = 0; i < 5; i++) { %>
+                                    <i class="fa fa-star<%= i < product.rating ? '' : '-o' %>"></i>
+                                <% } %>
+                            </div>
+                            <% if (product.discountAmount > 0) { %>
+                                <h5>
+                                  <span class="original-price">₹<%= product.price %></span>
+                                  <span class="discounted-price">₹<%= product.discountedPrice %></span>
+                                </h5>
+                                <span class="discount-badge"><%= Math.round((product.discountAmount / product.price) * 100) %>% OFF</span>
+                              <% } else { %>
+                                <h5>₹<%= product.price.toFixed(2) %></h5>
+                              <% } %>
+                            <!-- <h5>₹<%= product.price.toFixed(2) %></h5> -->
+                        </div>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+        <div class="col-lg-12 text-center mt-4">
+            <a href="/products" class="primary-btn">View All Products</a>
+        </div>
+    </div>
+</section>
+<!-- Product Section End -->
 
     <!-- Categories Section Begin -->
     <section class="categories spad">
@@ -279,3 +386,17 @@
     <!-- Footer Section End -->
 
     <%- include('../layout/userFoot') -%>
+    <script>
+        $(document).ready(function() {
+    $('.filter__controls li').on('click', function() {
+        $('.filter__controls li').removeClass('active');
+        $(this).addClass('active');
+
+        var selector = $(this).attr('data-filter');
+        $('.product__filter').isotope({
+            filter: selector
+        });
+        return false;
+    });
+});
+    </script>

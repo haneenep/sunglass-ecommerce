@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const Coupon = require('./couponModel');
 const Products = require('../models/productModel');
 
 const cartSchema = new mongoose.Schema(
@@ -17,9 +18,9 @@ const cartSchema = new mongoose.Schema(
                 },
                 price : {
                     type : Number
-                }
+                },
             }
-        ]
+        ],
     }
 )
 

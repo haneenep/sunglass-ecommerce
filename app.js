@@ -6,7 +6,6 @@ const logger = require('morgan');
 const {connect }= require("./config/dbconnect");
 const passport = require('passport');
 require('./config/passport');
-// const cookieSession = require('cookie-session');
 const nocache = require('nocache');
 const session = require("express-session")
 const flash = require('connect-flash')

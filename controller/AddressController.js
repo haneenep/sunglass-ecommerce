@@ -97,7 +97,7 @@ module.exports = {
                 address : req.body.address,
                 city : req.body.city,
                 state : req.body.state,
-                addressType : req.body.addressType.toLowerCase()
+                addressType : req.body.addressType
               }
 
               const userAddress = await Address.findOne({ userId })

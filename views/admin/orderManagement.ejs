@@ -1,0 +1,261 @@
+<%- include('../layout/adminHead') -%>
+
+<!--wrapper-->
+<div class="wrapper">
+    <!--sidebar wrapper -->
+    <%- include('../layout/adminSideWrapper') -%>
+    <!--end sidebar wrapper -->
+
+    <!--start header -->
+    <%- include('../layout/adminHeaderNav') -%>
+    <!--end header -->
+
+    <!--start page wrapper -->
+    <div class="page-wrapper">
+        <div class="page-content">
+            <!--breadcrumb-->
+            <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
+                <div class="breadcrumb-title pe-3">VISTAVOGUE</div>
+                <div class="ps-3">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0 p-0">
+                            <li class="breadcrumb-item"><a href="/admin/dashboard"><i class="bx bx-home-alt"></i></a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Orders</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+            <!--end breadcrumb-->
+
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-lg-flex align-items-center mb-4 gap-3">
+                        <div class="position-relative">
+                            <input type="text" id="orderSearchInput" class="form-control ps-5 radius-30" placeholder="Search Order">
+                            <span class="position-absolute top-50 product-show translate-middle-y"><i class="bx bx-search"></i></span>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table mb-0" id="orderTable">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>No.</th>
+                                    <th>#Order</th>
+                                    <th>Customer Name</th>
+                                    <th>Total</th>
+                                    <th>Payment Method</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Update Status</th>
+                                    <!-- <th>Return Request</th> -->
+                                    <th>View Details</th>
+                                </tr>
+                            </thead>
+                            <!-- ... previous code ... -->
+                            <tbody>
+                                <% orders.forEach((order, index) => { %>
+                                <tr>
+                                    <td><%= index + 1 %></td>
+                                    <td>
+                                        <div class="ms-2">
+                                            <h6 class="mb-0 font-14">#<%= order.orderId %></h6>
+                                        </div>
+                                    </td>
+                                    <td><%= order.address.name %></td>
+                                    <td>₹<%= order.totalAmount.toFixed(2) %></td>
+                                    <td>
+                                        <div class="badge rounded-pill text-<%= order.paymentMethod === 'COD' ? 'danger' : 'success' %> bg-light-<%= order.paymentMethod === 'COD' ? 'danger' : 'success' %> p-2 text-uppercase px-3">
+                                            <i class='bx bxs-circle align-middle me-1'></i><%= order.paymentMethod %>
+                                        </div>
+                                    </td>
+                                    <td><%= new Date(order.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) %></td>
+                                    <td>
+                                        <% order.products.forEach((product, productIndex) => { %>
+                                            <% 
+                                            let badgeClass = '';
+                                            let status = product.status;
+                                            if (product.returnStatus) {
+                                                status = product.returnStatus;
+                                                switch(status) {
+                                                    case 'Return Requested':
+                                                        badgeClass = 'text-warning bg-light-warning';
+                                                        break;
+                                                    case 'Return Approved':
+                                                    case 'Return Rejected':
+                                                        badgeClass = 'text-danger bg-light-danger';
+                                                        break;
+                                                    default:
+                                                        badgeClass = 'text-info bg-light-info';
+                                                }
+                                            } else {
+                                                switch(status) {   
+                                                    case 'pending':
+                                                        badgeClass = 'text-warning bg-light-warning';
+                                                        break;
+                                                    case 'Order Confirmed':
+                                                        badgeClass = 'text-primary bg-light-primary';
+                                                        break;
+                                                    case 'Order Shipped':
+                                                        badgeClass = 'text-info bg-light-info';
+                                                        break;
+                                                    case 'Order Delivered':
+                                                        badgeClass = 'text-success bg-light-success';
+                                                        break;
+                                                    case 'canceled':
+                                                        badgeClass = 'text-danger bg-light-danger';
+                                                        break;
+                                                    default:
+                                                        badgeClass = 'text-success bg-light-success';
+                                                }
+                                            }
+                                            %>
+                                            <div class="badge rounded-pill <%= badgeClass %> p-2 text-uppercase px-3 mb-1">
+                                                <i class='bx bxs-circle align-middle me-1'></i><%= status %>
+                                            </div>
+                                            <br>
+                                        <% }); %>
+                                    </td>
+                                    <td>
+                                        <% order.products.forEach((product, productIndex) => { %>
+                                            <% if (!product.returnStatus && product.status !== 'canceled' && product.status !== 'Order Delivered' && product.status !== 'Return Rejected' && product.status !== 'Return Approved' && product.status !== 'Return Requested') { %>
+                                                <select class="form-select form-select-sm status-update mb-1" aria-label="Update order status" data-order-id="<%= order._id %>" data-product-index="<%= productIndex %>">
+                                                    <option value="" selected disabled>Select</option>
+                                                    <% if (product.status === 'pending') { %>
+                                                        <option value="Order Confirmed">Order Confirmed</option>
+                                                    <% } else if (product.status === 'Order Confirmed') { %>
+                                                        <option value="Order Shipped">Order Shipped</option>
+                                                    <% } else if (product.status === 'Order Shipped') { %>
+                                                        <option value="Order Delivered">Order Delivered</option>
+                                                    <% } %>
+                                                    <option value="canceled">Cancel</option>
+                                                </select>
+                                            <% } else { %>
+                                                <span class="badge rounded-pill <%= product.returnStatus ? 'bg-info' : (product.status === 'canceled' ? 'bg-danger' : 'bg-success') %>" style="font-weight: 400;">
+                                                    <%= product.returnStatus || product.status %>
+                                                </span>
+                                            <% } %>
+                                            <br>
+                                        <% }); %>
+                                    </td>
+                                    <!-- <td>
+                                        <% const hasReturnReq = order.returnData.some(rData => rData.orderId.toString() === order._id.toString() && rData.status === 'Return Requested') %>
+                                        <% if (hasReturnReq) { %>
+                                            <span class="badge rounded-pill bg-warning" style="font-weight: 300;">Requested</span>
+                                        <% } else { %>
+                                            <span class="text-success" style="font-weight: 400;">No Returns</span>
+                                        <% } %>
+                                    </td> -->
+                                    <td><a href="/admin/orderDetails/<%= order._id %>" type="button" class="btn btn-primary btn-sm radius-30 px-4">View</a></td>
+                                </tr>
+                                <% }); %>
+                            </tbody>
+                            <!-- ... rest of the code ... -->
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end page wrapper -->
+
+    <!--start overlay-->
+    <div class="overlay toggle-icon"></div>
+    <!--end overlay-->
+    <!--Start Back To Top Button--> <a href="javaScript:;" class="back-to-top"><i class='bx bxs-up-arrow-alt'></i></a>
+    <!--End Back To Top Button-->
+    <footer class="page-footer">
+        <p class="mb-0">Copyright © 2024. All right reserved.</p>
+    </footer>
+</div>
+<!--end wrapper-->
+
+<!--start switcher-->
+<%- include('../layout/adminTheme') -%>
+<!--end switcher-->
+
+<!-- Bootstrap JS -->
+<script src="/assets/js/bootstrap.bundle.min.js"></script>
+<!--plugins-->
+<script src="/assets/js/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+<script src="/assets/plugins/simplebar/js/simplebar.min.js"></script>
+<script src="/assets/plugins/metismenu/js/metisMenu.min.js"></script>
+<script src="/assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
+<!--app JS-->
+<script src="/assets/js/app.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('orderSearchInput');
+    const table = document.getElementById('orderTable');
+    const statusUpdates = document.querySelectorAll('.status-update');
+
+    // Filtering
+    searchInput.addEventListener('keyup', function() {
+        const searchTerm = this.value.toLowerCase();
+        const rows = table.querySelectorAll('tbody tr');
+
+        rows.forEach((row, index) => {
+            const text = row.textContent.toLowerCase();
+            const display = text.includes(searchTerm) ? '' : 'none';
+            row.style.display = display;
+
+            // Update the numbering for visible rows
+            if (display === '') {
+                row.cells[0].textContent = index + 1;
+            }
+        });
+    });
+
+    // Status update
+    function updateOrderStatus(orderId, productIndex , status) {
+        // Show SweetAlert confirmation dialog
+        Swal.fire({
+            title: 'Are you sure?',
+            text: `Are you sure you want to update order status to ${status}?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, update it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: `updateOrderStatus?id=${orderId}&productIndex=${productIndex}&status=${status}`,
+                    method: 'PUT',
+                    success: function(response) {
+                        Swal.fire({
+                            text: response.msg,
+                            icon: 'success',
+                            timer: 3000,
+                            showConfirmButton: false
+                        });
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1000);
+                    },
+                    error: function(err) {
+                        Swal.fire({
+                            text: 'Something went wrong',
+                            icon: 'error',
+                            timer: 3000,
+                            showConfirmButton: false
+                        });
+                        console.log(err);
+                    }
+                });
+            }
+        });
+    }
+
+    // Add event listeners to status update selects
+    statusUpdates.forEach(select => {
+        select.addEventListener('change', function() {
+            const newStatus = this.value;
+            const orderId = this.getAttribute('data-order-id');
+            const productIndex = this.getAttribute('data-product-index');
+            updateOrderStatus(orderId, productIndex, newStatus);
+        });
+    });
+});
+</script>

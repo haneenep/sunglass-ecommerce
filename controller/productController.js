@@ -1,6 +1,8 @@
-const Product = require('../models/productModel');
 const Category = require('../models/categoryModel');
+const Product = require('../models/productModel');
 const Brand = require('../models/brandModel');
+const path = require('path');
+const fs = require('fs');
 
 
 const ITEM_PER_PAGE = 10;
@@ -32,6 +34,7 @@ module.exports = {
                 category,
                 brand,
                 stockQuantity,
+                discountAmount,
                 // isActive
             } = req.body;
 
@@ -49,7 +52,7 @@ module.exports = {
                 category,
                 brand,
                 stockQuantity,
-                // isActive
+                discountAmount
             })
 
             await newProduct.save();
@@ -106,6 +109,7 @@ module.exports = {
             if(!product){
                 return res.render('404');
             }
+            console.log(product,"there is the product needed fr edit");
 
             res.render('admin/editProduct',{product,category,brand})
         } catch (error) {
@@ -113,58 +117,90 @@ module.exports = {
             res.render('500');
         }
     },
-
-    editProduct : async (req,res) => {
-
+    editProduct: async (req, res) => {
         try {
             const productId = req.params.id;
-            const {
-                productName,
-                price,
-                description,
-                category,
-                brand,
-                stockQuantity,
-                // isActive
-
-            } = req.body;
-
-            const files = req.files;
-            const image = Object.values(files)
-            .flat()
-            .map((file) => `/uploads/products/${file.filename}`);
-
-            const updatedData = {
-                productName,
-                price,
-                description,
-                category,
-                brand,
-                stockQuantity,
-                // isActive : isActive === 'true'
+            const product = await Product.findById(productId);
+            if (!product) {
+                return res.status(404).render('404');
             }
-
-            if(image.length > 0) {
-                updatedData.images = image;
+    
+            const { productName, price, description, category, brand, discountAmount, stockQuantity, deletedImages, editedImages } = req.body;
+    
+            product.productName = productName;
+            product.price = price;
+            product.description = description;
+            product.category = category;
+            product.brand = brand;
+            product.discountAmount = discountAmount;
+            product.stockQuantity = stockQuantity;
+    
+            // Create a new array to store updated images
+            let updatedImages = [...product.images];
+    
+            // Handle deleted images
+            if (deletedImages) {
+                const deletedIndices = JSON.parse(deletedImages);
+                const imagesToDelete = product.images.filter((_, index) => deletedIndices.includes(index));
+    
+                // Delete files from the server
+                imagesToDelete.forEach(imagePath => {
+                    const fullPath = path.join(__dirname, '..', 'public', imagePath);
+                    fs.unlink(fullPath, (err) => {
+                        if (err) console.error("Error deleting image file:", err);
+                    });
+                });
+    
+                // Remove deleted images from the array
+                updatedImages = updatedImages.filter((_, index) => !deletedIndices.includes(index));
             }
-            
-            const updateProduct = await Product.findByIdAndUpdate(
-                productId,
-                updatedData,
-                {new : true}
-            );
-
-            if(!updateProduct) {
-                return res.render('404');
+    
+            // Handle edited images
+            if (editedImages) {
+                const editedImageData = JSON.parse(editedImages);
+                editedImageData.forEach(item => {
+                    if (item.index < updatedImages.length) {
+                        // Only replace the image if it's different from the existing one
+                        if (updatedImages[item.index] !== item.path) {
+                            // Delete the old image file if it's different
+                            const oldImagePath = updatedImages[item.index];
+                            const fullPath = path.join(__dirname, '..', 'public', oldImagePath);
+                            fs.unlink(fullPath, (err) => {
+                                if (err) console.error("Error deleting old edited image file:", err);
+                            });
+    
+                            // Update the image path
+                            updatedImages[item.index] = item.path;
+                        }
+                    }
+                });
             }
-
-            res.redirect('/admin/products')
+    
+            // Handle new images
+            if (req.files && req.files.newImages) {
+                const newImagePaths = req.files.newImages.map(file => `/uploads/products/${file.filename}`);
+                updatedImages = updatedImages.concat(newImagePaths);
+            }
+    
+            // Update product images
+            product.images = updatedImages;
+    
+            await product.save();
+            res.redirect('/admin/products');
         } catch (error) {
-            console.error("error updating product",error);
-            return res.render('500')
+            console.error("Error updating product", error);
+            return res.status(500).render('500');
         }
     },
-
+    
+    cropImage: async (req, res) => {
+        if (!req.file) {
+            return res.status(400).json({ success: false, message: 'No image file provided' });
+        }
+        const croppedImagePath = `/uploads/products/${req.file.filename}`;
+        res.json({ success: true, croppedImagePath });
+    },
+    
     deleteProduct : async (req,res) => {
 
         try {
@@ -180,5 +216,5 @@ module.exports = {
             console.error("Error deleting Product" , error);
             res.status(500).json({error : true , message : "internal Server Error"})
         }
-    }
-}
+    },
+};

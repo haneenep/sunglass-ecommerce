@@ -1,0 +1,80 @@
+<%- include('../layout/userProfileHead') -%>
+    <!-- Header Section Begin -->
+    <%- include('../layout/userHeaderNav') %>
+    <!-- Header Section End -->
+
+    <div class="page-container">
+        <!-- Sidebar Begin -->
+        <%- include('../layout/userProfileSidebar') -%>
+        <!-- Sidebar End -->
+
+        <!-- Main Content Begin -->
+        <div class="main-content">
+            <h3 class="mb-4">My Orders</h3><hr>
+            <div class="order-list">
+                <% if(order.length > 0) { %>                
+                <% order.forEach(function(orderItem) { %>
+                    <% orderItem.products.forEach(function(productItems) { %>
+                    <div class="order-item">
+                        <div class="row">
+                            <div class="col-md-2">
+                                <img src="<%= productItems.productId.images[0] %>" style="border-radius: 0px 3pc; margin-top: 50px;" alt="Product" class="order-image">
+                            </div>
+                            <div class="col-md-10">
+                                <div class="order-details">
+                                    <div>
+                                        <p><strong><%= productItems.productId.productName %></strong></p>
+                                        <p>
+                                            <% if (productItems.status === "pending") { %>
+                                            <span class="status-received"><%= productItems.status %></span>
+                                            <% }else if (productItems.status === "Order Confirmed") { %>
+                                            <span class="status-confirmed"><%= productItems.status %></span>
+                                            <% }else if (productItems.status === "Order Shipped") { %>
+                                            <span class="status-shipped"><%= productItems.status %></span>
+                                            <% }else if (productItems.status === "Order Delivered") { %>
+                                            <span class="status-delivered"><%= productItems.status %></span>
+                                            <% }else if (productItems.status === "canceled") { %>
+                                                <span class="status-cancelled">Cancelled</span>
+                                            <% }else{ %>
+                                            <span class="status-delivered">Order Delivered</span>
+                                            <% } %>
+                                        </p>
+                                        <p><strong>Items:</strong> <%= orderItem.products.length %></p>
+                                        <p><strong>Total:</strong> ₹<%= productItems.totalPrice %></p>
+                                        <p><strong>Order Date:</strong> <%= new Date(orderItem.createdAt).toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }) %></p>
+                                    </div>
+                                    <div>
+                                        <a href="/orderDetails/<%= orderItem._id %>?productId=<%= productItems.productId._id %>" class="view-order-btn">View Order</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <% }); %>
+                <% }); %>
+                <% }else{ %>
+                    <div class="order-item">
+                        <div class="row">
+                            <div class="col-md-10">
+                                <div class="order-details">
+                                    <div>
+                                        <p><strong>No Orders Yet !! </strong></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+        <!-- Main Content End -->
+    </div>
+
+    <!-- Footer Section Begin -->
+    <%- include('../layout/userFooterNav') %>
+    <!-- Footer Section End -->
+
+    <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script> -->
+    <%- include('../layout/userFoot') %>
+</body>
+</html>

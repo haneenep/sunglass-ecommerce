@@ -1,0 +1,379 @@
+<%- include('../layout/adminHead') -%>
+
+<!--wrapper-->
+<div class="wrapper">
+    <!--sidebar wrapper -->
+    <%- include('../layout/adminSideWrapper') -%>
+    <!--end sidebar wrapper -->
+    
+    <!--start header -->
+    <%- include('../layout/adminHeaderNav') -%>
+    <!--end header -->
+    
+    <!--start page wrapper -->
+    <div class="page-wrapper">
+        <div class="page-content">
+            <!--breadcrumb-->
+            <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
+                <div class="breadcrumb-title pe-3">VISTAVOGUE</div>
+                <div class="ps-3">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0 p-0">
+                            <li class="breadcrumb-item"><a href="/admin/dashboard"><i class="bx bx-home-alt"></i></a></li>
+                            <li class="breadcrumb-item"><a href="/admin/orders">Orders</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Order Details</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+            <!--end breadcrumb-->
+
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h4 class="mb-0">Order details #<%= order.orderId %></h4>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-8">
+                            <!-- Order Items -->
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Product</th>
+                                            <th>Price</th>
+                                            <th>Quantity</th>
+                                            <th>Total</th>
+                                            <% if(returnData){ %>
+                                            <th></th>
+                                            <% } %>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% order.products.forEach(product => { %>
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <img src="<%= product.productId.images[0] %>" alt="<%= product.productId.productName %>" class="me-3" style="width: 50px; height: 50px; object-fit: cover;">
+                                                    <div>
+                                                        <h6 class="mb-0"><%= product.productId.productName %></h6>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>₹<%= product.price.toFixed(2) %></td>
+                                            <td><%= product.quantity %></td>
+                                            <td>₹<%= (product.price * product.quantity).toFixed(2) %></td>
+                                            <td>
+                                                <% const returnRequest = returnData.find(r => r.productId.toString() === product._id.toString()) %>
+
+                                                <% if (returnRequest && returnRequest.status === "Return Approved" ) { %>
+
+
+                                                    <span class="badge rounded-pill bg-success" style="font-weight: 400;margin-left: 38px">
+                                                      <%= returnRequest.status %>
+                                                    </span>
+                                                <% } else if (returnRequest && returnRequest.status === "Return Rejected") { %>
+                                                     
+                                                  <span class="badge rounded-pill bg-danger" style="font-weight: 400;margin-left: 38px">
+                                                    <%= returnRequest.status %>
+                    
+                                                <% } %>
+
+                                                <% if (returnRequest && returnRequest.status === 'Return Requested') { %>
+                                                    <button type="button" class="btn btn-outline-warning" onclick="openCustomModal('<%= returnRequest._id %>')">Return Request</button>
+                                                <% } else if (product.status === 'canceled') { %>
+                                                     
+                                                    <span class="badge rounded-pill bg-danger" style="font-weight: 400;margin-left: 38px">
+                                                      <%= product.status %>
+                      
+                                                  <% } else { %>
+                                                    <span></span>
+                                                <% } %>
+                                            </td>
+                                        </tr>
+                                        <% }); %>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <!-- Order Summary -->
+                            <div class="mt-4">
+                                <div class="d-flex justify-content-between font-weight-bold mt-2">
+                                    <span>Total</span>
+                                    <span>₹<%= order.totalAmount.toFixed(2) %></span>
+                                </div>
+                                <div class="d-flex justify-content-between text-success">
+                                    <span>Payment Method:</span>
+                                    <span><%= order.paymentMethod %></span>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <span>Order Status:</span>
+                                    <span><%= order.products[0].status %></span>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <span>Order Date:</span>
+                                    <span><%= new Date(order.createdAt).toLocaleDateString() %></span>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <span>Expected Delivery Date:</span>
+                                    <span><%= new Date(order.deliveryDate).toLocaleDateString() %></span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <!-- Shipping Address -->
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <h5 class="card-title d-flex justify-content-between">
+                                        Shipping Address
+                                    </h5>
+                                    <p class="mb-0"><strong><%= order.address.name %></strong></p>
+                                    <p class="mb-0"><%= order.address.address %></p>
+                                    <p class="mb-0"><%= order.address.locality %></p>
+                                    <p class="mb-0"><%= order.address.city %>, <%= order.address.state %> <%= order.address.pincode %></p>
+                                    <p class="mb-0">Phone: <%= order.address.phoneNumber %></p>
+                                    <p class="mb-0">Address Type: <%= order.address.addressType %></p>
+                                </div>
+                            </div>
+
+                            <!-- Billing Address (Dummy) -->
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <h5 class="card-title">Billing Address</h5>
+                                    <p class="mb-0"><strong><%= order.address.name %></strong></p>
+                                    <p class="mb-0"><%= order.address.address %></p>
+                                    <p class="mb-0"><%= order.address.locality %></p>
+                                    <p class="mb-0"><%= order.address.city %>, <%= order.address.state %> <%= order.address.pincode %></p>
+                                    <p class="mb-0">Phone: <%= order.address.phoneNumber %></p>
+                                    <p class="mb-0">Address Type: <%= order.address.addressType %></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Shipping Activity Timeline -->
+                    <div class="mt-5">
+                        <h5 class="mb-3">Shipping activity</h5>
+                        <div class="shipping-timeline">
+                            <div class="timeline-header d-flex align-items-center mb-3">
+                                <div class="me-2" style="width: 12px; height: 12px; background-color: #4CAF50; border-radius: 50%;"></div>
+                                <span>Marked as fulfilled</span>
+                            </div>
+                            
+                            <div class="timeline-day mb-4">
+                                <h6 class="text-muted mb-3">WEDNESDAY, 19 AUGUST</h6>
+                                
+                                <div class="timeline-item d-flex mb-3">
+                                    <div class="me-3" style="width: 10px; height: 10px; background-color: #e0e0e0; border-radius: 50%; margin-top: 6px;"></div>
+                                    <div>
+                                        <p class="mb-0 fw-bold">Delivered</p>
+                                        <p class="text-muted mb-0">4:17 AM</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="timeline-item d-flex mb-3">
+                                    <div class="me-3" style="width: 10px; height: 10px; background-color: #e0e0e0; border-radius: 50%; margin-top: 6px;"></div>
+                                    <div>
+                                        <p class="mb-0 fw-bold">Out for delivery</p>
+                                        <p class="text-muted mb-0">2:38 AM</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="timeline-item d-flex mb-3">
+                                    <div class="me-3" style="width: 10px; height: 10px; background-color: #e0e0e0; border-radius: 50%; margin-top: 6px;"></div>
+                                    <div>
+                                        <p class="mb-0 fw-bold">Package arrived at the final delivery station</p>
+                                        <p class="text-muted mb-0">2:00 AM</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="timeline-day">
+                                <h6 class="text-muted mb-3">TUESDAY, 18 AUGUST</h6>
+                                
+                                <div class="timeline-item d-flex mb-3">
+                                    <div class="me-3" style="width: 10px; height: 10px; background-color: #e0e0e0; border-radius: 50%; margin-top: 6px;"></div>
+                                    <div>
+                                        <p class="mb-0 fw-bold">Tracking number</p>
+                                        <p class="text-primary mb-0">3981241023109293</p>
+                                        <p class="text-muted mb-0">6:29 AM</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="timeline-item d-flex mb-3">
+                                    <div class="me-3" style="width: 10px; height: 10px; background-color: #e0e0e0; border-radius: 50%; margin-top: 6px;"></div>
+                                    <div>
+                                        <p class="mb-0 fw-bold">Package has dispatched</p>
+                                        <p class="text-muted mb-0">6:29 AM</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="timeline-item d-flex">
+                                    <div class="me-3" style="width: 10px; height: 10px; background-color: #e0e0e0; border-radius: 50%; margin-top: 6px;"></div>
+                                    <div>
+                                        <p class="mb-0 fw-bold">Order was placed</p>
+                                        <p class="text-muted mb-0">Order #32543</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end page wrapper -->
+    
+    <!--start overlay-->
+    <div class="overlay toggle-icon"></div>
+    <!--end overlay-->
+    <!--Start Back To Top Button--> <a href="javaScript:;" class="back-to-top"><i class='bx bxs-up-arrow-alt'></i></a>
+    <!--End Back To Top Button-->
+    <footer class="page-footer">
+        <p class="mb-0">Copyright © 2024. All right reserved.</p>
+    </footer>
+</div>
+
+
+<!-- Return Modal -->
+<div id="customModal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Return Request Details</h5>
+          <button type="button" class="close" onclick="closeCustomModal()" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="reason">Reason:</label>
+            <p id="reason"></p>
+          </div>
+          <div class="form-group">
+            <label for="description">Description:</label>
+            <p id="description"></p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-success" id="approveReturn" data-return-id="">Approve</button>
+          <button type="button" class="btn btn-danger" id="rejectReturn" data-return-id="">Reject</button>
+        </div>
+      </div>
+    </div>
+</div>
+
+
+<!--end wrapper-->
+
+<!--start switcher-->
+<%- include('../layout/adminTheme') -%>
+<!--end switcher-->
+
+<!-- Bootstrap JS -->
+<script src="/assets/js/bootstrap.bundle.min.js"></script>
+<!--plugins-->
+<script src="/assets/js/jquery.min.js"></script>
+<script src="/assets/plugins/simplebar/js/simplebar.min.js"></script>
+<script src="/assets/plugins/metismenu/js/metisMenu.min.js"></script>
+<script src="/assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
+<!--app JS-->
+<script src="/assets/js/app.js"></script>
+<!-- Bootstrap JS and dependencies -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    function openCustomModal(returnId) {
+        const returnData = <%- JSON.stringify(returnData) %>;
+        const returnRequest = returnData.find(r => r._id.toString() === returnId);
+        if (returnRequest) {
+            document.getElementById('reason').textContent = returnRequest.reason;
+            document.getElementById('description').textContent = returnRequest.description;
+            document.getElementById('approveReturn').setAttribute('data-return-id', returnId);
+            document.getElementById('rejectReturn').setAttribute('data-return-id', returnId);
+        }
+        $('#customModal').modal('show');
+    }
+    
+    function closeCustomModal() {
+        $('#customModal').modal('hide');
+    }
+    
+    document.getElementById('approveReturn').addEventListener('click', function() {
+        const returnId = this.getAttribute('data-return-id');
+        updateReturnStatus(returnId, 'Return Approved');
+    });
+    
+    document.getElementById('rejectReturn').addEventListener('click', function() {
+        const returnId = this.getAttribute('data-return-id');
+        updateReturnStatus(returnId, 'Return Rejected');
+    });
+    
+    function updateReturnStatus(returnId, status) {
+        fetch('/admin/update-returnStatus', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ returnId, status }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Return status updated successfully');
+                location.reload(); // Reload the page to reflect changes
+            } else {
+                alert('Failed to update return status');
+            }
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+            alert('An error occurred while updating return status');
+        });
+        closeCustomModal();
+    }
+    </script> 
+
+<style>
+    .shipping-timeline .timeline-item:not(:last-child) {
+        padding-bottom: 1rem;
+        border-left: 1px solid #e0e0e0;
+        margin-left: 4px;
+    }
+    .shipping-timeline .timeline-day:not(:last-child) {
+        padding-bottom: 1rem;
+        border-left: 1px solid #e0e0e0;
+        margin-left: 4px;
+    }
+    /* Custom Modal Styling */
+    .modal-content {
+        border-radius: 30px;
+    }
+
+    .modal-header {
+        border-bottom: none;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .modal-header .close {
+        padding: 0;
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+    }
+
+    .modal-footer {
+        border-top: none;
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .modal-footer .btn {
+        margin-left: 5px;
+    }
+
+</style>
