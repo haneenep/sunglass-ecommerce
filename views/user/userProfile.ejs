@@ -173,8 +173,8 @@ nameForm.onsubmit = async function(e) {
     e.preventDefault();
     const newName = nameInput.value;
     
-    if (/\s/.test(newName) || /\d/.test(newName)) {
-        showNotification('Name cannot contain spaces or numbers.', true);
+    if (!newName.trim() || /\s/.test(newName) || /\d/.test(newName)) {
+        showNotification('Name cannot be empty, contain spaces, or contain numbers.', true);
         return;
     }
     

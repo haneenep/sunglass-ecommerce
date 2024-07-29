@@ -408,7 +408,9 @@ const uuid = require('uuid');
 
 
       contact : (req,res)  => {
-        res.render('user/contact');
+        const user = req.session.user;
+
+        res.render('user/contact',{user});
       },
 
       logout : (req, res) => {
