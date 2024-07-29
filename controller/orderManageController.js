@@ -1,4 +1,7 @@
+const uuid = require('uuid');
+const User = require('../models/userModel');
 const Order = require('../models/orderModel');
+const Wallet = require('../models/walletModel');
 const Returns = require('../models/returnModel');
 const Product = require('../models/productModel');
 
@@ -8,7 +11,7 @@ module.exports = {
 
         try {
 
-            const orders = await Order.find().sort({createdAt : -1}).populate('products.productId');
+            const orders = await Order.find({'paymentStatus' : {$in : [ 'pending' , 'Paid']}}).sort({createdAt : -1}).populate('products.productId');
             
             const ordersWithReturnData = await Promise.all(orders.map(async (order) => {
                 const returnData = await Returns.find({ orderId: order._id });
@@ -17,9 +20,6 @@ module.exports = {
                     returnData: returnData
                 };
             }));
-
-            console.log(orders," order");
-            console.log(ordersWithReturnData," order");
 
             res.render('admin/orderManagement',{orders : ordersWithReturnData});
         } catch(error){
@@ -43,60 +43,25 @@ module.exports = {
                 return res.status(404).json({ err: "Invalid product index" });
             }
             
-            console.log(orderr,"llllrrrr");
-
-            // if(status === "Order Confirmed"){
-            //     console.log('goooes hre');
-            //     await Order.updateOne(
-            //         { _id : id.trim()},
-            //         {$set : {status : status.trim()}}
-            //     )
-            //     orderr.products.forEach(async (data, index) => {
-            //         if(data.status !== "canceled"){
-            //             await Order.updateOne(
-            //                 { _id : id.trim()},
-            //                 { $set : {[`products.${index}.status`]: 'Order Confirmed'}}
-            //             )
-            //         }
-            //     });
-            // }else if(status === "Order Shipped"){
-            //     await Order.updateOne(
-            //         { _id : id.trim()},
-            //         {$set : {status : status.trim()}}
-            //     )
-            //     orderr.products.forEach(async (data, index) => {
-            //         if(data.status !== "canceled"){
-            //             await Order.updateOne(
-            //                 { _id : id.trim()},
-            //                 { $set : {[`products.${index}.status`]: "Order Shipped"}}
-            //             )
-            //         }
-            //     });
-            // } else if (status === "Order Delivered"){
-            //     await Order.updateOne(
-            //         { _id : id.trim()},
-            //         {$set : {status : status.trim()}}
-            //     )
-            //     orderr.products.forEach(async (data, index) => {
-            //         if(data.status !== "canceled"){
-            //             await Order.updateOne(
-            //                 { _id : id.trim()},
-            //                 { $set : {[`products.${index}.status`]: "Order Delivered"}}
-            //             )
-            //         }
-            //     });
-            // }
-
         orderr.products[productIndex].status = status;
 
         const allSameStatus = orderr.products.every(product => product.status === status);
 
+        console.log(allSameStatus,"same status");
         if (allSameStatus) {
             orderr.status = status;
+            console.log("coming here the same side");
         } else {
             orderr.status = 'Mixed';
+            console.log("coming here the different side");
         }
 
+        if(orderr.paymentMethod === 'COD' && orderr.status === 'Order Delivered'){
+            orderr.paymentStatus = 'Paid';
+            console.log("cooome");
+        }
+
+        console.log(orderr,"after the change");
         await orderr.save();
 
             res.status(200).json({ msg : "Order Status Updated"});
@@ -142,11 +107,9 @@ module.exports = {
                 { status : status},
                 {new : true}
             );
-
-            console.log(updatedReturn,"ppppp");
-
+            
             const order = await Order.findById(updatedReturn.orderId);
-
+            
             const product = order.products.find(p => p._id.equals(updatedReturn.productId));
 
             if (status === 'Return Approved') {
@@ -156,12 +119,47 @@ module.exports = {
                     {$inc : {stockQuantity : product.quantity}}
                 )
 
+                if(order.paymentMethod !== 'COD'){
+
+                    const userExists = await Wallet.findOne({user : order.userId})
+
+                    if(userExists){
+                        await Wallet.findByIdAndUpdate(userExists._id,{
+                            $inc : {balance : product.totalPrice},
+                            $push : {
+                                transactions: {
+                                    transaction_Id : `myWallet${uuid.v4()}`,
+                                    amount : product.totalPrice,
+                                    type : 'credit',
+                                    description : 'Order Cancelled Refund',
+                                    orderId : order._id,
+                                    product : product._id
+                                }
+                            }
+                        })
+                    }else{
+                        await Wallet.create({
+                            user : order.userId,
+                            balance : product.totalPrice,
+                            transactions : {
+                                transaction_Id : `myWallet${uuid.v4()}`,
+                                amount : product.totalPrice,
+                                type : 'credit',
+                                description : 'Order Cancelled Refund',
+                                orderId : order._id,
+                                product : product._id
+                            }
+                        })
+                    }
+                }
+
                 await Order.updateOne(
                     { _id: updatedReturn.orderId, 'products._id': updatedReturn.productId },
                     {
                         $set: { 'products.$.status': status },
                     }
                 );
+
             } else if (status === 'Return Rejected') {
                 await Order.updateOne(
                     { _id: updatedReturn.orderId, 'products._id': updatedReturn.productId },

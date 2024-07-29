@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="description" content="My Personal Information">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Address</title>
+    <title>Address</title>
     <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link rel="stylesheet" href="/stylesheets/bootstrap.min.css" type="text/css">
@@ -238,7 +238,7 @@
 }
 
 .dropdown-toggle {
-  background-color: #000000;
+  background-color: #179500;
   color: white;
   padding: 10px 20px;
   border: none;
@@ -272,7 +272,7 @@
 }
 
 .dropdown-menu a:hover {
-  background-color: #1ac100;
+  background-color: #000000;
 }
     </style>
 </head>
@@ -294,7 +294,7 @@
         <!-- Main Content Begin -->
         <div class="main-content">
             <div class="info-header">
-                <h1>My Shipping Addresses</h1><hr>
+                <h3>SHIPPING ADDRESSES</h3><hr>
             </div>
             <div class="address-grid">
                 <% if(address && address.length > 0){ %>
@@ -480,9 +480,16 @@
             });
 
             if (response.ok) {
-                    showNotification(addressData.addressId ? 'Address updated successfully!' : 'Address added successfully!');
-                    modal.style.display = 'none';                   
-                    // location.reload();
+                Swal.fire({
+                position: "top-center",
+                icon: "success",
+                title: "successfully done",
+                showConfirmButton: false,
+                timer: 1500
+            }).then(() => {
+                location.reload()
+            })
+
                 } else {
                     showNotification('Failed to submit address. Please try again.', true);
                 }

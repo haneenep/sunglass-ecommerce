@@ -28,71 +28,6 @@
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.7.6/lottie.min.js"></script>
-    
-
-    <style>
-       .dropdown {
-  position: relative;
-  display: inline-block;
-}
-
-.dropdown-toggle {
-  background-color: #ff003c;
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  cursor: pointer;
-  border-radius: 4px;
-}
-
-.dropdown-toggle:focus {
-  outline: none;
-}
-
-.dropdown-menu {
-  display: none;
-  position: absolute;
-  background-color: white;
-  min-width: 160px;
-  box-shadow: 0px 8px 16px rgba(255, 255, 255, 0.2);
-  z-index: 1;
-  border-radius: 4px;
-}
-
-.dropdown-toggle::after {
-        content: none !important;
-    }
-
-.dropdown-menu a {
-  color: rgb(255, 255, 255);
-  padding: 12px 16px;
-  text-decoration: none;
-  display: block;
-}
-
-.dropdown-menu a:hover {
-  background-color: #000000;
-}
-
-        .original-price {
-        text-decoration: line-through;
-        color: #999;
-        margin-right: 10px;
-        }
-        .discounted-price {
-        color: #e53637;
-        font-weight: bold;
-        }
-
-        .discount-badge {
-        background-color: #e53637;
-        color: white;
-        padding: 2px 5px;
-        border-radius: 3px;
-        font-size: 12px;
-        margin-left: 10px;
-        }
-    </style>
 
 </head>
 
@@ -100,7 +35,56 @@
 
     <!-- Header Section Begin -->
 
-    <%- include('../layout/userHeaderNav') -%>
+<!-- Header Section Begin -->
+<header class="header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3 col-md-3">
+                <div class="header__logo">
+                    <a href="/"><h3><span style="color: black;">VISTA</span>VOGUE</h3></a>
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-6">
+                <nav class="header__menu mobile-menu">
+                    <ul>
+                        <li class=""><a href="/">HOME</a></li>
+                        <li><a href="/products">PRODUCTS</a></li>
+                        <li><a href="/contact">CONTACT US</a></li>
+                    </ul>
+                </nav>
+            </div>
+            <div class="col-lg-3 col-md-3">
+                <div class="header__nav__option">
+                    <a href="#" class="search-switch"><img src="/img/icon/search.png" alt=""></a>
+                    <a href="/wishlist"><img src="/img/icon/heart.png" alt=""></a>
+                    <a href="/cart"><img src="/img/icon/cart.png" alt=""> <span>0</span></a>
+                    
+                    <% if( locals.user){%>
+                    <div class="dropdown">
+                        <button class="dropdown-toggle"
+                         style="border-radius: 7px; 
+                         padding: 0px 6px;">
+                         <%= user.name.charAt(0).toUpperCase()%>
+                        </button>
+                        <div class="dropdown-menu" style="z-index: 10; background-color: #000000;">
+                            <a href="#" style="margin-right: 0;"><%= user.name.toUpperCase() %></a>                            
+                            <a href="/userProfile" style="margin-right: 0;">PROFILE</a>                            
+                            <a href="/products" style="margin-right: 0;">PRODUCTS</a>
+                            <a href="/orders" style="margin-right: 0;">ORDERS</a>
+                            <a href="/logout" style="margin-right: 0;" id="logoutButton" style="color: red;" onclick="confirmLogout(event)">LOGOUT</a>
+                        </div>
+                    </div>
+                <%}else{%>
+                    <a href="/login"><i class="fa-regular fa-user"></i></a>
+                    <%}%>
+
+            </div>
+        </div>
+        <div class="canvas__open"><i class="fa fa-bars"></i></div>
+    </div>
+</header>
+<!-- Header Section End -->
+
 
     <!-- Header Section End -->
 
@@ -114,10 +98,10 @@
                         <div class="col-xl-5 col-lg-7 col-md-8">
                             <div class="hero__text">
                                 <h6>Summer Collection</h6>
-                                <h2>Fall - Winter Collections 2030</h2>
+                                <h2>VISTAVOGUE - Summer Collections 2024</h2>
                                 <p>A specialist label creating luxury essentials. Ethically crafted with an unwavering
                                 commitment to exceptional quality.</p>
-                                <a href="#" class="primary-btn">Shop now <span class="arrow_right"></span></a>
+                                <a href="/products" class="primary-btn">Shop now <span class="arrow_right"></span></a>
                                 <div class="hero__social">
                                     <a href="#"><i class="fa fa-facebook"></i></a>
                                     <a href="#"><i class="fa fa-twitter"></i></a>
@@ -135,7 +119,7 @@
                         <div class="col-xl-5 col-lg-7 col-md-8">
                             <div class="hero__text">
                                 <h6>Summer Collection</h6>
-                                <h2>Fall - Winter Collections 2030</h2>
+                                <h2>Fall - Winter Collections 2024</h2>
                                 <p>A specialist label creating luxury essentials. Ethically crafted with an unwavering
                                 commitment to exceptional quality.</p>
                                 <a href="#" class="primary-btn">Shop now <span class="arrow_right"></span></a>
@@ -161,33 +145,33 @@
                 <div class="col-lg-7 offset-lg-4">
                     <div class="banner__item">
                         <div class="banner__item__pic">
-                            <img src="img/banner/banner-1.jpg" alt="">
+                            <img src="img/banner/banner-1.jpeg" alt="">
                         </div>
                         <div class="banner__item__text">
-                            <h2>Clothing Collections 2030</h2>
-                            <a href="#">Shop now</a>
+                            <h2>NIKE ZUES // 001</h2>
+                            <a href="/products/66a681ac77bfadaff3c93b12">Shop now</a>
                         </div>
                     </div>
                 </div>
                 <div class="col-lg-5">
                     <div class="banner__item banner__item--middle">
                         <div class="banner__item__pic">
-                            <img src="img/banner/banner-2.jpg" alt="">
+                            <img src="img/banner/banner-02.jpg" alt="">
                         </div>
                         <div class="banner__item__text">
-                            <h2>Accessories</h2>
-                            <a href="#">Shop now</a>
+                            <h2>DEFENDER // 001</h2>
+                            <a href="/products/66a08a29624a74f7580fd780">Shop now</a>
                         </div>
                     </div>
                 </div>
                 <div class="col-lg-7">
                     <div class="banner__item banner__item--last">
                         <div class="banner__item__pic">
-                            <img src="img/banner/banner-3.jpg" alt="">
+                            <img src="img/banner/banner-03.jpg" alt="">
                         </div>
                         <div class="banner__item__text">
-                            <h2>Shoes Spring 2030</h2>
-                            <a href="#">Shop now</a>
+                            <h2>SLEEK GEEK // 001</h2>
+                            <a href="/products/6680344f1b24d4f4802a816f">Shop now</a>
                         </div>
                     </div>
                 </div>
@@ -220,36 +204,43 @@
                                 <a href="/products/<%= product._id %>">
                                     <img src="<%= product.images[0] %>" alt="<%= product.productName %>" class="img-fluid">
                                 </a>
+                                <div class="ribbon">
+                                    <span>
+                                        <span class="discount-badge"><%= Math.round(((product.price - product.discountedPrice) / product.price) * 100) %>% OFF</span>
+                                    </span>
+                                </div>
                             <% } %>
                             <ul class="product__hover">
                                 <li><a href="#"><img src="/img/icon/heart.png" alt=""></a></li>
-                                <li><a href="#"><img src="/img/icon/compare.png" alt=""> <span>Compare</span></a></li>
-                                <li><a href="#"><img src="/img/icon/search.png" alt=""></a></li>
+                                <li><a href="/products/<%= product._id %>"><img src="/img/icon/search.png" alt=""></a></li>
                             </ul>
                         </div>
                         <div class="product__item__text">
                             <h6><%= product.productName %></h6>
                             <a href="#" class="add-cart">+ Add To Cart</a>
-                            <div class="rating">
-                                <% for(let i = 0; i < 5; i++) { %>
-                                    <i class="fa fa-star<%= i < product.rating ? '' : '-o' %>"></i>
-                                <% } %>
-                            </div>
-                            <% if (product.discountAmount > 0) { %>
+                                <% if(product.inCategoryOffer === true){ %>
                                 <h5>
-                                  <span class="original-price">₹<%= product.price %></span>
-                                  <span class="discounted-price">₹<%= product.discountedPrice %></span>
+                                <span class="discounted-price">₹<%= product.discountedPrice %></span>
+                                <span class="original-price">₹<%= product.price %></span>
                                 </h5>
-                                <span class="discount-badge"><%= Math.round((product.discountAmount / product.price) * 100) %>% OFF</span>
-                              <% } else { %>
-                                <h5>₹<%= product.price.toFixed(2) %></h5>
-                              <% } %>
-                            <!-- <h5>₹<%= product.price.toFixed(2) %></h5> -->
+                                <% }else if(product.discountAmount > 0){ %>
+                                <h5>
+                                <span class="discounted-price">₹<%= product.discountedPrice %></span>
+                                <span class="original-price">₹<%= product.price %></span>
+                                </h5>
+                                <% }else{ %>
+                                    <h5>₹<%= product.price %></h5>
+                                <% } %>
+                                <div class="rating">
+                                    <% for(let i = 0; i < 5; i++) { %>
+                                        <i class="fa fa-star<%= i < product.rating ? '' : '-o' %>"></i>
+                                    <% } %>
+                                </div>
+                        `   </div>
                         </div>
                     </div>
-                </div>
-            <% }); %>
-        </div>
+                <% }); %>
+            </div>
         <div class="col-lg-12 text-center mt-4">
             <a href="/products" class="primary-btn">View All Products</a>
         </div>
@@ -257,127 +248,34 @@
 </section>
 <!-- Product Section End -->
 
-    <!-- Categories Section Begin -->
-    <section class="categories spad">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-3">
-                    <div class="categories__text">
-                        <h2>Clothings Hot <br /> <span>Shoe Collection</span> <br /> Accessories</h2>
-                    </div>
-                </div>
-                <div class="col-lg-4">
-                    <div class="categories__hot__deal">
-                        <img src="img/product-sale.png" alt="">
-                        <div class="hot__deal__sticker">
-                            <span>Sale Of</span>
-                            <h5>$29.99</h5>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 offset-lg-1">
-                    <div class="categories__deal__countdown">
-                        <span>Deal Of The Week</span>
-                        <h2>Multi-pocket Chest Bag Black</h2>
-                        <div class="categories__deal__countdown__timer" id="countdown">
-                            <div class="cd-item">
-                                <span>3</span>
-                                <p>Days</p>
-                            </div>
-                            <div class="cd-item">
-                                <span>1</span>
-                                <p>Hours</p>
-                            </div>
-                            <div class="cd-item">
-                                <span>50</span>
-                                <p>Minutes</p>
-                            </div>
-                            <div class="cd-item">
-                                <span>18</span>
-                                <p>Seconds</p>
-                            </div>
-                        </div>
-                        <a href="#" class="primary-btn">Shop now</a>
-                    </div>
+<!-- Latest Product Section Begin -->
+<section class="latest spad">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="section-title">
+                    <span>Latest Glasses</span>
+                    <h2>Fashion New Trends</h2>
                 </div>
             </div>
         </div>
-    </section>
-    <!-- Categories Section End -->
-
-    <!-- Instagram Section Begin -->
-    <section class="instagram spad">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-8">
-                    <div class="instagram__pic">
-                        <div class="instagram__pic__item set-bg" data-setbg="img/instagram/instagram-1.jpg"></div>
-                        <div class="instagram__pic__item set-bg" data-setbg="img/instagram/instagram-2.jpg"></div>
-                        <div class="instagram__pic__item set-bg" data-setbg="img/instagram/instagram-3.jpg"></div>
-                        <div class="instagram__pic__item set-bg" data-setbg="img/instagram/instagram-4.jpg"></div>
-                        <div class="instagram__pic__item set-bg" data-setbg="img/instagram/instagram-5.jpg"></div>
-                        <div class="instagram__pic__item set-bg" data-setbg="img/instagram/instagram-6.jpg"></div>
+        <div class="row">
+            <% latestProducts.forEach(product => { %>
+                <div class="col-lg-4 col-md-6 col-sm-6">
+                    <div class="blog__item">
+                        <div class="blog__item__pic set-bg" data-setbg="<%= product.images[0] %>"></div>
+                        <div class="blog__item__text">
+                            <span><img src="img/icon/calendar.png" alt=""> <%= new Date(product.createdAt).toLocaleDateString() %></span>
+                            <h5><%= product.productName %></h5>
+                            <a href="/products/<%= product._id %>">View Product</a>
+                        </div>
                     </div>
                 </div>
-                <div class="col-lg-4">
-                    <div class="instagram__text">
-                        <h2>Instagram</h2>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
-                        labore et dolore magna aliqua.</p>
-                        <h3>#Male_Fashion</h3>
-                    </div>
-                </div>
-            </div>
+            <% }); %>
         </div>
-    </section>
-    <!-- Instagram Section End -->
-
-    <!-- Latest Blog Section Begin -->
-    <section class="latest spad">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="section-title">
-                        <span>Latest News</span>
-                        <h2>Fashion New Trends</h2>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-lg-4 col-md-6 col-sm-6">
-                    <div class="blog__item">
-                        <div class="blog__item__pic set-bg" data-setbg="img/blog/blog-1.jpg"></div>
-                        <div class="blog__item__text">
-                            <span><img src="img/icon/calendar.png" alt=""> 16 February 2020</span>
-                            <h5>What Curling Irons Are The Best Ones</h5>
-                            <a href="#">Read More</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6 col-sm-6">
-                    <div class="blog__item">
-                        <div class="blog__item__pic set-bg" data-setbg="img/blog/blog-2.jpg"></div>
-                        <div class="blog__item__text">
-                            <span><img src="img/icon/calendar.png" alt=""> 21 February 2020</span>
-                            <h5>Eternity Bands Do Last Forever</h5>
-                            <a href="#">Read More</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6 col-sm-6">
-                    <div class="blog__item">
-                        <div class="blog__item__pic set-bg" data-setbg="img/blog/blog-3.jpg"></div>
-                        <div class="blog__item__text">
-                            <span><img src="img/icon/calendar.png" alt=""> 28 February 2020</span>
-                            <h5>The Health Benefits Of Sunglasses</h5>
-                            <a href="#">Read More</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- Latest Blog Section End -->
+    </div>
+</section>
+<!-- Latest Product Section End -->
 
     <!-- Footer Section Begin -->
 
@@ -400,3 +298,117 @@
     });
 });
     </script>
+
+    <style>
+        .ribbon{
+            position: absolute;
+            left: -5px;
+            top: -5px;
+            z-index: 1;
+            overflow: hidden;
+            width: 75px;
+            height: 75px;
+            text-align: left;
+        }
+        .ribbon span {
+            font-size: 10px;
+            font-weight: bold;
+            color: #FFF;
+            text-transform: uppercase;
+            text-align: center;
+            line-height: 20px;
+            transform: rotate(-45deg);
+            -webkit-transform: rotate(-45deg);
+            width: 100px;
+            display: block;
+            background: #FF0000;
+            box-shadow: 0 3px 10px -5px rgba(0, 0, 0, 1);
+            position: absolute;
+            top: 19px;
+            left: -21px;
+        }
+        .ribbon span ::before{
+            content: "";
+            position: absolute;
+            left: 0px;
+            top: 100%;
+            z-index: -1;
+            border-left: 3px solid #FF0000;
+            border-right: 3px solid transparent;
+            border-bottom: 3px solid transparent;
+            border-top: 3px solid #FF0000;
+        }
+        .ribbon span::after{
+            content: "";
+            position: absolute;
+            right: 0px;
+            top: 100%;
+            z-index: -1;
+            border-left: 3px solid transparent;
+            border-right: 3px solid #FF0000;
+            border-bottom: 3px solid transparent;
+            border-top: 3px solid #FF0000;
+        }
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-toggle {
+            background-color: #000000;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .dropdown-toggle:focus {
+            outline: none;
+        }
+
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            background-color: white;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px rgba(255, 255, 255, 0.2);
+            z-index: 1;
+            border-radius: 4px;
+        }
+
+        .dropdown-toggle::after {
+            content: none !important;
+        }
+
+        .dropdown-menu a {
+            color: rgb(255, 255, 255);
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+        }
+
+        .dropdown-menu a:hover {
+            background-color: #179500;
+        }
+
+        .original-price {
+            text-decoration: line-through;
+            color: #999;
+            margin-right: 10px;
+            margin-left: 5px;
+        }
+        .discounted-price {
+            color: #000000;
+            font-weight: bold;
+        }
+
+        .discount-badge {
+            background-color: #e53637;
+            color: white;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+    </style>

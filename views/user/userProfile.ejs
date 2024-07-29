@@ -6,13 +6,14 @@
 
 <div class="page-container">
     <!-- Sidebar Begin -->
+
     <%- include('../layout/userProfileSidebar') -%>
     <!-- Sidebar End -->
 
     <!-- Main Content Begin -->
     <div class="main-content">
         <div class="info-header">
-            <h1>My Account</h1>
+            <h3>PROFILE</h3>
             <hr>
         </div>
         <% if(locals.user){ %>
@@ -24,10 +25,17 @@
         <div class="info-item">
             <label>Email:</label>
             <p><%= user.email %></p>
-        </div> 
+        </div>
         <div class="info-item">
             <label>Referral Link:</label>
-            <p>coming soon!</p>
+            <% if(user.referalLink){ %>
+            <div class="referal-badge" data-referal="<%= user.referalLink %>">
+                Copy Referral Link
+                <span class="copy-icon">📋</span>
+            </div>
+            <% }else{ %>
+                <p>Coming soon!</p>
+            <% } %>
         </div>
         <div class="info-item">
             <label>Password:</label>
@@ -213,11 +221,11 @@ passwordForm.onsubmit = async function(e) {
                 passwordModal.style.display = 'none';
                 passwordForm.reset();
             } else {
-                showNotification('Failed to update password. Please check your current password and try again.', true);
+                showNotification('Failed to update password. Please try again.', true);
             }
         } catch (error) {
             console.error('Error:', error);
-            showNotification('An Error Occurred. Please try again', true);
+            showNotification('An error occurred. Please try again.', true);
         }
     }
 }
@@ -241,16 +249,35 @@ window.onclick = function(event) {
     }
 }
 
+document.querySelectorAll('.referal-badge').forEach(badge => {
+    badge.addEventListener('click', function() {
+        const referralLink = this.getAttribute('data-referal');
+        navigator.clipboard.writeText(referralLink).then(() => {
+            showNotification('Referral link copied to clipboard!',false);
+        }).catch(err => {
+            console.error('Failed to copy: ', err);
+        });
+    });
+});
+
 const showNotification = (message, isError = false) => {
     Toastify({
         text: message,
         duration: 3000,
         close: true,
         gravity: "top",
-        position: "right",
+        position: "center",
         backgroundColor: isError ? "red" : "green",
     }).showToast();
 };
+
+function confirmLogout(event) {
+    event.preventDefault();
+    const userConfirmed = confirm('Are you sure you want to logout?');
+    if (userConfirmed) {
+        window.location.href = event.target.href;
+    }
+}
 </script>
 
 <!-- Footer Section Begin -->
@@ -258,3 +285,73 @@ const showNotification = (message, isError = false) => {
 <!-- Footer Section End -->
 
 <%- include('../layout/userFoot') -%>
+
+<style>
+
+.close {
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.close:hover {
+    color: black;
+}
+
+.referal-badge {
+    display: inline-block;
+    padding: 5px 10px;
+    background-color: #bcffa7;
+    color: #179500;
+    border: 1px dashed #71ff82;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.copy-icon {
+    margin-left: 5px;
+    font-size: 12px;
+}
+
+.referal-badge:hover {
+    background-color: #179500;
+    color: white;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+#passwordRequirements {
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+#passwordRequirements ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+#passwordRequirements ul li {
+    margin-bottom: 5px;
+}
+
+#passwordRequirements ul li span {
+    margin-right: 10px;
+    color: red;
+}
+
+#passwordRequirements ul li span.green {
+    color: green;
+}
+</style>

@@ -24,6 +24,9 @@ const userSchema = new mongoose.Schema({
         type : String,
         default : 'status-active'
     },
+    referalLink : {
+        type : String
+    },
     createdAt : {
         type : Date,
         default : Date.now,

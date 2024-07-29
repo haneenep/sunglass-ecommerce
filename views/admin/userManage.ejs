@@ -44,7 +44,6 @@
   </div>
 </div>
 
-<%- include('../layout/adminTheme') -%>
 
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
@@ -120,7 +119,8 @@
       setupPagination(filteredUsers);
     });
 
-    const users = <%- JSON.stringify(user) %>;
+    const users =     JSON.parse('<%- JSON.stringify(user) %>'.replace(/&#34;/g, '"'));
+  
     displayUsers(users, currentPage);
     setupPagination(users);
 

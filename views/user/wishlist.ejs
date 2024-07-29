@@ -4,145 +4,66 @@
 <%- include('../layout/userHeaderNav') -%>
 <!-- Header Section End -->
 
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #ffffff;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 15px;
-        }
-        .wishlist-header {
-            margin: 20px 0;
-        }
-        .wishlist-header h1 {
-            font-size: 24px;
-            font-weight: 600;
-            margin: 0;
-        }
-        .wishlist-header span {
-            font-weight: normal;
-            color: #666;
-        }
-        .wishlist-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 20px;
-        }
-        .wishlist-item {
-            border: 1px solid #e0e0e0;
-            border-radius: 4px;
-            overflow: hidden;
-            position: relative;
-        }
-        .wishlist-item img {
-            width: 100%;
-            height: 280px;
-            object-fit: cover;
-        }
-        .wishlist-item-content {
-            padding: 12px;
-        }
-        .wishlist-item h3 {
-            font-size: 14px;
-            margin: 0 0 8px 0;
-            font-weight: normal;
-        }
-        .price {
-            font-size: 16px;
-            font-weight: bold;
-        }
-        .original-price {
-            color: #888;
-            text-decoration: line-through;
-            margin-left: 5px;
-            font-weight: normal;
-        }
-        .discount {
-            color: #ff905a;
-            margin-left: 5px;
-        }
-        .out-of-stock {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background-color: #ff3e6c;
-            color: white;
-            padding: 4px 8px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-        .remove-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: none;
-            border: none;
-            color: #888;
-            font-size: 20px;
-            cursor: pointer;
-        }
-        .action-btn {
-            display: block;
-            width: 100%;
-            padding: 10px;
-            margin-top: 10px;
-            border: none;
-            border-radius: 4px;
-            font-size: 14px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        .move-to-bag {
-            background-color: #ff3e6c;
-            color: white;
-        }
-        .show-similar {
-            background-color: #f5f5f6;
-            color: #282c3f;
-        }
-    </style>
-
+<section class="breadcrumb-option">
     <div class="container">
-        <div class="wishlist-header">
-            <h1>My Wishlist <span>179 items</span></h1>
-        </div>
-        <div class="wishlist-grid">
-            <!-- Item 1 -->
-            <div class="wishlist-item">
-                <img src="/api/placeholder/200/280" alt="Kook N Keech Printed T-shirt">
-                <span class="out-of-stock">OUT OF STOCK</span>
-                <button class="remove-btn">&times;</button>
-                <div class="wishlist-item-content">
-                    <h3>Kook N Keech Printed Drop Shoulder T-shirt</h3>
-                    <div>
-                        <span class="price">₹899</span>
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="breadcrumb__text">
+                    <h4>Wishlist</h4>
+                    <div class="breadcrumb__links">
+                        <a href="/">Home</a>
+                        <span>Wishlist</span>
                     </div>
-                    <button class="action-btn show-similar">SHOW SIMILAR</button>
                 </div>
             </div>
-            
-            <!-- Item 2 -->
-            <div class="wishlist-item">
-                <img src="/api/placeholder/200/280" alt="HIGHLANDER Men White Printed T-shirt">
-                <button class="remove-btn">&times;</button>
-                <div class="wishlist-item-content">
-                    <h3>HIGHLANDER Men White Printed Round Neck T-shirt</h3>
-                    <div>
-                        <span class="price">₹277</span>
-                        <span class="original-price">₹749</span>
-                        <span class="discount">(63% OFF)</span>
-                    </div>
-                    <button class="action-btn move-to-bag">MOVE TO BAG</button>
-                </div>
-            </div>
-            
         </div>
     </div>
+</section> 
+
+
+<div class="container">
+    <div class="wishlist-header">
+        <h1>My Wishlist <span><%= wishlist.length %> items</span></h1>
+    </div>
+    <% if(wishlist && wishlist.length > 0){ %>
+    <div class="wishlist-grid">
+            <% wishlist.forEach(item => { %>
+                <div class="wishlist-item" data-product-id="<%= item.product._id %>">
+                    <img src="<%= item.product.images[0] %>" alt="<%= item.product.productName %>">
+                    <!-- <% if(item.product.stockQuantity <= 0) { %>
+                        <span class="out-of-stock">OUT OF STOCK</span>
+                    <% } %> -->
+                    <button class="remove-btn" onclick="removeFromWishlist('<%= item.product._id %>' , '<%= item.product.images[0] %>')">&times;</button>
+                    <div class="wishlist-item-content">
+                        <h3><%= item.product.productName %></h3>
+                        <div>
+                            <% if(item.product.discountAmount > 0) { %>
+                                <span class="original-price">₹<%= item.product.price %></span>
+                                <span class="discounted-price">₹<%= item.product.discountedPrice %></span>
+                                <span class="discount-badge">(<%= Math.round((item.product.discountAmount / item.product.price) * 100) %>% OFF)</span>
+                            <% }else{ %>
+                                <span class="price">₹<%= item.product.price %></span>
+                            <% } %>
+                        </div>
+                        <!-- <% if(item.product.stockQuantity > 0) { %>
+                            <button class="action-btn move-to-bag" >MOVE TO BAG</button>
+                        <% } else { %>
+                            <button class="action-btn show-similar">SHOW SIMILAR</button>
+                        <% } %> -->
+                    </div>
+                </div>
+            <% }) %>
+        <% } else { %>
+            <div class="wishlist">
+            <div class="empty-wishlist-container">
+                <div id="lottie-container" style="width: 300px; height: 300px;"></div>
+                <h2>Your wishlist is empty!</h2>
+                <p>Find something you love and add it to your wishlist.</p>
+              </div>
+            </div>
+        <% } %>
+    </div>
+</div>
 
     <script>
         document.querySelectorAll('.remove-btn').forEach(button => {
@@ -150,7 +71,79 @@
                 this.closest('.wishlist-item').remove();
             });
         });
-    </script>
+
+        document.addEventListener('DOMContentLoaded', function() {
+          if (document.getElementById('lottie-container')) {
+            var animation = lottie.loadAnimation({
+              container: document.getElementById('lottie-container'),
+              renderer: 'svg',
+              loop: true,
+              autoplay: true,
+              path: 'https://lottie.host/8afed254-5451-4c8c-bc9a-de5474bc1c2c/TVHYqfZbTv.json'
+            });
+          }
+        });
+      </script>
+      <script>
+        function removeFromWishlist(productId,productImage) {
+        fetch(`/wishlist/remove/${productId}`, {
+            method: 'DELETE',
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+            // Remove the item from the DOM
+            const wishlistItem = document.querySelector(`[data-product-id="${productId}"]`);
+            if (wishlistItem) {
+                wishlistItem.remove();
+            }
+            
+            // Update wishlist count
+            const wishlistCount = document.querySelector('.wishlist-count');
+            if (wishlistCount) {
+                let count = parseInt(wishlistCount.textContent) - 1;
+                wishlistCount.textContent = count > 0 ? count : 0;
+            }
+
+            Toastify({
+                text: "Item removed from wishlist",
+                duration: 3000,
+                close: true,
+                gravity: "top",
+                position: "right",
+                backgroundColor: "#333",
+                stopOnFocus: true,
+                className: "custom-toast",
+                escapeMarkup: false,
+                avatar: productImage,
+                onClick: function(){}
+            }).showToast();
+            } else {
+            Toastify({
+                text: data.message || 'Failed to remove from wishlist',
+                duration: 3000,
+                close: true,
+                gravity: 'top',
+                position: 'center',
+                backgroundColor: '#FF0000',
+                stopOnFocus: true,
+            }).showToast();
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            Toastify({
+            text: 'Failed to remove from wishlist',
+            duration: 3000,
+            close: true,
+            gravity: 'top',
+            position: 'center',
+            backgroundColor: '#FF0000',
+            stopOnFocus: true,
+            }).showToast();
+        });
+        }
+      </script>
 
 
 <!-- Footer Section Begin -->
@@ -159,3 +152,150 @@
 
 <%- include('../layout/userFoot') -%>
 
+<style>
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #ffffff;
+    }
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 15px;
+    }
+    .wishlist-header {
+        margin: 20px 0;
+    }
+    .wishlist-header h1 {
+        font-size: 24px;
+        font-weight: 600;
+        margin: 0;
+    }
+    .wishlist-header span {
+        font-weight: normal;
+        color: #666;
+    }
+    .wishlist-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 20px;
+    }
+    .wishlist-item {
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        overflow: hidden;
+        position: relative;
+    }
+    .wishlist-item img {
+        width: 100%;
+        height: 280px;
+        object-fit: cover;
+    }
+    .wishlist-item-content {
+        padding: 12px;
+    }
+    .wishlist-item h3 {
+        font-size: 14px;
+        margin: 0 0 8px 0;
+        font-weight: normal;
+    }
+    .price {
+        font-size: 16px;
+        font-weight: bold;
+    }
+    .original-price {
+        text-decoration: line-through;
+        color: #999;
+        margin-left: 5px;
+    }
+    .discounted-price {
+        color: #212529;
+        font-weight: bold;
+    }
+    .discount-badge {
+        background-color: #e53637;
+        color: white;
+        padding: 2px 5px;
+        border-radius: 3px;
+        font-size: 12px;
+        margin-left: 10px;
+    }
+    .out-of-stock {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background-color: #ff3e6c;
+        color: white;
+        padding: 4px 8px;
+        font-size: 12px;
+        font-weight: bold;
+    }
+    .remove-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: none;
+        border: none;
+        color: #888;
+        font-size: 20px;
+        cursor: pointer;
+    }
+    .action-btn {
+        display: block;
+        width: 100%;
+        padding: 10px;
+        margin-top: 10px;
+        border: none;
+        border-radius: 4px;
+        font-size: 14px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+    .move-to-bag {
+        background-color: #ff3e6c;
+        color: white;
+    }
+    .show-similar {
+        background-color: #f5f5f6;
+        color: #282c3f;
+    }
+    .empty-wishlist-container {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          text-align: center;
+          padding: 40px;
+          background-color: #f9f9f9;
+          border-radius: 8px;
+          margin: 20px 0;
+        }
+      
+        .empty-wishlist-container h2 {
+          font-size: 24px;
+          color: #333;
+          margin-bottom: 10px;
+        }
+      
+        .empty-wishlist-container p {
+          font-size: 16px;
+          color: #666;
+        }
+        .custom-toast {
+        display: flex !important;
+        align-items: right;
+        padding: 12px !important;
+        border-radius: 4px !important;
+        background-color: #333 !important;
+        color: white !important;
+        }
+
+        .custom-toast img {
+        width: 40px;
+        height: 40px;
+        object-fit: cover;
+        margin-right: 12px;
+        border-radius: 4px;
+        }
+</style>

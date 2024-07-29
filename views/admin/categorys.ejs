@@ -1,106 +1,102 @@
 <%- include('../layout/adminHead') -%>
 
-    <div class="wrapper">
-        <%- include('../layout/adminSideWrapper') -%>
-        <%- include('../layout/adminHeaderNav') -%>
+<div class="wrapper">
+    <%- include('../layout/adminSideWrapper') -%>
+    <%- include('../layout/adminHeaderNav') -%>
 
-        <div class="page-wrapper">
-            <div class="page-content">
-                <h3>Manage Categories</h3>
-                <a href="/admin/add-categorys"  class="btn btn-success bx bx-list-plus" >Add Category</a>
-                <% if(locals.success){ %>
-                <script>
+    <div class="page-wrapper">
+        <div class="page-content">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h3 class="mb-0">Manage Categories</h3>
+                        <a href="/admin/add-categorys" class="btn btn-primary">
+                            <i class="bx bx-plus-circle me-1"></i> Add Category
+                        </a>
+                    </div>
 
-                    document.addEventListener('DOMContentLoaded' , function () {
-                        const success = "Category Edited Successfully";
-                        showModals(success);
-                    })
+                    <!-- <div class="mb-3">
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bx bx-search"></i></span>
+                            <input type="text" id="categorySearch" class="form-control" placeholder="Search categories...">
+                        </div>
+                    </div> -->
 
-                </script>
-                <% }else if(locals.done){ %>
-                    <script>
-
-                        document.addEventListener('DOMContentLoaded' , function () {
-                            const done = "New Category is Added";
-                            showModals(done);
-                        })
-    
-                    </script>
-                    <% }else if(locals.delet){ %>
-                        <script>
-
-                            document.addEventListener('DOMContentLoaded' , function () {
-                                const delet = "Deleted Successfully";
-                                showModal(delet);
-                            })
-        
-                        </script>
-                        <% }else if(locals.err){ %>
-                            <script>
-
-                                document.addEventListener('DOMContentLoaded' , function () {
-                                    const err = "Category not found";
-                                    showModa(err);
-                                })
-            
-                            </script>
-                            <% } %>
-                <table id="categoryTable" class="display" style="width:100%">
-
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Active</th>
-                            <th>Added Date</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <% categorys.forEach(function(category, index) { %>
-                        <tr>
-                            <td><%= category.name.toUpperCase() %></td>
-                            <td><%= category.isActive ? 'Yes' : 'No' %></td>
-                            <td><%= category.createdAt.toDateString() %></td>
-                            <td>
-                                <a href="/admin/edit-categorys/<%= category._id %>" class="btn btn-outline-success bx bxs-edit-alt"> Edit</a>
-                                <form action="/admin/categorys/delete" method="POST" class="d-inline">
-                                    <input type="hidden" name="id" value="<%= category.id %>">
-                                    <button type="submit" class="btn btn-outline-danger bx bxs-trash-alt"> Delete</button>
-                                </form>
-                            </td>
-                        </tr>
-                        <% }); %>
-                    </tbody>
-                </table>
-
+                    <div class="table-responsive">
+                        <table id="categoryTable" class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Status</th>
+                                    <th>Added Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% categorys.forEach(function(category, index) { %>
+                                <tr>
+                                    <td><%= category.name.toUpperCase() %></td>
+                                    <td>
+                                        <span class="badge <%= category.isActive ? 'bg-success' : 'bg-danger' %>">
+                                            <%= category.isActive ? 'Active' : 'Inactive' %>
+                                        </span>
+                                    </td>
+                                    <td><%= category.createdAt.toDateString() %></td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="/admin/edit-categorys/<%= category._id %>" class="btn btn-sm btn-outline-primary">
+                                                <i class="bx bx-edit-alt"></i> Edit
+                                            </a>
+                                            <form action="/admin/categorys/delete" method="POST" class="d-inline">
+                                                <input type="hidden" name="id" value="<%= category.id %>">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                    <i class="bx bx-trash"></i> Delete
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <% }); %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="overlay toggle-icon"></div>
-        <a href="javascript:;" class="back-to-top"><i class='bx bxs-up-arrow-alt'></i></a>
-        <footer class="page-footer">
-            <p class="mb-0">Copyright © 2021. All right reserved.</p>
-        </footer>
     </div>
 
-    <%- include('../layout/adminTheme') -%>
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
-    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
-    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
-    <script src="assets/js/jquery.min.js"></script>
-    <script src="assets/plugins/simplebar/js/simplebar.min.js"></script>
-    <script src="assets/plugins/metismenu/js/metisMenu.min.js"></script>
-    <script src="assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
-    <script src="assets/js/app.js"></script>
-    <script>
-        $(document).ready(function() {
-            $('#categoryTable').DataTable();
-        });
-    </script>
-    <script>
+    <div class="overlay toggle-icon"></div>
+    <a href="javascript:;" class="back-to-top"><i class='bx bxs-up-arrow-alt'></i></a>
+    <footer class="page-footer">
+        <p class="mb-0">Copyright © 2021. All right reserved.</p>
+    </footer>
+</div>
 
-        function showModals(success,done) {
+<!-- Include necessary scripts -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="assets/js/app.js"></script>
+
+<script>
+    $(document).ready(function() {
+        var table = $('#categoryTable').DataTable({
+            responsive: true,
+            pageLength: 10,
+            lengthChange: false,
+            searching: true,
+            ordering: true
+        });
+
+        $('#categorySearch').on('keyup', function() {
+            table.search(this.value).draw();
+        });
+    });
+
+    // Existing toast notification functions
+    function showModals(success, done) {
         Toastify({
-            text: success,done,
+            text: success || done,
             duration: 3000,
             newWindow: true,
             close: true,
@@ -114,10 +110,7 @@
         }).showToast();
     }
 
-    </script>
-    <script>
-    
-        function showModal(delet) {
+    function showModal(delet) {
         Toastify({
             text: delet,
             duration: 3000,
@@ -133,10 +126,7 @@
         }).showToast();
     }
 
-    </script>
-    <script>
-    
-        function showModa(err) {
+    function showModa(err) {
         Toastify({
             text: err,
             duration: 3000,
@@ -152,7 +142,16 @@
         }).showToast();
     }
 
-    </script>
-</body>
-
-</html>
+    // Trigger notifications based on server-side flags
+    document.addEventListener('DOMContentLoaded', function () {
+        <% if(locals.success){ %>
+            showModals("Category Edited Successfully");
+        <% } else if(locals.done){ %>
+            showModals("New Category is Added");
+        <% } else if(locals.delet){ %>
+            showModal("Deleted Successfully");
+        <% } else if(locals.err){ %>
+            showModa("Category not found");
+        <% } %>
+    });
+</script>   

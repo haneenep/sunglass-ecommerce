@@ -142,6 +142,11 @@
                                         <img src="<%= product.images[0] %>" alt="<%= product.productName %>">
                                     </a>
                                     <% } %>
+                                    <div class="ribbon">
+                                        <span>
+                                            <span class="discount-badge"><%= Math.round(((product.price - product.discountedPrice) / product.price) * 100) %>% OFF</span>
+                                        </span>
+                                    </div>
                                     <ul class="product__hover">
                                         <li><a href="#"><img src="img/icon/heart.png" alt=""></a></li>
                                         <li><a href="#"><img src="img/icon/compare.png" alt=""> <span>Compare</span></a></li>
@@ -151,21 +156,36 @@
                                 <div class="product__item__text">
                                     <h6><%= product.productName %></h6>
                                     <a href="/cart" class="add-cart">+ Add To Cart</a>
-                                    <% if (product.discountAmount > 0) { %>
+                                    <% if(product.inCategoryOffer === true){ %>
                                         <h5>
-                                          <span class="original-price">₹<%= product.price %></span>
-                                          <span class="discounted-price">₹<%= product.discountedPrice %></span>
-                                        </h5>
-                                        <span class="discount-badge"><%= Math.round((product.discountAmount / product.price) * 100) %>% OFF</span>
-                                      <% } else { %>
-                                        <h5>₹<%= product.price.toFixed(2) %></h5>
-                                      <% } %>
-                                    <!-- <h5>₹<%= product.price.toFixed(2) %></h5>    -->
-                                    <% if (product.stockQuantity > 0) { %>
-                                        <span class="in-stock badge rounded-end  p-2 text-uppercase px-3" style="background-color: rgb(255, 255, 255); color: green;">In Stock</span>
+                                        <span class="discounted-price">₹<%= product.discountedPrice %></span>
+                                        <span class="original-price">₹<%= product.price %></span>
+                                        <% if (product.stockQuantity > 0) { %>
+                                            <span class="in-stock badge rounded-end  p-2 text-uppercase px-3" style="background-color: rgb(255, 255, 255); color: green; margin-left: -9px;">In Stock</span>
                                         <% } else { %>
-                                            <span class="out-of-stock badge rounded  p-2 text-uppercase px-3" style="background-color: rgb(255, 255, 255); color: red;">Out of Stock</span>
-                                            <% } %>
+                                            <span class="out-of-stock badge rounded  p-2 text-uppercase px-3" style="background-color: rgb(255, 255, 255); color: red; margin-left: -9px;">Out of Stock</span>
+                                        <% } %>
+                                        </h5>
+                                        <% }else if(product.discountAmount > 0){ %>
+                                        <h5>
+                                        <span class="discounted-price">₹<%= product.discountedPrice %></span>
+                                        <span class="original-price">₹<%= product.price %></span>
+                                        <% if (product.stockQuantity > 0) { %>
+                                            <span class="in-stock badge rounded-end  p-2 text-uppercase px-3" style="background-color: rgb(255, 255, 255); color: green; margin-left: -9px;">In Stock</span>
+                                        <% } else { %>
+                                            <span class="out-of-stock badge rounded  p-2 text-uppercase px-3" style="background-color: rgb(255, 255, 255); color: red; margin-left: -9px;">Out of Stock</span>
+                                        <% } %>
+                                        </h5>
+                                        <% }else{ %>
+                                            <h5>
+                                                ₹<%= product.price %>
+                                                <% if (product.stockQuantity > 0) { %>
+                                                    <span class="in-stock badge rounded-end  p-2 text-uppercase px-3" style="background-color: rgb(255, 255, 255); color: green; margin-left: -9px;">In Stock</span>
+                                                <% } else { %>
+                                                    <span class="out-of-stock badge rounded  p-2 text-uppercase px-3" style="background-color: rgb(255, 255, 255); color: red; margin-left: -9px;">Out of Stock</span>
+                                                <% } %>
+                                            </h5>
+                                        <% } %>
                                         </div>
                                     </div>
                                 </div>
@@ -207,7 +227,7 @@
             const urlParams = new URLSearchParams(window.location.search);
             urlParams.set(type, value);
             window.location.search = urlParams.toString();
-        }
+        }   
     </script>
 
     <style>
@@ -228,7 +248,7 @@
         }
 
         .discounted-price {
-        color: #e53637;
+        color: #000000;
         font-weight: bold;
         }
 
@@ -239,5 +259,54 @@
         border-radius: 3px;
         font-size: 12px;
         margin-left: 10px;
+        }
+        .ribbon{
+            position: absolute;
+            left: -5px;
+            top: -5px;
+            z-index: 1;
+            overflow: hidden;
+            width: 75px;
+            height: 75px;
+            text-align: left;
+        }
+        .ribbon span {
+            font-size: 10px;
+            font-weight: bold;
+            color: #FFF;
+            text-transform: uppercase;
+            text-align: center;
+            line-height: 20px;
+            transform: rotate(-45deg);
+            -webkit-transform: rotate(-45deg);
+            width: 100px;
+            display: block;
+            background: #FF0000;
+            box-shadow: 0 3px 10px -5px rgba(0, 0, 0, 1);
+            position: absolute;
+            top: 19px;
+            left: -21px;
+        }
+        .ribbon span ::before{
+            content: "";
+            position: absolute;
+            left: 0px;
+            top: 100%;
+            z-index: -1;
+            border-left: 3px solid #FF0000;
+            border-right: 3px solid transparent;
+            border-bottom: 3px solid transparent;
+            border-top: 3px solid #FF0000;
+        }
+        .ribbon span::after{
+            content: "";
+            position: absolute;
+            right: 0px;
+            top: 100%;
+            z-index: -1;
+            border-left: 3px solid transparent;
+            border-right: 3px solid #FF0000;
+            border-bottom: 3px solid transparent;
+            border-top: 3px solid #FF0000;
         }
     </style>

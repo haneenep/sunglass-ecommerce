@@ -36,7 +36,7 @@
     }
 
     .dropdown-toggle {
-    background-color: #ff003c;
+    background-color: #179500;
     color: white;
     padding: 10px 20px;
     border: none;
@@ -232,7 +232,14 @@
                                                 </div>
                                                 <div class="product__cart__item__text">
                                                     <h6><%= product.productid.productName %></h6>
-                                                    <h5>₹<%= product.productid.price %></h5>
+                                                    <% if(product.productid.inCategoryOffer || product.productid.discountAmount > 0) { %>
+                                                            <h5>
+                                                            <span class="discounted-price" style="color: red; font-weight: 700;">₹<%= product.productid?.discountedPrice.toFixed(2) %></span>
+                                                            <span class="original-price" style="text-decoration: line-through;">₹<%= product.productid.price.toFixed(2) %></span>
+                                                            </h5>
+                                                    <% }else{ %>
+                                                            <h5>₹<%= product.productid.price.toFixed(2) %></h5>
+                                                    <% } %>
                                                 </div>
                                             </td>
                                             <td class="quantity__item">
@@ -244,7 +251,9 @@
                                                 </div>
                                                 </div>
                                             </td>
-                                            <td class="cart__price" data-product-total="<%= product.productid._id %>">₹<%= (product.quantity * product.productid.price).toFixed(2) %></td>
+                                            <td class="cart__price" data-product-total="<%= product.productid._id %>">
+                                                ₹<%= (product.quantity * (product.productid.inCategoryOffer || product.productid.discountAmount > 0 ? product.productid.discountedPrice : product.productid.price)).toFixed(2) %>
+                                            </td>
                                             <td class="cart__close"><button style="border: none; border-radius: 30px;" class="remove-item"><i class="fa fa-close"></i></button></td>
                                         </tr>
                                     <% }) %>
@@ -258,19 +267,15 @@
                                 <a href="/products">Continue Shopping</a>
                             </div>
                         </div>
-                        <div class="col-lg-6 col-md-6 col-sm-6">
-                            <div class="continue__btn update__btn">
-                                <a href="#"><i class="fa fa-spinner"></i> Update cart</a>
-                            </div>
-                        </div>
                     </div>
                 </div>
                 <div class="col-lg-4">
                     <div class="cart__total">
                         <h6>Cart total</h6>
                         <ul>
-                            <li>Subtotal <span id="cartSubtotal">₹<%= cart ? cart.products.reduce((acc, product) => acc + (product.quantity * product.productid.price), 0).toFixed(2) : '0.00' %></span></li>
-                            <li>Total <span id="cartTotal">₹<%= cart ? cart.products.reduce((acc, product) => acc + (product.quantity * product.productid.price), 0).toFixed(2) : '0.00' %></span></li>
+                            <li>Subtotal <span id="cartSubtotal">₹<%= cart.subTotal.toFixed(2) %></span></li>
+                            <li>Discount <span id="cartDiscount">-₹<%= cart.discount.toFixed(2) %></span></li>                            
+                            <li>Total <span id="cartTotal">₹<%= cart.total.toFixed(2) %></span></li>
                             <li>Shipping Fee <span><del>₹40.00</del></span><span style="color: green;">Free</span></li>
                         </ul>
                         <a href="/checkOut" class="primary-btn">Proceed to checkout</a>
@@ -301,5 +306,233 @@
     <!-- Footer Section End -->
 
     <%- include('../layout/userFoot') -%>
+<script>
 
+document.addEventListener('DOMContentLoaded', (event) => {
+    document.querySelectorAll('.pro-qty-2').forEach(quantityContainer => {
+        const decrButton = quantityContainer.querySelector('.decr.qtybtn');
+        const incButton = quantityContainer.querySelector('.inc.qtybtn');
+        const input = quantityContainer.querySelector('input');
+        const productId = quantityContainer.getAttribute('data-product-id');
+        const productMaxQuantity = parseInt(quantityContainer.getAttribute('data-max-quantity'));
+        const maxQuantity = Math.min(10, productMaxQuantity);
+
+        const updateButtons = () => {
+            let currentValue = parseInt(input.value);
+            decrButton.disabled = currentValue <= 1;
+            incButton.disabled = currentValue >= maxQuantity;
+        };
+
+        const showSpinner = () => {
+            decrButton.disabled = true;
+            incButton.disabled = true;
+            input.style.display = 'none';
+            const spinner = document.createElement('div');
+            spinner.className = 'spinner';
+            quantityContainer.appendChild(spinner);
+        };
+
+        const hideSpinner = () => {
+            decrButton.disabled = false;
+            incButton.disabled = false;
+            input.style.display = 'inline-block';
+            const spinner = quantityContainer.querySelector('.spinner');
+            if (spinner) spinner.remove();
+            updateButtons();
+        };
+
+    const updateCart = (newQuantity) => {
+    showSpinner();
+    fetch('/updateCart', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ productId, quantity: newQuantity }),
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(err => {
+                throw new Error(err.message || 'Network response was not ok');
+            });
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            document.getElementById('cartSubtotal').textContent = `₹${data.subtotal.toFixed(2)}`;
+            document.getElementById('cartDiscount').textContent = `-₹${data.discount.toFixed(2)}`;
+            document.getElementById('cartTotal').textContent = `₹${data.total.toFixed(2)}`;
+            const productPriceElement = quantityContainer.closest('tr').querySelector('.product__cart__item__text h5 .discounted-price') || quantityContainer.closest('tr').querySelector('.product__cart__item__text h5');
+            const productPrice = parseFloat(productPriceElement.textContent.replace('₹', ''));
+            const newProductTotal = (newQuantity * productPrice).toFixed(2);
+            const productTotalCell = document.querySelector(`[data-product-total="${productId}"]`);
+            if (productTotalCell) {
+                productTotalCell.textContent = `₹${newProductTotal}`;
+            }
+            showNotification('Cart updated successfully');
+        } else {
+            throw new Error(data.message || 'Failed to update cart');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification(error.message, true);
+        input.value = newQuantity > input.value ? newQuantity - 1 : newQuantity + 1;
+    })
+    .finally(() => {
+        hideSpinner();
+    });
+};
+
+
+        decrButton.addEventListener('click', () => {
+            let currentValue = parseInt(input.value);
+            if (currentValue > 1) {
+                input.value = currentValue - 1;
+                updateCart(currentValue - 1);
+            }
+        });
+
+        incButton.addEventListener('click', () => {
+            let currentValue = parseInt(input.value);
+            if (currentValue < maxQuantity) {
+                input.value = currentValue + 1;
+                updateCart(currentValue + 1);
+            } else {
+                showNotification("Product Quantity limit Exceed", true);
+            }
+        });
+
+        updateButtons();
+    });
+
+
+    const removeButtons = document.querySelectorAll('.remove-item');
+    const modal = document.getElementById('removeModal');
+    const closeModal = document.querySelector('.close');
+    let currentProductRow;
+
+    removeButtons.forEach(button => {
+        button.addEventListener('click', (event) => {
+            currentProductRow = event.target.closest('tr');
+            modal.style.display = 'block';
+        });
+    });
+
+    closeModal.addEventListener('click', (event) => {
+        modal.style.display = 'none';
+    });
+
+    window.addEventListener('click', (event) => {
+        if (event.target == modal) {
+            modal.style.display = 'none';
+        }
+    });
+
+    document.querySelector('.btn-remove').addEventListener('click', () => {
+        const productId = currentProductRow.querySelector('.pro-qty-2').getAttribute('data-product-id');
+        removeProductFromCart(productId);
+        modal.style.display = 'none';
+    });
+
+    const updateCartTotals = (subtotal, total, isEmpty) => {
+        const subtotalElement = document.querySelector('.cart__total li:nth-child(1) span');
+        const totalElement = document.querySelector('.cart__total li:nth-child(3) span');
+
+        if (subtotalElement) {
+            subtotalElement.textContent = `₹${parseFloat(subtotal).toFixed(2)}`;
+        }
+
+        if (totalElement) {
+            totalElement.textContent = `₹${parseFloat(total).toFixed(2)}`;
+        }
+
+        if (isEmpty) {
+            window.location.href = '/emptyCart';
+        }
+    };
+
+    const removeProductFromCart = (productId) => {
+        fetch(`/removeFromCart/${productId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.text().then(text => {
+                    throw new Error(`Server responded with ${response.status}: ${text}`);
+                });
+            }
+            return response.json();
+        }).then(data => {
+            if (data.success) {
+                currentProductRow.remove();
+                updateCartTotals(data.subtotal, data.total, data.isEmpty);
+                showNotification('Product Removed From Cart');
+            } else {
+                showNotification(data.message || 'Failed to remove From Cart', true);
+            }
+        }).catch(error => {
+            console.error('Error', error);
+            showNotification(error.message, true);
+        });
+    };
+    
+    const showNotification = (message, isError = false , limit) => {
+            Toastify({
+                text: message,
+                duration: 3000,
+                close: true,
+                gravity: "top",
+                position: "right",
+                backgroundColor: isError ? "red" : "green",
+            }).showToast();
+        };
+});
+    
+        // const moveProductToWishlist = (productId) => {
+        //     fetch('/moveToWishlist', {
+        //         method: 'POST',
+        //         headers: {
+        //             'Content-Type': 'application/json',
+        //         },
+        //         body: JSON.stringify({ productId }),
+        //     })
+        //     .then(response => {
+        //         if (!response.ok) {
+        //             throw new Error('Network response was not ok');
+        //         }
+        //         return response.json();
+        //     })
+        //     .then(data => {
+        //         if (data.success) {
+        //             currentProductRow.remove();
+        //             showNotification('Product moved to wishlist');
+        //         } else {
+        //             showNotification(data.message || 'Failed to move product', true);
+        //         }
+        //     })
+        //     .catch(error => {
+        //         console.error('Error:', error);
+        //         showNotification(error.message, true);
+        //     });
+        // };
+
+
+//         const showNotification = (message, isError = false , limit) => {
+//             Toastify({
+//                 text: message,
+//                 duration: 3000,
+//                 close: true,
+//                 gravity: "top",
+//                 position: "right",
+//                 backgroundColor: isError ? "red" : "green",
+//             }).showToast();
+//         };
+
+// });
+</script>
     

@@ -1,13 +1,27 @@
 <div class="sidebar">
     <% if(locals.user){ %>
-    <h2>Account <br> <p> <%= user.name.toUpperCase() %></p><hr></h2>
+    <h3>ACCOUNT <br> <p> <%= user.name.toUpperCase() %></p><hr></h3>
     <% } %>
     <ul class="sidebar-nav">
-        <li><a href="/userProfile">My Account</a></li>
-        <li><a href="/orders">My Orders</a></li>
-        <li><a href="#">My Wishes</a></li>
-        <li><a href="#">My Wallet</a></li>
-        <li><a href="/shipAddress"></i> My Shipping Addresses</a></li>
-        <li><a href="/logout"style="margin-right: 0;" id="logoutButton" style="color: red;" onclick="confirmLogout(event)">Sign Out</a></li>
+        <li><a href="/userProfile" class="nav-item">
+            <i class="fas fa-user"></i>
+            Profile
+        </a></li>
+        <li><a href="/orders" class="nav-item">
+            <i class="fas fa-box"></i>
+            Orders
+        </a></li>
+        <li><a href="/wallet" class="nav-item">
+            <i class="fas fa-wallet"></i>
+            Wallet
+        </a></li>
+        <li><a href="/shipAddress" class="nav-item">
+            <i class="fas fa-address-book"></i>
+            Shipping Addresses
+        </a></li>
+        <li><a href="/logout" id="logoutButton" onclick="confirmLogout(event)" class="nav-item logout">
+            <i class="fas fa-sign-out-alt"></i>
+            Sign Out
+        </a></li>
     </ul>
 </div>

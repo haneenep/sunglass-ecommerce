@@ -56,31 +56,38 @@
                                     <div class="checkout__input">
                                         <p>Full Name<span>*</span></p>
                                         <input type="text" name="name" >
+                                        <span id="name-error" class="error"></span>
                                     </div>
                                 </div>
                                 <div class="col-lg-6">
                                     <div class="checkout__input">
                                         <p>Phone<span>*</span></p>
                                         <input type="text" name="phoneNumber" >
+                                        <span id="number-error" class="error"></span>
                                     </div>
                                 </div>
                             </div>
                             <div class="checkout__input">
                                 <p>Address<span>*</span></p>
                                 <input type="text" name="address" placeholder="Street Address" class="checkout__input__add" >
+                                <span id="address-error" class="error"></span>
                                 <input type="text" name="locality" placeholder="Apartment, suite, unit etc. (optional)">
+                                <!-- <span id="address-error" class="error"></span> -->
                             </div>
                             <div class="checkout__input">
                                 <p>Town/City<span>*</span></p>
                                 <input type="text" name="city" >
+                                <span id="city-error" class="error"></span>
                             </div>
                             <div class="checkout__input">
                                 <p>State<span>*</span></p>
                                 <input type="text" name="state" >
+                                <span id="state-error" class="error"></span>
                             </div>
                             <div class="checkout__input">
                                 <p>Postcode / ZIP<span>*</span></p>
                                 <input type="text" name="pincode" >
+                                <span id="pincode-error" class="error"></span>
                             </div>
                             <div class="checkout__input">
                                 <p>Address Type<span>*</span></p>
@@ -94,16 +101,7 @@
 
                         <div class="checkout__input__checkbox">
                             <label for="diff-acc">
-                                Note about your order, e.g, special note for delivery
                                 <input type="checkbox" id="diff-acc">
-                                <span class="checkmark"></span>
-                            </label>
-                        </div>
-                        <div class="checkout__input__checkbox">
-                            <label for="newsletter">
-                                I would like to receive exclusive discounts, news and trends from <strong>VISTAVOGUE</strong> by email. <br>
-                                I can unsubscribe whenever I want.
-                                <input type="checkbox" id="newsletter" name="newsletter">
                                 <span class="checkmark"></span>
                             </label>
                         </div>
@@ -118,12 +116,15 @@
                                 <% }); %>
                             </ul>
                             <ul class="checkout__total__all">
-                                <li>Subtotal <span>₹<%= cart.products.reduce((acc, product) => acc + (product.quantity * product.productid.price), 0).toFixed(2) %></span></li>
+                                <li>Subtotal<span>₹<%= cart.subTotal.toFixed(2) %></span></li>
+                                <% if(cart.discount > 0){ %>
+                                <li>Discount<span>-₹<%= cart.discount.toFixed(2) %></span></li>
+                                <% } %>
                                 <% if(appliedCoupon) { %>
                                     <li>Coupon Discount <span>-₹<%= discountAmount.toFixed(2) %></span></li>
                                     <li>Total <span>₹<%= newTotal.toFixed(2) %></span></li>
                                 <% } else { %>
-                                    <li>Total <span>₹<%= cart.products.reduce((acc, product) => acc + (product.quantity * product.productid.price), 0).toFixed(2) %></span></li>
+                                    <li>Total <span>₹<%= cart.total.toFixed(2) %></span></li>
                                 <% } %>
                             </ul>
                             <p><strong>Choose Payment Mode</strong></p>
@@ -135,9 +136,16 @@
                                 </label>
                             </div>
                             <div class="checkout__input__checkbox">
+                                <label for="payment-wallet">
+                                    Wallet (bal : ₹<%= wallet.balance %>)
+                                    <input type="radio" id="payment-wallet" name="paymentMethod" value="wallet" >
+                                    <span class="checkmark"></span>
+                                </label>
+                            </div>
+                            <div class="checkout__input__checkbox">
                                 <label for="payment-razorpay">
-                                    RazorPay
-                                    <input type="radio" id="payment-razorpay" name="paymentMethod" value="razorPay" >
+                                    Razorpay
+                                    <input type="radio" id="payment-razorpay" name="paymentMethod" value="razorpay" >
                                     <span class="checkmark"></span>
                                 </label>
                             </div>
@@ -216,8 +224,186 @@
         form.style.display = select.value === 'new' ? 'block' : 'none';
     }
 
-    document.getElementById('checkoutForm').addEventListener('submit', function(e) {
+    var couponsData = JSON.parse('<%- JSON.stringify(coupons) %>'.replace(/&#34;/g, '"'));
+
+document.addEventListener('DOMContentLoaded', function() {
+    const checkoutForm = document.getElementById('checkoutForm');
+    const couponSection = document.querySelector('.coupon__code');
+    const modal = document.getElementById("couponModal");
+    const availableCouponsModal = document.getElementById("availableCouponsModal");
+    const openCouponModalBtn = document.getElementById("openCouponModal");
+    const openAvailableCouponsModalBtn = document.getElementById("openAvailableCouponModal");
+    const closeBtns = document.getElementsByClassName("close");
+    const checkCouponBtn = document.getElementById("checkCoupon");
+    const couponCodeInput = document.getElementById("couponCode");
+    const couponDetails = document.getElementById("couponDetails");
+    const applyCouponBtn = document.getElementById("applyCoupon");
+
+    // Modal functionality
+    openCouponModalBtn.onclick = function(e) {
         e.preventDefault();
+        modal.style.display = "flex";
+    }
+
+    openAvailableCouponsModalBtn.onclick = function(e) {
+        e.preventDefault();
+        availableCouponsModal.style.display = "flex";
+    }
+
+    Array.from(closeBtns).forEach(btn => {
+        btn.onclick = function() {
+            modal.style.display = "none";
+            availableCouponsModal.style.display = "none";
+        }
+    });
+
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+        if (event.target == availableCouponsModal) {
+            availableCouponsModal.style.display = "none";
+        }
+    }
+
+    // Coupon functionality
+    checkCouponBtn.onclick = function() {
+        var couponCode = couponCodeInput.value.trim().toUpperCase();
+        var coupon = couponsData.find(c => c.couponCode === couponCode);
+        
+        if (coupon) {
+            document.querySelector('.coupon-badge').textContent = coupon.couponCode;
+            document.querySelector('#couponDetails h3').textContent = `Save ₹${coupon.discountAmount}`;
+            document.querySelector('#couponDetails .description').textContent = coupon.description;
+            document.querySelector('#couponDetails .expiry').textContent = `Expires on: ${new Date(coupon.validTo).toLocaleDateString()}`;
+            
+            couponDetails.style.display = "block";
+            applyCouponBtn.disabled = false;
+        } else {
+            showNotification("Invalid coupon code", true);
+            couponDetails.style.display = "none";
+            applyCouponBtn.disabled = true;
+        }
+    }
+
+    applyCouponBtn.onclick = function() {
+        var couponCode = couponCodeInput.value.trim().toUpperCase();
+
+        Swal.fire({
+            title: 'Applying Coupon',
+            text: 'Please wait...',
+            allowOutsideClick: false,
+            showConfirmButton: false,
+            willOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
+        fetch('/applycoupon', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ couponCode: couponCode }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showNotification(`Coupon applied successfully! You saved ₹${data.discountAmount}`, false);
+                updateTotalPrice(data.newTotal, data.discountAmount);
+                modal.style.display = "none";
+                addRemoveCouponButton(couponCode);
+            } else {
+                showNotification(data.message || "Failed to apply coupon", true);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification("An error occurred while applying the coupon", true);
+        })
+        .finally(() => {
+            Swal.close();
+        });
+    }
+
+    function addRemoveCouponButton(couponCode) {
+        const existingButton = document.getElementById('removeCouponBtn');
+        if (existingButton) {
+            existingButton.remove();
+        }
+        const removeCouponButton = document.createElement('button');
+        removeCouponButton.textContent = 'Remove Coupon';
+        removeCouponButton.id = 'removeCouponBtn';
+        removeCouponButton.classList.add('remove-coupon-btn');
+        removeCouponButton.type = 'button'; 
+        couponSection.appendChild(removeCouponButton);
+    }
+
+    function removeCoupon(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        
+        Swal.fire({
+            title: 'Removing Coupon',
+            text: 'Please wait...',
+            allowOutsideClick: false,
+            showConfirmButton: false,
+            willOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
+        fetch('/removecoupon', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                Swal.fire({
+                    title: 'Success',
+                    text: 'Coupon removed successfully',
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                }).then(() => {
+                    location.reload();
+                });
+            } else {
+                throw new Error(data.message || "Failed to remove coupon");
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            Swal.fire({
+                title: 'Error',
+                text: error.message || "An error occurred while removing the coupon",
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+        });
+    }
+
+    // Event delegation for remove coupon button
+    document.body.addEventListener('click', function(event) {
+        if (event.target && event.target.id === 'removeCouponBtn') {
+            removeCoupon(event);
+        }
+    });
+
+    // Form submission
+    checkoutForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const submitButton = checkoutForm.querySelector('button[type="submit"]');
+        submitButton.disabled = true;
+
         const formData = new FormData(this);
         const data = {
             paymentMethod: formData.get('paymentMethod')
@@ -236,22 +422,9 @@
                 pincode: formData.get('pincode'),
                 addressType: formData.get('addressType')
             };
-            // data.selectedAddressId =null;
         } else {
             data.selectedAddressId = selectedAddress;
-            // data.address = null
         }
-
-        // Show loading indicator
-        // Swal.fire({
-        //     title: 'Processing Order',
-        //     text: 'Please wait...',
-        //     allowOutsideClick: false,
-        //     showConfirmButton: false,
-        //     willOpen: () => {
-        //         Swal.showLoading();
-        //     }
-        // });
 
         fetch('/placeOrder', {
             method: 'POST',
@@ -262,258 +435,178 @@
         })
         .then(response => response.json())
         .then(data => {
+            if(data.success){
+                if(data.razorpayOrderId){
+                    var options = {
+                        "key": data.key, 
+                        "amount": data.amount, 
+                        "currency": data.currency,
+                        "name": "VISTAVOGUE",
+                        "description": "Test Transaction",
+                        "image" : 'images/logs.png',
+                        "order_id": data.razorpayOrderId,
+                        "handler" : function (response){
+                            createOrder(data, response,true);
+                        },
+                        "prefill": {
+                            "name": "kaka",
+                            "email": "kaka1email@example.com",
+                            "contact": "9990000999"
+                        },
+                        "notes": {
+                            address: "Razor pay Corporate Office",
+                        },
+                        "theme": {
+                            "color": "#0D0D0D"
+                        }
+                    };
+                    var razor = new window.Razorpay(options);
+                    razor.open();
+
+                    // razorpay failed
+                    razor.on('payment.failed', async function (response) {
+                        createOrder(data, response,false);
+                    })
+                } else {
+                    Swal.fire({
+                        position: 'center',
+                        icon: "success",
+                        title: "Your order has been successful",
+                        showConfirmButton: false,
+                        timer: 2000
+                    })
+                    .then(() => window.location.href = `/order-confirmation/${data.orderId}`);
+                }
+            } else {
+                throw new Error(data.message || 'Error placing order');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            Swal.fire({
+                title: 'Error',
+                text: error.message || 'An error occurred while placing the order.',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+        })
+        .finally(() => {
+            submitButton.disabled = false;
+        });
+    });
+
+    function createOrder(orderData, PaymentResponse, payment) {
+        console.log("response", {orderData, PaymentResponse});
+        fetch('/createOrder', {
+            method: 'POST',
+            headers: {
+                'Content-type': 'application/json'
+            },
+            body: JSON.stringify({
+                razorpayOrderId: PaymentResponse.razorpay_order_id,
+                razorpayPaymentId: PaymentResponse.razorpay_payment_id,
+                razorpaySignature: PaymentResponse.razorpay_signature,
+                payment,
+                ...orderData
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
             if (data.success) {
                 Swal.fire({
-                position: 'center',
-                icon: "success",
-                title: "Your order has been successfull",
-                showConfirmButton: false,
-                timer: 2000
+                    position: 'center',
+                    icon: "success",
+                    title: "Your order has been successful",
+                    showConfirmButton: false,
+                    timer: 2000
                 })
                 .then(() => window.location.href = `/order-confirmation/${data.orderId}`);
             } else {
-                showNotification(`Error placing order: ${data.message}`,true);
+                showNotification(`Error creating order: ${data.message}`, true);
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            showNotification('An error occurred while placing the order.',true);
-        });
-
-        function showNotification(message, isError = false) {
-            Toastify({
-                text: message,
-                duration: 3000,
-                close: true,
-                gravity: "top",
-                position: "center",
-                backgroundColor: isError ? "red" : "#ff3e6c",
-            }).showToast();
-        }
-    });
-
-    var couponsData = (<%- JSON.stringify(coupons) %>);
-
-    document.addEventListener('DOMContentLoaded', function() {
-        var modal = document.getElementById("couponModal");
-        var availableCouponsModal = document.getElementById("availableCouponsModal");
-        var btn = document.getElementById("openCouponModal");
-        var btnAvailableCoupons = document.getElementById("openAvailableCouponModal");
-        var spans = document.getElementsByClassName("close");
-        var checkCouponBtn = document.getElementById("checkCoupon");
-        var couponCodeInput = document.getElementById("couponCode");
-        var couponDetails = document.getElementById("couponDetails");
-        var applyCouponBtn = document.getElementById("applyCoupon");
-    
-        btn.onclick = function(e) {
-            e.preventDefault();
-            modal.style.display = "flex";
-        }
-    
-        btnAvailableCoupons.onclick = function(e) {
-            e.preventDefault();
-            availableCouponsModal.style.display = "flex";
-        }
-    
-        Array.from(spans).forEach(span => {
-            span.onclick = function() {
-                modal.style.display = "none";
-                availableCouponsModal.style.display = "none";
-            }
-        });
-    
-        window.onclick = function(event) {
-            if (event.target == modal) {
-                modal.style.display = "none";
-            }
-            if (event.target == availableCouponsModal) {
-                availableCouponsModal.style.display = "none";
-            }
-        }
-
-        document.querySelectorAll('.coupon-badge').forEach(badge => {
-            badge.addEventListener('click', function() {
-                const couponCode = this.dataset.coupon;
-                navigator.clipboard.writeText(couponCode).then(() => {
-                    showNotification('Coupon code copied!', false);
-                }).catch(err => {
-                    console.error('Failed to copy: ', err);
-                    showNotification('Failed to copy coupon code', true);
-                });
-            });
-        });
-    
-        checkCouponBtn.onclick = function() {
-            var couponCode = couponCodeInput.value.trim().toUpperCase();
-            var coupon = couponsData.find(c => c.couponCode === couponCode);
-            
-            if (coupon) {
-                document.querySelector('.coupon-badge').textContent = coupon.couponCode;
-                document.querySelector('#couponDetails h3').textContent = `Save ₹${coupon.discountAmount}`;
-                document.querySelector('#couponDetails .description').textContent = coupon.description;
-                document.querySelector('#couponDetails .expiry').textContent = `Expires on: ${new Date(coupon.validTo).toLocaleDateString()}`;
-                
-                couponDetails.style.display = "block";
-                applyCouponBtn.disabled = false;
-            } else {
-                showNotification("Invalid coupon code", true);
-                couponDetails.style.display = "none";
-                applyCouponBtn.disabled = true;
-            }
-        }
-
-    
-        applyCouponBtn.onclick = function() {
-            var couponCode = couponCodeInput.value.trim().toUpperCase();
-
-             // Show loading indicator
-             Swal.fire({
-                title: 'Applying Coupon',
-                text: 'Please wait...',
-                allowOutsideClick: false,
-                showConfirmButton: false,
-                willOpen: () => {
-                    Swal.showLoading();
-                }
-            });
-
-        // Fetch request to apply coupon
-        fetch('/applycoupon', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ couponCode: couponCode }),
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                showNotification(`Coupon applied successfully! You saved ₹${data.discountAmount}`, false);
-                updateTotalPrice(data.newTotal, data.discountAmount);
-                modal.style.display = "none";
-
-                addRemoveCouponButton(couponCode);
-            } else {
-                showNotification(data.message || "Failed to apply coupon", true);
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            showNotification("An error occurred while applying the coupon", true);
-        })
-        .finally(() => {
-            Swal.close();
+            showNotification('An error occurred while creating the order.', true);
         });
     }
 
-        function showNotification(message, isError = false) {
-            Toastify({
-                text: message,
-                duration: 3000,
-                close: true,
-                gravity: "top",
-                position: "center",
-                backgroundColor: isError ? "red" : "#ff3e6c",
-            }).showToast();
-        }
-        
+    function updateTotalPrice(newTotal, discountAmount) {
+        const totalSpan = document.querySelector('.checkout__total__all li:last-child span');
+        totalSpan.textContent = `₹${newTotal.toFixed(2)}`;
 
-        function updateTotalPrice(newTotal, discountAmount) {
-            // Update the displayed total price in the checkout summary
-            const totalSpan = document.querySelector('.checkout__total__all li:last-child span');
-            totalSpan.textContent = `₹${newTotal.toFixed(2)}`;
+        const discountLi = document.createElement('li');
+        discountLi.classList.add('discount-line');
+        discountLi.textContent = `Coupon Discount`;
+        const discountSpan = document.createElement('span');
+        discountSpan.textContent = `-₹${discountAmount.toFixed(2)}`;
+        discountLi.appendChild(discountSpan);
 
-            const discountLi = document.createElement('li');
-            discountLi.classList.add('discount-line');
-            discountLi.textContent = `Coupon Discount`;
-            const discountSpan = document.createElement('span');
-            discountSpan.textContent = `-₹${discountAmount.toFixed(2)}`;
-            discountLi.appendChild(discountSpan);
+        const totalAllUl = document.querySelector('.checkout__total__all');
+        totalAllUl.insertBefore(discountLi, totalAllUl.lastElementChild);
+    }
 
-            const totalAllUl = document.querySelector('.checkout__total__all');
-            totalAllUl.insertBefore(discountLi, totalAllUl.lastElementChild);
-        }
+    function showNotification(message, isError = false) {
+        Toastify({
+            text: message,
+            duration: 3000,
+            close: true,
+            gravity: "top",
+            position: "center",
+            backgroundColor: isError ? "red" : "#179500",
+        }).showToast();
+    }
 
-        function addRemoveCouponButton(couponCode) {
-            const couponSection = document.querySelector('.coupon__code');
-            const removeCouponButton = document.createElement('button');
-            removeCouponButton.textContent = 'Remove Coupon';
-            removeCouponButton.classList.add('remove-coupon-btn');
-            removeCouponButton.onclick = removeCoupon;
-            couponSection.appendChild(removeCouponButton);
-        }
+    // Address form toggle
+    function toggleAddressForm() {
+        const select = document.getElementById('addressSelect');
+        const form = document.getElementById('addressForm');
+        form.style.display = select.value === 'new' ? 'block' : 'none';
+    }
 
-        function removeCoupon() {
-            // Show loading indicator
-            Swal.fire({
-                title: 'Removing Coupon',
-                text: 'Please wait...',
-                allowOutsideClick: false,
-                showConfirmButton: false,
-                willOpen: () => {
-                    Swal.showLoading();
-                }
+    // Clipboard functionality for coupon codes
+    document.querySelectorAll('.coupon-badge').forEach(badge => {
+        badge.addEventListener('click', function() {
+            const couponCode = this.dataset.coupon;
+            navigator.clipboard.writeText(couponCode).then(() => {
+                showNotification('Coupon code copied!', false);
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+                showNotification('Failed to copy coupon code', true);
             });
-
-            fetch('/removecoupon', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data.success) {
-                    location.reload()
-                    showNotification('Coupon removed successfully');
-                } else {
-                    showNotification(data.message || "Failed to remove coupon",true);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showNotification(error.message || "An error occurred while removing the coupon", true);
-            })
-            .finally(() => {
-                Swal.close(); // Close loading indicator
-            });
-        }
-
-        // Keyboard accessibility for modals
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                modal.style.display = 'none';
-                availableCouponsModal.style.display = 'none';
-            }
         });
+    });
 
-        const modalElement = document.querySelector('.modal-content');
+    // Keyboard accessibility for modals
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            modal.style.display = 'none';
+            availableCouponsModal.style.display = 'none';
+        }
+    });
 
-        modalElement.addEventListener('keydown', function(e) {
-            if (e.key === 'Tab') {
-                const focusableContent = modalElement.querySelectorAll(focusableElements);
-                const firstFocusableElement = focusableContent[0];
-                const lastFocusableElement = focusableContent[focusableContent.length - 1];
+    const modalElement = document.querySelector('.modal-content');
+    modalElement.addEventListener('keydown', function(e) {
+        if (e.key === 'Tab') {
+            const focusableContent = modalElement.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+            const firstFocusableElement = focusableContent[0];
+            const lastFocusableElement = focusableContent[focusableContent.length - 1];
 
-                if (e.shiftKey) {
-                    if (document.activeElement === firstFocusableElement) {
-                        lastFocusableElement.focus();
-                        e.preventDefault();
-                    }
-                } else {
-                    if (document.activeElement === lastFocusableElement) {
-                        firstFocusableElement.focus();
-                        e.preventDefault();
-                    }
+            if (e.shiftKey) {
+                if (document.activeElement === firstFocusableElement) {
+                    lastFocusableElement.focus();
+                    e.preventDefault();
+                }
+            } else {
+                if (document.activeElement === lastFocusableElement) {
+                    firstFocusableElement.focus();
+                    e.preventDefault();
                 }
             }
-        });
+        }
+    });
 });
+
 </script>
 
 <style>
@@ -571,7 +664,7 @@
     }
     .coupon-input button {
         padding: 10px 15px;
-        background-color: #ff3e6c;
+        background-color: #179500;
         color: white;
         border: none;
         border-radius: 0 4px 4px 0;
@@ -581,9 +674,9 @@
     .coupon-badge {
         display: inline-block;
         padding: 5px 10px;
-        background-color: #fff0f1;
-        color: #ff3e6c;
-        border: 1px dashed #ff3e6c;
+        background-color: #bcffa7;
+        color: #0a0a0a;
+        border: 1px dashed #a0cc00;
         border-radius: 4px;
         margin-bottom: 10px;
         font-size: 14px;
@@ -591,7 +684,7 @@
         transition: background-color 0.3s, color 0.3s;
     }
     .coupon-badge:hover {
-        background-color: #ff3e6c;
+        background-color: #179500;
         color: white;
     }
 
@@ -602,7 +695,7 @@
     #couponDetails h3 {
         margin: 10px 0;
         font-size: 16px;
-        color: #ff3e6c;
+        color: #179500;
     }
     #couponDetails p {
         margin: 5px 0;
@@ -616,7 +709,7 @@
     #applyCoupon {
         width: 100%;
         padding: 10px;
-        background-color: #ff3e6c;
+        background-color: #179500;
         color: white;
         border: none;
         border-radius: 4px;
@@ -645,14 +738,14 @@
     }
 
     .coupon-item .coupon-badge:hover {
-        background-color: #ff3e6c;
+        background-color: #179500;
         color: white;
     }
 
     .remove-coupon-btn {
         margin-left: 10px;
         padding: 5px 10px;
-        background-color: #ff3e6c;
+        background-color: #179500;
         color: white;
         border: none;
         border-radius: 4px;
@@ -666,3 +759,4 @@
     }
     
 </style>
+

@@ -58,7 +58,7 @@ a:focus {
 
 a:hover {
 	text-decoration: none;
-  color: #ff3e6c;
+  color: #29bd0f;
 }
 
 /*---------------------------------------------*/
@@ -208,7 +208,7 @@ iframe {
 .login100-form-title {
   font-family: Poppins-Bold;
   font-size: 24px;
-  color: #ff3e6c;
+  color: #35a321;
   line-height: 1.2;
   text-align: center;
 
@@ -230,7 +230,7 @@ iframe {
   font-family: Poppins-Medium;
   font-size: 15px;
   line-height: 1.5;
-  color: #ff3e6c;
+  color: #29bd0f;
 
   display: block;
   width: 100%;
@@ -253,7 +253,7 @@ iframe {
   width: 100%;
   height: 100%;
   box-shadow: 0px 0px 0px 0px;
-  color: #ff3e6c;
+  color: #29bd0f;
 }
 
 .input100:focus + .focus-input100 {
@@ -301,7 +301,7 @@ iframe {
 }
 
 .input100:focus + .focus-input100 + .symbol-input100 {
-  color: #ff3e6c;
+  color: #29bd0f;
   padding-left: 28px;
 }
 
@@ -346,7 +346,7 @@ iframe {
 }
 
 .login100-form-btn:hover {
-  background: #ff3e6c;
+  background: #29bd0f;
 }
 
 
@@ -483,7 +483,7 @@ iframe {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background-color: #ff3e6c;
+  background-color: #29bd0f;
   border: none;
   color: #fff;
   font-size: 20px;
@@ -545,7 +545,7 @@ a:focus {
 
 a:hover {
     text-decoration: none;
-    color: #ff3e6c;
+    color: #29bd0f;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -651,7 +651,7 @@ iframe {
     border-radius: 10px;
     overflow: hidden;
     padding: 55px 55px 37px 55px;
-    box-shadow: 0 10px 30px 0 #ff3e6c;
+    box-shadow: 0 10px 30px 0 #D0D9C7;
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
@@ -664,16 +664,18 @@ iframe {
 .login100-pic img {
     max-width: 100%;
     margin-top: 55px;
+    margin-left: 30px;
 }
 
 .login100-form {
     width: 290px;
+    margin-right: 20px;
 }
 
 .login100-form-title {
     font-family: Poppins-Bold;
     font-size: 24px;
-    color: #ff3e6c;
+    color: #262626;
     line-height: 1.2;
     text-align: center;
     width: 100%;
@@ -711,7 +713,7 @@ iframe {
     width: 100%;
     height: 100%;
     box-shadow: 0px 0px 0px 0px;
-    color: #ff3e6c;
+    color: #29bd0f;
 }
 
 .input100:focus + .focus-input100 {
@@ -738,7 +740,7 @@ iframe {
 }
 
 .input100:focus + .focus-input100 + .symbol-input100 {
-    color: #ff3e6c;
+    color: #29bd0f;
     padding-left: 28px;
 }
 
@@ -759,7 +761,7 @@ iframe {
     width: 100%;
     height: 50px;
     border-radius: 25px;
-    background: #ff3e6c;
+    background: #29bd0f;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -768,7 +770,7 @@ iframe {
 }
 
 .login100-form-btn:hover {
-    background: #dd0033;
+    background: #39a926;
 }
 
 .text-center {

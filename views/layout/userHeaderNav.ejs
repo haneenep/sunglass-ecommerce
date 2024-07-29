@@ -4,22 +4,15 @@
         <div class="row">
             <div class="col-lg-3 col-md-3">
                 <div class="header__logo">
-                    <a href="/"><h3>VISTAVOGUE</h3></a>
+                    <a href="/"><h3><span style="color: black;">VISTA</span>VOGUE</h3></a>
                 </div>
             </div>
             <div class="col-lg-6 col-md-6">
                 <nav class="header__menu mobile-menu">
                     <ul>
-                        <li class=""><a href="/">Home</a></li>
-                        <li><a href="/products">Products</a></li>
-                        <li><a href="#">Pages</a>
-                            <ul class="dropdown">
-                                <li><a href="./shop-details.html">Shop Details</a></li>
-                                <li><a href="/cart">Shopping Cart</a></li>
-                                <li><a href="./checkout.html">Check Out</a></li>
-                            </ul>
-                        </li>
-                        <li><a href="./contact.html">Contacts</a></li>
+                        <li class=""><a href="/">HOME</a></li>
+                        <li><a href="/products">PRODUCTS</a></li>
+                        <li><a href="/contact">CONTACT US</a></li>
                     </ul>
                 </nav>
             </div>
@@ -32,16 +25,16 @@
                     <% if( locals.user){%>
                     <div class="dropdown">
                         <button class="dropdown-toggle"
-                         style="border-radius: 15px; 
+                         style="border-radius: 7px; 
                          padding: 0px 6px;">
                          <%= user.name.charAt(0).toUpperCase()%>
                         </button>
-                        <div class="dropdown-menu" style="z-index: 10; background-color: #ff003c;">
+                        <div class="dropdown-menu" style="z-index: 10; background-color: #000000;">
                             <a href="#" style="margin-right: 0;"><%= user.name.toUpperCase() %></a>                            
-                            <a href="/userProfile" style="margin-right: 0;">My Profile</a>                            
-                            <a href="/products" style="margin-right: 0;">All Products</a>
-                            <a href="/orders" style="margin-right: 0;">My Orders</a>
-                            <a href="/logout" style="margin-right: 0;" id="logoutButton" style="color: red;" onclick="confirmLogout(event)">Logout</a>
+                            <a href="/userProfile" style="margin-right: 0;">PROFILE</a>                            
+                            <a href="/products" style="margin-right: 0;">PRODUCTS</a>
+                            <a href="/orders" style="margin-right: 0;">ORDERS</a>
+                            <a href="/logout" style="margin-right: 0;" id="logoutButton" style="color: red;" onclick="confirmLogout(event)">LOGOUT</a>
                         </div>
                     </div>
                 <%}else{%>

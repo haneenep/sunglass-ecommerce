@@ -99,6 +99,16 @@
                             <!-- Order Summary -->
                             <div class="mt-4">
                                 <div class="d-flex justify-content-between font-weight-bold mt-2">
+                                    <span>Shipping</span>
+                                    <span>Free</span>
+                                </div>
+                                <% if(order.discount > 0){ %>
+                                <div class="d-flex justify-content-between font-weight-bold mt-2">
+                                    <span>Discount</span>
+                                    <span style="color: red;">-₹<%= order.discount %></span>
+                                </div>
+                                <% } %>
+                                <div class="d-flex justify-content-between font-weight-bold mt-2">
                                     <span>Total</span>
                                     <span>₹<%= order.totalAmount.toFixed(2) %></span>
                                 </div>
@@ -267,9 +277,6 @@
 
 <!--end wrapper-->
 
-<!--start switcher-->
-<%- include('../layout/adminTheme') -%>
-<!--end switcher-->
 
 <!-- Bootstrap JS -->
 <script src="/assets/js/bootstrap.bundle.min.js"></script>
@@ -286,7 +293,7 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script>
     function openCustomModal(returnId) {
-        const returnData = <%- JSON.stringify(returnData) %>;
+        const returnData = JSON.parse('<%- JSON.stringify(returnData) %>'.replace(/&#34;/g, '"'));
         const returnRequest = returnData.find(r => r._id.toString() === returnId);
         if (returnRequest) {
             document.getElementById('reason').textContent = returnRequest.reason;

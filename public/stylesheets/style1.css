@@ -44,7 +44,7 @@ h4,
 h5,
 h6 {
 	margin: 0;
-	color: #ff003c;
+	color: #179500;
 	font-weight: 400;
 	font-family: "Nunito Sans", sans-serif;
 }
@@ -329,13 +329,6 @@ ol {
 
 .header {
 	background: #ffffff;
-    /* position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    z-index: 1000;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); */
-}
 }
 
 .header__top {
@@ -376,8 +369,8 @@ ol {
 }
 
 .fa-regular, .far {
-    font-weight: 400;
-    color: black;
+	font-weight: 400;
+	color: black;
 }
 
 .header__top__hover:hover ul {
@@ -474,7 +467,7 @@ ol {
 	left: 0;
 	top: 56px;
 	width: 150px;
-	background: #ff003c;
+	background: #179500;
 	text-align: left;
 	padding: 5px 0;
 	z-index: 9;
@@ -485,7 +478,7 @@ ol {
 	transition: all, 0.3s;
 }
 
-.header__menu ul li .dropdown li:hover{
+.header__menu ul li .dropdown li:hover {
 	background-color: black;
 }
 
@@ -507,12 +500,12 @@ ol {
 }
 
 .header__menu ul li a {
-	font-size: 17px;
+	font-size: 15px;
 	color: #111111;
 	display: block;
 	font-weight: 600;
 	position: relative;
-	padding: 3px 0;
+	padding: 10px 0;
 }
 
 .header__menu ul li a:after {
@@ -521,7 +514,7 @@ ol {
 	bottom: 0;
 	width: 100%;
 	height: 2px;
-	background: #ff003c;
+	background: #179500;
 	content: "";
 	-webkit-transition: all, 0.5s;
 	-o-transition: all, 0.5s;
@@ -530,7 +523,6 @@ ol {
 	-ms-transform: scale(0);
 	transform: scale(0);
 }
-
 
 .header__nav__option {
 	text-align: right;
@@ -572,6 +564,87 @@ ol {
 .canvas__open {
 	display: none;
 }
+
+/* Responsive styles */
+@media (max-width: 1200px) {
+	.header__menu ul li {
+		margin-right: 30px;
+	}
+}
+
+@media (max-width: 991px) {
+	.header__menu {
+		display: none;
+	}
+	.header__nav__option {
+		text-align: center;
+	}
+	.canvas__open {
+		display: block;
+		font-size: 22px;
+		color: #111111;
+		height: 35px;
+		width: 35px;
+		line-height: 35px;
+		text-align: center;
+		border: 1px solid #111111;
+		border-radius: 2px;
+		cursor: pointer;
+		position: absolute;
+		right: 15px;
+		top: 25px;
+	}
+	.offcanvas-menu-wrapper {
+		display: block;
+		position: fixed;
+		left: -300px;
+		top: 0;
+		height: 100%;
+		width: 300px;
+		background: #ffffff;
+		padding: 50px 30px 30px;
+		z-index: 9999;
+		overflow-y: auto;
+		-webkit-transition: all, 0.5s;
+		-o-transition: all, 0.5s;
+		transition: all, 0.5s;
+	}
+	.offcanvas-menu-wrapper.active {
+		left: 0;
+	}
+}
+
+@media (max-width: 767px) {
+	.header__top {
+		display: none;
+	}
+	.header__logo {
+		text-align: center;
+	}
+	.header__nav__option {
+		text-align: left;
+	}
+	.header__nav__option a {
+		margin-right: 20px;
+	}
+	.header__nav__option .price {
+		margin-left: 0;
+	}
+}
+
+@media (max-width: 479px) {
+	.canvas__open {
+		right: 10px;
+	}
+	.header__nav__option {
+		display: flex;
+		justify-content: space-around;
+	}
+	.header__nav__option a {
+		margin-right: 10px;
+	}
+}
+
 
 /*---------------------
   Hero
@@ -2371,7 +2444,7 @@ padding-top: 70px;
 
 .shopping__cart__table table tbody tr td.product__cart__item .product__cart__item__text {
 	overflow: hidden;
-	padding-top: 21px;
+	padding-top: 50px;
 }
 
 .shopping__cart__table table tbody tr td.product__cart__item .product__cart__item__text h6 {

@@ -44,9 +44,16 @@ const productSchema = new mongoose.Schema({
     },
     discountedPrice: {
         type: Number,
-        default: function() {
+        default: function() {  
           return this.price - this.discountAmount;
         }
+    },
+    beforeOffer :{
+        type : Number
+    },
+    inCategoryOffer : {
+        type : Boolean,
+        default : false
     },
     isDeleted : {
         type : Boolean,
@@ -62,6 +69,23 @@ const productSchema = new mongoose.Schema({
         this.discountedPrice = this.price - this.discountAmount;
         next();
     });
+
+    productSchema.methods.updateCategoryOffer = async function(categoryOffer) {
+        if(categoryOffer && categoryOffer.status === 'Active'){
+            this.inCategoryOffer = true;
+            this.beforeOffer = this.price;
+            this.discountAmount = Math.floor(this.price * (categoryOffer.offerPercentage / 100));
+        }else{
+            this.inCategoryOffer = false;
+            this.discountAmount = 0;
+            this.beforeOffer = 0;
+        }
+
+        this.discountedPrice = this.price - this.discountAmount
+        await this.save()
+
+      };
+      
 
 const product = mongoose.model('product',productSchema);
 

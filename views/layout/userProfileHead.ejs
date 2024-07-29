@@ -63,6 +63,7 @@
       src="https://cdn.jsdelivr.net/npm/toastify-js"
     ></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.7.6/lottie.min.js"></script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <style>
       body {
         font-family: "Nunito Sans", sans-serif;
@@ -177,6 +178,13 @@
             border-radius: 20px;
             font-size: 14px;
          }
+        .status-failed { 
+          color: rgb(255, 0, 0);
+          background-color: rgba(130, 17, 17, 0.11);
+          padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 14px;
+         }
         .product-details { background-color: #f8f9fa; padding: 15px; margin-bottom: 15px; }
         .status-in-progress {
             background-color: #ffc107;
@@ -195,9 +203,23 @@
           border: 1px solid;
           cursor: pointer; 
       }
+        .repayment-btn {
+          background-color: #ffffff;
+          color: rgb(255, 0, 0);
+          padding: 8px 16px;
+          border-radius: .2rem;
+          line-height: 1.5;
+          border-color: #343a40;
+          border: 1px solid;
+          cursor: pointer; 
+      }
 
       .view-order-btn:hover {
           background-color: #161718; 
+      }
+      .repayment-btn:hover {
+          background-color: #ff0000e4; 
+          color: white;
       }
 
       .info-header {
@@ -365,7 +387,7 @@
       }
 
       .dropdown-menu a:hover {
-        background-color: #1ac100;
+        background-color: #179500;
       }
       @media (max-width: 768px) {
             .page-container {
@@ -384,6 +406,9 @@
                 margin-bottom: 15px;
             }
         }
+        .sidebar-nav a:hover {
+        color: #179500;
+    }
 
     </style>
   </head>

@@ -2,7 +2,7 @@
 <%- include('../layout/userHeaderNav') -%>
 
 <section class="shop-details">
-  <div class="container">
+  <div class="container" data-product-id="<%= product._id %>">
     <div class="row">
       <div class="col-lg-12">
         <div class="product__details__breadcrumb">
@@ -37,16 +37,21 @@
               <span>Brand :</span> <strong class="badge badge-dark"> <%= brand.name.toUpperCase() %></strong>
             </p>
           <% } %>
-          <!-- <h3>₹<%= product.price %></h3> -->
-          <% if (product.discountAmount > 0) { %>
+          <% if(product.inCategoryOffer === true){ %>
             <h3>
-              <span class="original-price">₹<%= product.price %></span>
-              <span class="discounted-price">₹<%= product.discountedPrice %></span>
+            <span class="original-price">₹<%= product.price %></span>
+            <span class="discounted-price">₹<%= product.discountedPrice %></span>
             </h3>
-            <span class="discount-badge"><%= Math.round((product.discountAmount / product.price) * 100) %>% OFF</span>
-          <% } else { %>
-            <h3>₹<%= product.price.toFixed(2) %></h3>
-          <% } %>
+            <span class="discount-badge"><%= Math.round(((product.price - product.discountedPrice) / product.price) * 100) %>% OFF</span>
+            <% }else if(product.discountAmount > 0){ %>
+            <h3>
+            <span class="original-price">₹<%= product.price %></span>
+            <span class="discounted-price">₹<%= product.discountedPrice %></span>
+            </h3>
+            <span class="discount-badge"><%= Math.round(((product.price - product.discountedPrice) / product.price) * 100) %>% OFF</span>
+            <% }else{ %>
+                <h3>₹<%= product.price %></h3>
+            <% } %>
           <hr>
           <h4 style="display: flex;">&nbsp;Description</h4>
           <p style="text-align: start;"><%= product.description %></p> 
@@ -70,7 +75,7 @@
                 <i class="fa fa-shopping-cart"></i> Out of Stock
               </button>
             <% } else if (user && !cart) { %>
-              <a href="#" id="add-to-bag-btn" class="primary-btn" onclick="addToCart('<%= product._id %>', '<%= product.price %>', '<%= product.stockQuantity %>')">
+              <a href="#" id="add-to-bag-btn" class="primary-btn" onclick="addToCart('<%= product._id %>', '<%= product.price %>', '<%= product.stockQuantity %>','<%= product.discountAmount %>')">
                 <i class="fa fa-shopping-cart"></i> Add to Bag
               </a>
               <input type="hidden" id="product-quantity" value="1">
@@ -84,9 +89,12 @@
               </a>
             <% } %>
           </div>
-                   
-          <div class="product__details__btns__option">
-            <a href="#"><i class="fa fa-heart"></i> Add to wishlist</a>
+          
+           <div class="product__details__btns__option">
+            <button id="wishlist-btn" class="secondary-btn" onclick="addToWishlist('<%= product._id %>')">
+              <i class="fa fa-heart" id="wishlist-icon"></i>
+              <span id="wishlist-text">WISHLIST</span>
+            </button>
           </div>
 
         </div>
@@ -149,7 +157,21 @@
                         <i class="fa fa-star-o"></i>
                         <i class="fa fa-star-o"></i>
                     </div>
-                    <h5>₹<%= product.price %></h5>
+                    <% if(product.inCategoryOffer === true){ %>
+                      <h5>
+                      <span class="discounted-price">₹<%= product.discountedPrice %></span>
+                      <span class="original-price">₹<%= product.price %></span>
+                      <span class="discount-badge"><%= Math.round(((product.price - product.discountedPrice) / product.price) * 100) %>% OFF</span>
+                      </h5>
+                      <% }else if(product.discountAmount > 0){ %>
+                      <h5>
+                      <span class="discounted-price">₹<%= product.discountedPrice %></span>
+                      <span class="original-price">₹<%= product.price %></span>
+                      <span class="discount-badge"><%= Math.round(((product.price - product.discountedPrice) / product.price) * 100) %>% OFF</span>
+                      </h5>
+                      <% }else{ %>
+                          <h5>₹<%= product.price %></h5>
+                      <% } %>
                 </div>
             </div>
         </div>
@@ -191,7 +213,7 @@
     $("#etalage").etalage("init");
   }
 
-  function addToCart(productId, price, stockQuantity) {
+  function addToCart(productId, price, stockQuantity,discountAmount) {
   const quantity = document.querySelector('#product-quantity').value;
   if (stockQuantity <= 0) {
     const addToBagBtn = document.getElementById('add-to-bag-btn');
@@ -210,7 +232,8 @@
       productId: productId,
       quantity: quantity,
       price: price,
-      stockQuantity: stockQuantity
+      stockQuantity: stockQuantity,
+      discountAmount: discountAmount
     })
   }).then(response => response.json())
   .then(data => {
@@ -225,7 +248,7 @@
         stopOnFocus: true,
       }).showToast();
 
-      // Update button text and behavior
+
       const btn = document.getElementById('add-to-bag-btn');
       if (btn) {
         btn.innerHTML = '<i class="fa fa-shopping-cart"></i> Go to Bag';
@@ -261,6 +284,93 @@
   });
 }
 
+function addToWishlist(productId) {
+  if (isInWishlist) {
+    return;
+  }
+
+  fetch('/wishlist/add', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ productId })
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      isInWishlist = true;
+      updateWishlistButton();
+      Toastify({
+        text: 'Added to wishlist',
+        duration: 3000,
+        close: true,
+        gravity: 'top',
+        position: 'center',
+        backgroundColor: '#333',
+        stopOnFocus: true,
+      }).showToast();
+    } else {
+      Toastify({
+        text: data.message,
+        duration: 3000,
+        close: true,
+        gravity: 'top',
+        position: 'center',
+        backgroundColor: '#FF0000',
+        stopOnFocus: true,
+      }).showToast();
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    Toastify({
+      text: 'Failed to add to wishlist',
+      duration: 3000,
+      close: true,
+      gravity: 'top',
+      position: 'center',
+      backgroundColor: '#FF0000',
+      stopOnFocus: true,
+    }).showToast();
+  });
+}
+
+function updateWishlistButton() {
+  const wishlistBtn = document.getElementById('wishlist-btn');
+  const wishlistIcon = document.getElementById('wishlist-icon');
+  const wishlistText = document.getElementById('wishlist-text');
+  
+  if (isInWishlist) {
+    wishlistBtn.classList.add('wishlisted');
+    wishlistIcon.style.color = '#ff3e6c';
+    wishlistText.textContent = 'WISHLISTED';
+    wishlistBtn.disabled = true;
+  } else {
+    wishlistBtn.classList.remove('wishlisted');
+    wishlistIcon.style.color = '';
+    wishlistText.textContent = 'WISHLIST';
+    wishlistBtn.disabled = false;
+  }
+}
+
+function checkWishlistStatus(productId) {
+  fetch(`/wishlist/check/${productId}`)
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        isInWishlist = data.isInWishlist;
+        updateWishlistButton();
+      }
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const productId = document.querySelector('[data-product-id]').dataset.productId;
+  checkWishlistStatus(productId);
+});
+  
 </script>
 
 <style>
@@ -441,6 +551,7 @@
   margin-right: 10px;
 }
 
+
 .discount-badge {
   background-color: #e53637;
   color: white;
@@ -448,6 +559,27 @@
   border-radius: 3px;
   font-size: 12px;
   margin-left: 10px;
+}
+
+
+.secondary-btn {
+  background-color: white;
+  color: #000;
+  border: 1px solid #ccc;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.wishlisted {
+  background-color: #535766;
+  color: white;
+  border: none;
+}
+
+#wishlist-icon {
+  margin-right: 5px;
 }
 
 </style>

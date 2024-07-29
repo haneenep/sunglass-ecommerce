@@ -8,6 +8,7 @@
             </div>
 
             <form class="login100-form validate-form" id="signupForm" action="/signup" method="post">
+                <input type="hidden" name="userId" id="userId">
                 <span class="login100-form-title">
                     Register Now
                 </span>
@@ -77,3 +78,12 @@
 </div>
 
 <%- include('../layout/footer') -%>
+<script>
+    
+    const urlParams = new URLSearchParams(window.location.search);
+    const refId = urlParams.get('refId');
+
+    document.getElementById("userId").value = refId;
+    
+</script>
+

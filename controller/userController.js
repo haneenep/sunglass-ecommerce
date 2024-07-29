@@ -1,12 +1,15 @@
-  const bcrypt = require('bcrypt');
-  const User = require('../models/userModel');
-  const sendEmail = require('../auth/nodemailer');
-  const OTP = require('../models/otpModel');
-  const generateOtp = require('../utils/generateOtp');
-  const Product = require('../models/productModel');
-  const Category = require('../models/categoryModel');
-  const Brand = require('../models/brandModel');
-  const Cart = require('../models/cartModel');
+const generateOtp = require('../utils/generateOtp');
+const Category = require('../models/categoryModel');
+const Product = require('../models/productModel');
+const sendEmail = require('../auth/nodemailer');
+const Wallet = require('../models/walletModel');
+const Brand = require('../models/brandModel');
+const User = require('../models/userModel');
+const Cart = require('../models/cartModel');
+const OTP = require('../models/otpModel');
+const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
+const uuid = require('uuid');
   
 
     module.exports = {
@@ -15,22 +18,28 @@
 
         const user = req.session.user;
         const PRODUCTS_PER_SECTION = 8;
+        const LATEST_PRODUCTS_COUNT = 3;
         
         try {
 
-          const products = await Product.find().populate('category');
+          const [products,latestP] = await Promise.all([
+            Product.find().populate('category'),
+            Product.find().sort({createdAt : -1})
+          ])
 
           const mensProducts = products.filter(product => product.category.name.toLowerCase() === 'men').slice(0, PRODUCTS_PER_SECTION);
           const womensProducts = products.filter(product => product.category.name.toLowerCase() === 'women').slice(0, PRODUCTS_PER_SECTION);
           const kidsProducts = products.filter(product => product.category.name.toLowerCase() === 'kids').slice(0, PRODUCTS_PER_SECTION);
           
-          console.log(products,"productsss");
+          const latestProducts = latestP.slice(0,LATEST_PRODUCTS_COUNT);
+
           res.render('user/user_home',{
             user,
             products,
             mensProducts,
             womensProducts,
             kidsProducts,
+            latestProducts
           }
         );
 
@@ -49,15 +58,22 @@
         res.render('user/user_login',{ err,success });
       },
 
-      signup : (req,res) => {
+        signup : (req,res) => {
+
         const err = req.session.errMssg || null;
         req.session.errMssg = null;
         res.render('user/user_signup',{err});
+
       },
 
       // Generate and send OTP 
       generateAndSendOtp : async (req,res) => {
-        const {name,email,password} = req.body;
+        const {name,email,password,userId} = req.body;
+        console.log("ll",req.body);
+
+        if(userId){
+          req.session.refLink = req?.body?.userId;
+        }
 
         try{
 
@@ -148,13 +164,52 @@
             password
           });
 
+          const referalLink = `http://localhost:4000/loginandsignup?refId=${newUser._id}`
+          
+          newUser.referalLink = referalLink
           await newUser.save();
+
           await OTP.deleteOne({email});
+
+          const refLink = req?.session?.refLink;
+
+          if(mongoose.Types.ObjectId.isValid(refLink)){
+            const userRef = req.session.refLink;
+            const userExist = await Wallet.findById(userRef)
+
+            if(userExist){
+              await Wallet.findByIdAndUpdate(
+                {user : userExist},
+                {$inc : {balance : 200},
+                $push : {
+                  transactions : {
+                    transaction_id : `myWallet${uuid.v4()}`,
+                    amount : 200,
+                    type : 'credit',
+                    description : 'Referal Amount',
+                  }
+                }}
+              )
+            }else{
+              await Wallet.create({
+                user : userRef,
+                balance : 200,
+                transactions : {
+                  transaction_id : `myWallet${uuid.v4}`,
+                  amount : 200,
+                  type : 'credit',
+                  description : 'Referal Amount'
+                }
+              })
+            }
+          }
+          
+          delete req.session.refLink;
+          
           req.session.tempUser = null;
           req.session.success = "Signup Successfully !!";
-        
 
-          res.redirect('/login');
+          res.redirect('/');
         } catch(err) {
           console.log(err);
           res.render('500')
@@ -252,12 +307,9 @@
           .skip(skip)
           .limit(limit)
           .lean();
-
-          products.forEach(product => {
-            product.discountedPrice = product.price - product.discountAmount;
-          });
           
-          console.log(products,"jkkjkjkjk");
+          console.log(products,"there is your filter");
+          
           const totalPages  = Math.ceil(totalProducts / limit);
 
           const categories = await Category.find({ isActive: true }).lean();
@@ -302,7 +354,7 @@
   
           if(price){
           const [min,max] = price.split('-').map(Number);
-          filterQuery.price = {$gte : min,$lte : max};
+          filterQuery.discountedPrice = {$gte : min,$lte : max};
           }
   
           if(search){
@@ -319,16 +371,14 @@
           const sortOptions = {
               recommended: { createdAt: 1 },
               new: { createdAt: -1 },
-              low_to_high: { price: 1 },
-              high_to_low: { price: -1 }
+              low_to_high: { discountedPrice: 1 },
+              high_to_low: { discountedPrice: -1 }
           };
           return sortOptions[sort] || sortOptions.recommended;
       }
       },
 
       productDetails: async (req, res) => {
-
-        // const relatedProduct = 
     
         try {
           
@@ -341,9 +391,6 @@
             .populate('category')
             .populate('brand');
 
-            product.discountedPrice = product.price - product.discountAmount;
-
-    
             const category = product.category;
             const brand = product.brand;
             const relatedProducts = await Product.find({ category: category._id, _id: { $ne: productId } });
@@ -359,6 +406,10 @@
         }
     },
 
+
+      contact : (req,res)  => {
+        res.render('user/contact');
+      },
 
       logout : (req, res) => {
         req.session.destroy(err => {

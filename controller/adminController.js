@@ -13,11 +13,6 @@
         adminPost : (req,res) => {
             res.redirect('/admin/dashboard')
         },
-
-        // route for admindash
-        adminDash : (req,res) => {
-            res.render('admin/adminDash',{ user : req.session.admin})
-        },
         
 
         adminLogout : (req,res) => {
@@ -25,6 +20,7 @@
                 if(err) {
                     return res.redirect('/admin/dashboard')
                 }
+                console.log("admin login");
                 res.redirect('/admin/login')
             });
         },

@@ -1,4 +1,4 @@
-const createError = require('http-errors');
+// const createError = require('http-errors');
 const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
@@ -9,7 +9,8 @@ require('./config/passport');
 const nocache = require('nocache');
 const session = require("express-session")
 const flash = require('connect-flash')
-
+require('dotenv').config();
+require('./utils/cronjob');
 
 const usersRouter = require('./routes/users');
 const adminRouter = require('./routes/admin');

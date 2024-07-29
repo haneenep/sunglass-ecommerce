@@ -2,9 +2,11 @@
     const upload = require('../config/multer');
     const brandController = require('../controller/brandController');
     const adminController = require('../controller/adminController');
+    const offerController = require('../controller/offerController');
     const couponController = require('../controller/couponController');
     const productController = require('../controller/productController');
     const categoryController = require('../controller/categoryController');
+    const dashboardController = require('../controller/dashboardController');
     const userManageController = require('../controller/userManageController');
     const orderMangementController = require('../controller/orderManageController');
 
@@ -18,7 +20,7 @@
     router.post('/login',adminAuth.isAdminAuthenticated,adminController.adminPost);
     router.get('/logout',adminController.adminLogout);
     // dashboard
-    router.get('/dashboard',adminAuth.ensureAdmin,adminController.adminDash);
+    router.get('/dashboard',adminAuth.ensureAdmin,dashboardController.adminDash);
 
 
     // display addProduct form
@@ -75,17 +77,17 @@
     // orderStatusChanging
     router.put('/updateOrderStatus',orderMangementController.updateOrderStatus);
     // orderManagementDetails
-    router.get('/orderDetails/:id',orderMangementController.orderManageDetails);
+    router.get('/orderDetails/:id',adminAuth.ensureAdmin,orderMangementController.orderManageDetails);
     //  orderReturnStatus
     router.post('/update-returnStatus',orderMangementController.updateReturnStatus);
 
 
     // coupon
-    router.get('/coupons',couponController.couponGet);  
+    router.get('/coupons',adminAuth.ensureAdmin,couponController.couponGet);  
     // addCoupon
     router.post('/addCoupon',couponController.addCoupon);
     // viewCoupon
-    router.get('/getCoupon/:id',couponController.getCoupon);
+    router.get('/getCoupon/:id',adminAuth.ensureAdmin,couponController.getCoupon);
     // editgetting
     router.get('/editCoupon/:id',couponController.editCouponGet);
     // editing 
@@ -93,5 +95,19 @@
     // deleting
     router.delete('/deleteCoupon/:id',couponController.deleteCoupon);
 
+
+    // offer
+    router.get('/offers',adminAuth.ensureAdmin,offerController.offerGet);
+    // add offer
+    router.post('/add-offer',offerController.addOffer);
+    // edit offer
+    router.post('/edit-offer/:id',offerController.editOffer);
+    // deleting offer
+    router.delete('/delete-offer/:id',offerController.deleteOffer);
+
+    
+    // salesreport
+    router.post('/salesreport',dashboardController.salesReport);
+    
 
     module.exports = router;    

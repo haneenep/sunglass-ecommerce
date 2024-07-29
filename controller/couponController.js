@@ -169,7 +169,7 @@ module.exports = {
 
     applyingCoupon: async (req, res) => {
         const { couponCode } = req.body;
-        const userId = req.session.user._id;
+        const userId = req.session?.user?._id;
     
         try {
             const cart = await Cart.findOne({ userId }).populate({
@@ -177,13 +177,13 @@ module.exports = {
                 model: Products
             });
 
+            console.log(cart,"hhhhheree mahan");
+
             if(req.session.appliedCoupon){
                 return res.status(404).json({success : false,message : "A Coupon is allready applied"})
             }
     
-            const totalPrice = cart.products.reduce((price, curr) => {
-                return price + curr.price * curr.quantity;
-            }, 0);
+            const totalPrice = cart.total
     
             const coupon = await Coupon.findOne({ couponCode });
     
@@ -219,25 +219,28 @@ module.exports = {
 
             const cart = await Cart.findOne({userId}).populate('products.productid');
             
+            console.log(cart,"removed toatl here");
             if(!cart){
                 res.status(404).json({success : false , message : "no cart found"});
             }
-            const newTotal = cart.products.reduce((total, item) => {
-                return total + (item.quantity * item.productid.price);
-            }, 0);
-            
+
+            const newTotal = cart.total
     
             // Remove the applied coupon from the session
             delete req.session.appliedCoupon;
-            
+
             res.status(200).json({
                  success: true,
                  newTotal : newTotal,
                  message: "Coupon removed successfully" 
                 });
+
         } catch (error) {
             console.error("Error while removing the coupon", error);
             res.status(500).json({ message: "Error while removing the coupon" });
         }
     }
 }
+
+
+// 

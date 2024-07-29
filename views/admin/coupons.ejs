@@ -265,11 +265,6 @@
     </div>
 </div>
 
-
-<!--start switcher-->
-<%- include('../layout/adminTheme') -%>
-<!--end switcher-->
-
 <!-- Bootstrap JS -->
 <script src="/assets/js/bootstrap.bundle.min.js"></script>
 <!--plugins-->
@@ -295,6 +290,26 @@
         const discountAmount = parseFloat(document.getElementById('discountAmount').value);
         const validFrom = document.getElementById('validFrom').value;
         const validTo = document.getElementById('validTo').value;
+        const searchInput = document.getElementById('couponSearchInput');
+        const table = document.getElementById('couponTable');
+
+        // Filtering
+        searchInput.addEventListener('keyup', function() {
+            const searchTerm = this.value.toLowerCase();
+            const rows = table.querySelectorAll('tbody tr');
+
+            rows.forEach((row, index) => {
+                const text = row.textContent.toLowerCase();
+                const display = text.includes(searchTerm) ? '' : 'none';
+                row.style.display = display;
+
+                // Update the numbering for visible rows
+                if (display === '') {
+                    row.cells[0].textContent = index + 1;
+                }
+            });
+        });
+
     
         // Validate each field
         let isValid = true;
