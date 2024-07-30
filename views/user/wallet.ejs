@@ -34,25 +34,25 @@
                                 <div class="col-6 col-md-3 mb-3">
                                     <div class="summary-item">
                                         <h6 class="text-muted">This Month</h6>
-                                        <h4 class="text-success">₹<%= summary.thisMonth.totalIn %></h4>
+                                        <h4 class="text-success">₹<%= summary?.thisMonth?.totalIn ? summary?.thisMonth?.totalIn : 0 %></h4>
                                     </div>
                                 </div>
                                 <div class="col-6 col-md-3 mb-3">
                                     <div class="summary-item">
                                         <h6 class="text-muted">Last Month</h6>
-                                        <h4 class="text-info">₹<%= summary.lastMonth.totalIn %></h4>
+                                        <h4 class="text-info">₹<%= summary?.lastMonth?.totalIn ? summary?.lastMonth?.totalIn : 0 %></h4>
                                     </div>
                                 </div>
                                 <div class="col-6 col-md-3 mb-3">
                                     <div class="summary-item">
                                         <h6 class="text-muted">Total In</h6>
-                                        <h4 class="text-success">₹<%= summary.totalIn %></h4>
+                                        <h4 class="text-success">₹<%= summary?.totalIn ? summary.totalIn : 0 %></h4>
                                     </div>
                                 </div>
                                 <div class="col-6 col-md-3 mb-3">
                                     <div class="summary-item">
                                         <h6 class="text-muted">Total Out</h6>
-                                        <h4 class="text-danger">₹<%= summary.totalOut %></h4>
+                                        <h4 class="text-danger">₹<%= summary.totalOut ? summary.totalOut : 0 %></h4>
                                     </div>
                                 </div>
                             </div>
