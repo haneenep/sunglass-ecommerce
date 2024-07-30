@@ -192,13 +192,9 @@ const moment = require('moment');
                     $limit: 30 // Last 30 days
                 }
             ]);
-            console.log(salesGraphData,"jjjj");
     
             const salesDates = salesGraphData.map(item => item._id);
             const salesCounts = salesGraphData.map(item => item.count);
-
-            console.log(salesDates,"jjjj");
-            console.log(salesCounts,"jjjj");
 
                 res.render('admin/adminDash',{
                     admin : req.session.admin,

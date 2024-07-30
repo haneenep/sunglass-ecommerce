@@ -25,7 +25,6 @@ module.exports = {
     },
 
     addProduct : async (req,res) => {
-        console.log(req.body);
         try {
             const {
                 productName ,
@@ -109,7 +108,6 @@ module.exports = {
             if(!product){
                 return res.render('404');
             }
-            console.log(product,"there is the product needed fr edit");
 
             res.render('admin/editProduct',{product,category,brand})
         } catch (error) {
@@ -160,29 +158,24 @@ module.exports = {
                 const editedImageData = JSON.parse(editedImages);
                 editedImageData.forEach(item => {
                     if (item.index < updatedImages.length) {
-                        // Only replace the image if it's different from the existing one
                         if (updatedImages[item.index] !== item.path) {
-                            // Delete the old image file if it's different
                             const oldImagePath = updatedImages[item.index];
                             const fullPath = path.join(__dirname, '..', 'public', oldImagePath);
                             fs.unlink(fullPath, (err) => {
                                 if (err) console.error("Error deleting old edited image file:", err);
                             });
     
-                            // Update the image path
                             updatedImages[item.index] = item.path;
                         }
                     }
                 });
             }
     
-            // Handle new images
             if (req.files && req.files.newImages) {
                 const newImagePaths = req.files.newImages.map(file => `/uploads/products/${file.filename}`);
                 updatedImages = updatedImages.concat(newImagePaths);
             }
     
-            // Update product images
             product.images = updatedImages;
     
             await product.save();

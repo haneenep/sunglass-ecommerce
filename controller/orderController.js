@@ -342,7 +342,6 @@ module.exports = {
                         }
                     });
                 }else{
-                    console.log("failed come here");
                     var order = new Order({
                         userId : userId,
                         products : products,
@@ -511,10 +510,6 @@ module.exports = {
                 return price + curr.price * curr.quantity
             },0);
 
-            console.log(order.products,"or///////////////////////////////////");
-            console.log(selectedProduct,"se............................");
-            console.log("sssssssss//////////////////////",subtotal);
-
             const otherItems = order.products
             .filter(p => p.productId._id.toString !== selectedProduct)
             .map(p => ({
@@ -544,8 +539,6 @@ module.exports = {
                 
             };
 
-
-            console.log('order details ',orderDetails);
             res.render('user/orderDetails',{user,userId,order : orderDetails})
         } catch(error){
             console.error(error,"while getting the detailed page");
@@ -585,7 +578,6 @@ module.exports = {
 
             const userId = req.session.user;
 
-            console.log(userId,"ddd");
             const {orderId,productId} = req.params;
 
             const order = await Order.findOne({ _id : orderId});
@@ -640,8 +632,6 @@ module.exports = {
                 }
             }
 
-            console.log("possible hereee its getting");
-
             res.status(200).json({success : true , message : "successfully canceled the order+"});
 
         } catch(error){
@@ -689,7 +679,3 @@ module.exports = {
     }
     
 }
-
-// 
-
-// ........................................................

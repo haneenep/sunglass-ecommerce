@@ -12,7 +12,6 @@ const addressSchema = new mongoose.Schema({
     },
     phoneNumber: {
         type: String
-        // Consider adding validation for phone number format
     },
     address: {
         type: String,
@@ -25,7 +24,6 @@ const addressSchema = new mongoose.Schema({
     pincode: {
         type: Number,
         required: true
-        // Consider adding validation for pincode format
     },
     city: {
         type: String,
@@ -37,7 +35,7 @@ const addressSchema = new mongoose.Schema({
     },
     addressType: {
         type: String,
-        enum: ['HOME', 'WORK', 'OTHER'] // Consider adding 'OTHER' as an option
+        enum: ['HOME', 'WORK', 'OTHER']
     },
 });
 
@@ -156,7 +154,7 @@ OrderSchema.pre("save", async function (next) {
             { upsert: true, new: true }
         );
 
-        this.orderId = counter.count + 1000; // Start from 1001
+        this.orderId = counter.count + 1000;
 
         return next();
     } catch (error) {

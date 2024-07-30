@@ -128,8 +128,6 @@ module.exports = {
                     {$set : {inCategoryOffer : true , beforeOffer : originalPrice , discountedPrice : newPrice}},
                     {new : true}
                 )
-
-                console.log(updatedProduct,"edited Product");
             }
         }
 

@@ -69,7 +69,6 @@ const uuid = require('uuid');
       // Generate and send OTP 
       generateAndSendOtp : async (req,res) => {
         const {name,email,password,userId} = req.body;
-        console.log("ll",req.body);
 
         if(userId){
           req.session.refLink = req?.body?.userId;
@@ -80,9 +79,7 @@ const uuid = require('uuid');
           console.log('Start generating OTP');
 
           let user = await User.findOne({email});
-          console.log(user);
           if(user){
-            console.log("user already registered");
             req.session.errMssg = "User already exists";
             return res.redirect('/loginandsignup');
           }
@@ -108,7 +105,6 @@ const uuid = require('uuid');
           };
 
           await sendEmail(mailOptions);
-          console.log('OTP sent to email');
 
           // Temporarily store users details in session
           req.session.tempUser = { name, email, password : await bcrypt.hash(password, 10) };
@@ -133,9 +129,9 @@ const uuid = require('uuid');
 
       // verify OTP
       verifyOTP : async (req,res) => {
+
         const { email,otp } = req.body;
-        console.log("egamil",email);
-        console.log('Session tempUser:', req.session.tempUser);
+
         try {
 
           const otpRecord = await OTP.findOne({ email });
@@ -164,7 +160,7 @@ const uuid = require('uuid');
             password
           });
 
-          const referalLink = `http://localhost:4000/loginandsignup?refId=${newUser._id}`
+          const referalLink = `https://www.vistavogue.live/loginandsignup?refId=${newUser._id}`
           
           newUser.referalLink = referalLink
           await newUser.save();
@@ -307,9 +303,7 @@ const uuid = require('uuid');
           .skip(skip)
           .limit(limit)
           .lean();
-          
-          console.log(products,"there is your filter");
-          
+                    
           const totalPages  = Math.ceil(totalProducts / limit);
 
           const categories = await Category.find({ isActive: true }).lean();

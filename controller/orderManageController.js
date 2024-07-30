@@ -47,21 +47,16 @@ module.exports = {
 
         const allSameStatus = orderr.products.every(product => product.status === status);
 
-        console.log(allSameStatus,"same status");
         if (allSameStatus) {
             orderr.status = status;
-            console.log("coming here the same side");
         } else {
             orderr.status = 'Mixed';
-            console.log("coming here the different side");
         }
 
         if(orderr.paymentMethod === 'COD' && orderr.status === 'Order Delivered'){
             orderr.paymentStatus = 'Paid';
-            console.log("cooome");
         }
 
-        console.log(orderr,"after the change");
         await orderr.save();
 
             res.status(200).json({ msg : "Order Status Updated"});
@@ -84,9 +79,6 @@ module.exports = {
             if (!order) {
                 return res.render('404');
             }
-  
-            console.log(returnData,"daaaataaa");
-            console.log(order,"the order");
 
             res.render('admin/orderDetails',{order ,returnData});
 
@@ -168,8 +160,6 @@ module.exports = {
                     }
                 );
             }
-
-            console.log("changed the order status");
 
             res.json({ success: true, message: 'Return status updated successfully' });
             

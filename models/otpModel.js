@@ -10,7 +10,7 @@ const otpSchema = new mongoose.Schema({
             required : true
         },
         otpExpires: {
-            type: Number, // Unix timestamp in milliseconds
+            type: Number, 
             required: true
         }
 });
