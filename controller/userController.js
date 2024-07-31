@@ -23,7 +23,7 @@ const uuid = require('uuid');
         try {
 
           const [products,latestP] = await Promise.all([
-            Product.find().populate('category'),
+            Product.find().populate('category').populate('brand'),
             Product.find().sort({createdAt : -1})
           ])
 
@@ -33,6 +33,7 @@ const uuid = require('uuid');
           
           const latestProducts = latestP.slice(0,LATEST_PRODUCTS_COUNT);
 
+          console.log(products,"ppprodduct")
           res.render('user/user_home',{
             user,
             products,

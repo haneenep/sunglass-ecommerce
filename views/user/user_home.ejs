@@ -210,13 +210,12 @@
                                 </div>
                             <% } %>
                             <ul class="product__hover">
-                                <li><a href="#"><img src="/img/icon/heart.png" alt=""></a></li>
                                 <li><a href="/products/<%= product._id %>"><img src="/img/icon/search.png" alt=""></a></li>
                             </ul>
                         </div>
                         <div class="product__item__text">
                             <h6><%= product.productName %></h6>
-                            <a href="#" class="add-cart">+ Add To Cart</a>
+                            <a href="#" class="add-cart"><%= product.brand.name.toUpperCase() %></a>
                                 <% if(product.inCategoryOffer === true){ %>
                                 <h5>
                                 <span class="discounted-price">₹<%= product.discountedPrice %></span>
