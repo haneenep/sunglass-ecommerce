@@ -232,7 +232,7 @@ module.exports = {
                     const wallet = await Wallet.findOne({user : userId});
 
                     if(!wallet){
-                        res.status(404).json({message : "Wallet Not found",success : false})
+                        res.status(404).json({message : "Insufficient balance in wallet",success : false})
                     }else{
 
                         if(wallet.balance >= totalAmount){
