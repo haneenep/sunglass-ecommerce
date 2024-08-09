@@ -15,4 +15,4 @@ COPY . .
 EXPOSE 4000
 
 # Command to run your application
-ENTRYPOINT ["node", "app.js"]
+ENTRYPOINT ["node", "bin/www"]
